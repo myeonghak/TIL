@@ -1,0 +1,33 @@
+[Forecasting: how to detect outliers?]
+
+https://medium.com/analytics-vidhya/forecasting-how-to-detect-outliers-cb65faafcd97
+
+
+
+- 특이치를 예측하는 일은 Supply chain management에 필수적임. 이는 손으로 수정해주어야 할 필요를 만들어내거나, 심각한 손실을 야기하기도 함
+- 현대 supply chain에서 이러한 특이치는 언제나 발생함. 그 원인은 다음과 같음.
+	1) 실수와 착오 : 이러한 에러를 발견한다면 이를 다시는 발생하지 않도록 개선할 수 있음.
+	2) 예외적인 수요(Exceptional Demand): 일부 수요는 실제적이지만, 이는 그들이 예외적이지 않다는 것을 의미하지 않음. 이러한 예외적인 매출은 그렇게 특이한 상황은 아니다.
+									예를 들어 홍보, 마케팅, 특이한 고객 행동, 재고 정리등이 있다. 
+									특히, 작년에 실시했던 -80% 재고 정리를 모델에 반영하고 싶지는 않을 것이다.
+
+- 이러한 특이치를 제거하고 스무딩하면, 예측의 성능이 더욱 나아질 것이라 기대할 수 있다. 단지 이러한 작업만으로 수%의 성능이 개선되는 일을 흔히 보았다.
+- 큰 데이터 상황에서는, 이러한 (특이치) 탐지와 제거 작업을 자동화 하는 것은 더욱 중요하다. 
+
+
+1) Winsorization (윈저화)
+[Noun] (statistics) A transformation of statistics of a batch or sample by transforming extreme values.
+
+특이치는 지극히 높거나 낮은 값을 의미한다. 이러한 간단한 정의에 의해, 
+지나치게 높은 x%의 값을, nth percentile로 치환해주는 작업으로 스무딩할 수 있음.
+이렇게 값을 낮은 percentile로 shrink down 해주는 기법을 winsorization이라고 함.
+가령 99% percentile을 사용하면, 해당 위치의 가장 가까운 값들에 기반해 선형 근사를 해줌. (linear approximation)
+
+
+2) 표준 편차 (sd)
+정규화 수행 후 k 시그마 만큼의 값을 뛰어 넘는 값을 outlier로 간주
+
+그러나 트렌드 혹은 계절성(seasonality)을 반영하지 못함
+
+3) 오차 표준 편차(Error Standard Deviation)
+트렌드나 계절성을 가졌을 경우 

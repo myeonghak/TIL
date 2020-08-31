@@ -1,0 +1,22 @@
+[Just How Robust Are Tree-Based Classifiers In Handling Missing Data As IS?]
+- 트리기반 분류 모델의 학습에 사용되는 데이터의 결측치 비율이 모델의 성능에 어떻게 영향을 미치는지를 실험적으로 확인하기 위함
+
+
+1. Data Source and Description
+	1) credit approval dataset 사용
+	2) 총 690개의 행으로 구성됨. y value는 거의 1:1 비율
+	3) 80:20으로 데이터 나눔. 
+	4) 비교를 위해, logistic 모델의 결측치는 mean/mode imputation 해줌.
+	
+2. Missing Value Generation And Thresholds
+	1) 결측값을 무작위로 일정 비율로 추가하여 노이즈를 줌.
+	-> 15%, 30%, 50%, 75%, 100% 등.
+	
+3. Initial Results
+	1) 대부분의 모델에서 기대했던 것 이상의 성능이 나옴 (기대 이하의 성능 감소가 관측됨)
+	2) 이상하게도, 최고 성능을 낸 모델은 결측치가 가장 적은 모델에서 나오지 않았음.
+	-> eg. 2.6% 결측치의 RF 모델이 0.6% 결측치의 모델을 아웃퍼폼함. (f1 .88 vs .86)
+
+4. Final Results
+	1) 결측치 비율이 올라갈수록 성능이 감쇠하는 것은 사실이었으나, 이 감쇠가 일어나는 패턴, 즉 결측치와 성능 손실의 관계는 선형적이거나 quadratic하지 않았음.
+	2) 핵심은, 상대적으로 많은 비율의 결측치도 반드시 모델의 성능을 크게 손상하지는 않는다는 것. 

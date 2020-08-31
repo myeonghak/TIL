@@ -1,0 +1,35 @@
+[links]
+https://www.kaggle.com/wrosinski/shap-feature-importance-with-feature-engineering
+https://www.kaggle.com/qqgeogor/eda-script-67
+https://www.actuaries.digital/2019/06/18/analytics-snippet-feature-importance-and-the-shap-approach-to-machine-learning-models/
+https://datanetworkanalysis.github.io/2019/12/24/shap3
+https://christophm.github.io/interpretable-ml-book/shap.html
+https://www.kaggle.com/dansbecker/advanced-uses-of-shap-values#Summary-Plots
+https://datanetworkanalysis.github.io/2019/12/24/shap3
+
+[Two Sigma News competition]
+
+< SHAP Feature Importance with Feature Engineering >
+
+
+- 어떤 변수가 중요한지 알 수 있다면, 이를 사용해서 feature engineering을 꾀할 수 있다.
+	1) 변수의 중요도(기여도)를 통해 (도메인 지식과 결합해서) 새로운 변수를 조합해서 만들어 낼 수 있음
+	2) train set과 test set의 특정(중요) 변수의 분포의 차이를 파악할 수 있음
+
+- summary plot: 가장 중요한 변수들을 보여줌	
+	1) validation set에 기반한 모델의 변수 중요도를 뽑아내려고 함.
+	2) summary_plot: 
+		- 모든 변수에 대한 SHAP 값과 선택된 set의 모든 샘플을 통합해 줌.
+		- 그 뒤 SHAP 값이 정렬됨; 따라서 가장 중요한 변수가 가장 위에 등장하게 됨.
+		- 또한, 모델의 결과에 각각 피처가 어떻게 영향을 미쳤는지에 대한 정보도 제공받을 수 있음.
+		- 만일 한 변수의 SHAP 변수가 증가하는 축에 (오른쪽) 적색 data point가 밀집되어 있다면, 해당 변수의 값이 y 변수의 높은 값에 기여하는 것으로 간주할 수 있음
+
+
+
+
+
+
+
+import shap
+%matplotlib inline
+shap.initjs()
