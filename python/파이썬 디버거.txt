@@ -1,0 +1,30 @@
+[파이썬 Debugger]
+https://www.slideshare.net/ssuser029f98/jupyter-notebook-qtconsole
+https://www.youtube.com/watch?v=ChuU3NlYRLQ&list=LLypIXWIsUMIMvCa6zQfOZmQ&index=2&t=0s
+https://stricky.tistory.com/93
+
+
+%pdb
+-> 이 코드로, error가 발생하면 자동으로 pdb를 실행하는 기능을 ON/OFF할 수 있음.
+
+- 파이썬의 내장 모듈로, 코드 디버깅을 도움
+- 코드 안에 break point를 놓을 수 있음. 이는 다음 용도로 쓰임
+	1) 변수 검증
+	: x==5 따위를 검증 가능
+	2) line by line으로 한 단계씩 진행 가능
+	: 함수 내부에서 어떻게 작동하는지를 확인할 수 있음
+	3) 작동하는 대로 코드를 보여줌
+	
+	
+- 유용한 커맨드
+	1) n: 다음 라인을 실행
+	2) c: 실행 완료
+	3) l: 앞뒤 3 라인을 리스트함
+	4) s: function call 안으로 들어감?
+	5) b: 모든 break point의 리스트 출력
+	6) b[int]: int번째 라인에 break point 설정 (eg. b 10)
+	7) b[func] : 함수명에 break
+	8) cl: 모든 break point 제거
+	9) cl[int] : int번째 라인에 bp 삭제
+	10) p : print
+	
