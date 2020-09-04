@@ -1,0 +1,74 @@
+Graph representation 1
+metapath2vec 논문
+
+1. 임베딩 방식
+	1) transE
+	: loss-> head(이병헌)+relation(관계)-tail(광해)=0
+	같이 자주 등장하는 node를 유사한 것으로 간주하고, 가까운 공간에 임베딩되도록 학습. pos 샘플이 등장하면 로스가 적도록, neg 샘플이 등장하면 로스가 크도록 학습.
+	그러나 학습되는 relation의 정보가 반영되지 않음.
+	
+	2) transR
+	:‘다른 관계를 갖는 엔티티들은 다른 공간에 임베딩 되어야한다’
+	관계는 유지하되, 특정 관계에 대해서 프로젝션 한 두 엔티티는 다르도록 학습
+	
+2. 그래프
+	1) 가장 중요한 것: 이웃을 정의하는 방법, 그래프간의 연관성
+	diffusion: 그래프 내에서 노드간 발생하는 정보의 교환
+	high order proximity: 그래프 행렬 A를 제곱하면, 2 step의 연결된 가중치를 의미함. 
+	n제곱 하면 n step이 됨. 이를 평균으로 나누어 평균 해주면,  high order proximity가 됨.
+	이런 hop를 가지고 PPMI를 구할 수 있음.
+	PPMI: 한 노드의 힘이 세졌을 때, 정보가 어떻게 전파가 되냐?
+	-> 힘이 증가되면 다른 곳에서 끌어오게 되는데, 이 끌어옴에 따라 자기의 정보도 커지기도 함. 뺏긴 노드는 -가 되지만, 이를 무시하고 0으로 처리해 줌. 
+	이러한 전처리 방법을 PPMI라고 함. 
+	이런 식으로 연결성에 대한 정보를 나타내는 것. 이런 전처리 과정을 거친 값으로 매트릭스를 초기화하게 된다! 1,3 노드가 관련이 있다 이런 식으로.
+	
+3. Deepwalk & Skipgram
+	: graph source에서 random하게 sequence를 생성-> 생성된 sequence로 skip-gram 학습
+	
+	Deepwalk 방법의 한계
+	: homogeneous한 관계만을 표현할 수 있음 (다른 type의 node를 다르다고 표현하지 못함) 
+	
+4. metapath2vec
+	:이러한 한계점을 극복하는 방법을 제시함. 다른 타입의 노드를 다르게 표현할 수 있음. 
+	“대표저자”라는 관계를 표현함에 있어 같은 방향과 같은 크기로 균일하게 공간에 표현됨.
+	transR 방식의 임베딩에서는 다른 타입을 다른 공간에 임베딩함으로써 이러한 차이를 표현했는데, 비슷한 접근을 취함.
+	같은 공간에 맵핑 되는 것은 부적절하다는 것
+	
+	1) subpath 생성
+	: randomwalk 기반으로 path 생성. (일반적으로 길이는 1000정도)
+	
+	2) neighbor window
+	: window size=5를 가정, subpath에서 구한 seq에 window를 취해줌. 여기서 window 바깥의 샘플은 negative sample
+	이 window 내에서, 다음에 등장할 토큰이 제대로 등장할 확률을 MLE로 극대화하도록 학습
+	
+	3) type별 maximum probability를 구별
+	: 같은 타입(공간) 내의 확률끼리는 곱의 연산으로, 다른 공간 확률들은 합의 연산을 취해줌.
+	
+	4) randomwalk의 문제
+	: 오직 빈도에만 의존 -> 특정 metapath 구조에 의미가 있다고 먼저 제공 (APA는 공저자, APVPA-> 같은 주제 연구 관계 등)
+	
+	5) path 지정
+	: 시작과 끝이 동일하도록 지정, 그러나 꼭 그래야하는 것은 아님. 
+	
+	6) negative sampling시 type고려
+	: softmax를 취해 줄 때, negative samples를 분모에 두는데 이 때 아무 negative sample만 두는 것이 아니라, 다른 타입에서 샘플링을 해 옴.
+	
+5. PTE 방식(텍스트 도메인)에서 차용한 방법론이라고 함.
+
+6. metapath2vec의 성능
+	1) 적은 데이터 수에서 좋은 성능을 보임.
+	: 이는 유용한 metapath를 미리 지정해 주기 때문이 아닐까, 하는 추측
+	
+	2) 하이퍼파라미터
+	: 하이퍼파라미터에 민감하지 않은 성향을 보이나, 저자의 window size에는 민감한 현상(한 저자가 한가지의 연구만 하는 것이 아니므로, 
+	window size를 너무 크게 잡으면 임베딩에 방해가 됨)
+	
+7. 결론
+	1) homogeneous grah network를 heterogeneous graph에 적용한 논문
+	2) Skip-gram 구조의 변형을 통해, 다른 type 노드간 관계를 다른 공간에서 학습되도록 유도함
+	3) GNN 구조에서 network가 커질 때, graph sampling 방식으로 활용도가 높음.
+
+8. 한계점
+	: 데이터 셋에 따른 최적의 metapath에 관한 선행지식이 필요
+	-> 도메인 지식이 없을 경우 휴리스틱한 접근이 필요, 불확실성 존재
+	
