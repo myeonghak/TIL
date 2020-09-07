@@ -1,0 +1,29 @@
+* 콘솔, 터미널, 쉘의 차이점
+http://blog.naver.com/asianchairshot/221383363419
+
+0. 콘솔 (=물리적 터미널)
+서버의 로컬 장치에서 직접 명령어를 작성할 수 있는 입출력 장치. 콘솔이 물리적인 장치라면 터미널은 원격제어 환경까지 포함하는 더 넓은 의미라고 할 수 있다.
+
+1. 터미널
+서버의 로컬 또는 원격으로 접속할 수 있는 콘솔을 구현한 소프트웨어
+리눅스 환경에서 콘솔과 함께 TTY(teletypewriter : 전신타자기 라는 기계에서 유래된 약자)에 속한다.
+커멘드를 입력하는 쉘을 실행하기 위한 포장(wrapper) 프로그램이다. 터미널이 모니터와 키보드로 역할이 나뉘어지기 이전에는 이들 모두가 teletype에 속했다. 
+unix/linux 환경에 더 나은 멀티프로세싱과 윈도우 시스템이 더해지면서 터미널이라는 개념은 소프트웨어 쪽으로 기울어졌다.
+
+즉, 이 둘은 함께 실행될 수 밖에 없다. 티비를 켜면 무조건 화면 안에 무언가가 방송되고 있거나 하다못해 지지직거리는 것 처럼 터미널(티비)을 활성화 함과 동시에 쉘(방송)이 실행된다고 봐도 무방.
+
+2. 쉘 (셸, Shell)
+실제로 명령어를 전달하고 결과를 전달받는 프로그램
+The shell is the program which actually processes commands and returns output. 
+Most shells also manage foreground and background processes, command history and command line editing. 
+These features (and many more) are standard in bash, the most common shell in modern linux systems.
+사용자가 명령어를 입력하면 쉘은 사용자가 입력한 명령어를 OS로 전달하는 명령어 해석기라고 볼 수 있다. 
+쉘은 여러 종류가 있다. 상단에 첨부한 이미지 최상단에 bash 라고 쓰여있는데 맥에서 지정되어 있는 기본쉘이 bash이다. 쉘의 종류로는 bash, sh, csh 등이 있다.
+
++ 명령 프롬프트(cmd)도 windows에서 기본으로 제공되는 shell 프로그램 중 하나.
+
++ CLI(Command Line Interface)
+
++ $의 의미
+$는 프롬프트로 사용자의 명령을 받아들일 준비가 되었음을 모니터에 나타내는 표시이다. 
+리눅스 환경에서 주로 $ 혹은 #을 만나게 되는데 이는 현재 로그인 한 유저의 계정 정보를 나타낸다. 
