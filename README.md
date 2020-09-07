@@ -36,7 +36,7 @@ A collection of what I learned day by day, what I found interesting today, what 
 -	[Visualization](#Visualization)
 -	[XAI (eXplainable AI)](#XAI)
 
-##### Minor techniques
+##### Miscellaneous
 
 -	[Git](#git)
 -	[Linux](#linux)
@@ -50,6 +50,7 @@ A collection of what I learned day by day, what I found interesting today, what 
 -	[Computer Science](#cs)
 -	[Database](#db)
 -	[Web](#web)
+-	[Computer Science](#cs)
 
 <!-- ### Python -->
 
