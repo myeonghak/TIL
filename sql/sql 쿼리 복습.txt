@@ -1,0 +1,174 @@
+
+1. ANIMAL_ID순으로 조회
+
+SELECT ANIMAL_ID, NAME FROM ANIMAL_INS ORDER BY ANIMAL_ID
+
+2. 모든 레코드 조회하기
+SELECT * FROM ANIMAL_INS ORDER BY ANIMAL_ID
+
+
+3. 역순 정렬하기
+SELECT NAME, DATETIME FROM ANIMAL_INS ORDER BY ANIMAL_ID desc
+
+4. 조건 걸기
+
+SELECT ANIMAL_ID, NAME FROM ANIMAL_INS WHERE INTAKE_CONDITION = 'Sick'
+
+5. 부정 조건 걸기
+SELECT ANIMAL_ID, NAME FROM ANIMAL_INS WHERE NOT INTAKE_CONDITION = 'Aged' ORDER BY ANIMAL_ID
+
+6. 여러 기준으로 정렬
+SELECT ANIMAL_ID,NAME,DATETIME FROM ANIMAL_INS ORDER BY NAME ASC, DATETIME DESC
+
+7. 상위 n개 레코드
+SELECT NAME FROM ANIMAL_INS ORDER BY DATETIME LIMIT 1
+
+8. 최댓값 구하기
+SELECT DATETIME FROM ANIMAL_INS ORDER BY DATETIME desc LIMIT 1
+# where datetime = (select max(datetime) from animal_ins);
+
+9. 최솟값 구하기
+SELECT DATETIME FROM ANIMAL_INS ORDER BY DATETIME asc LIMIT 1
+
+10. count, 레코드의 수 세기
+SELECT COUNT(ANIMAL_ID) FROM ANIMAL_INS
+
+11. 중복 제거 후 수 세기
+SELECT COUNT(DISTINCT NAME) FROM ANIMAL_INS
+
+
+12. 그룹별 수 세기
+SELECT ANIMAL_TYPE,COUNT(ANIMAL_ID)  FROM ANIMAL_INS GROUP BY ANIMAL_TYPE ORDER BY ANIMAL_TYPE
+
+13. 동일 그룹 내 count 수로 조건 걸기
+SELECT NAME, COUNT(ANIMAL_ID) FROM ANIMAL_INS GROUP BY NAME HAVING  (COUNT(NAME) >= 2)
+
+14. 특정 시간대 조건 걸기
+SELECT HOUR(DATETIME) AS H, COUNT(ANIMAL_ID) FROM ANIMAL_OUTS GROUP BY H HAVING H BETWEEN 9 AND 19
+
+
+15. 시간별 수 세기
+SELECT HOUR(DATETIME) AS H, COUNT(ANIMAL_ID) AS ID FROM ANIMAL_OUTS GROUP BY H ORDER BY H ASC
+
+16. 결측값 찾기
+SELECT ANIMAL_ID FROM ANIMAL_INS WHERE NAME IS NULL
+# is를 =로 교체 안됨
+
+17. 결측값 아닌 것 찾기
+SELECT ANIMAL_ID FROM ANIMAL_INS WHERE NAME IS NOT NULL
+
+
+18. 결측치 처리하기
+SELECT ANIMAL_TYPE, IFNULL(NAME,"No name") AS NAME, SEX_UPON_INTAKE FROM ANIMAL_INS
+
+19. join으로 결측치 찾기
+
+SELECT O.ANIMAL_ID, O.NAME FROM ANIMAL_OUTS AS O
+    LEFT OUTER JOIN ANIMAL_INS AS I ON O.ANIMAL_ID = I.ANIMAL_ID
+WHERE I.ANIMAL_ID IS NULL
+
+
+# JOIN 할때 등호 앞뒤의 순서는 상관 없음
+
+# SELECT
+#   O.ANIMAL_ID, O.NAME FROM ANIMAL_OUTS AS O 
+#   LEFT OUTER JOIN ANIMAL_INS AS I ON I.ANIMAL_ID=O.ANIMAL_ID
+# WHERE I.ANIMAL_ID IS NULL 
+# ORDER BY ANIMAL_ID ASC 
+
+
+20. join으로 결측치 점검
+아직 입양을 못 간 동물 중, 가장 오래 보호소에 있었던 동물 3마리의 이름과 보호 시작일을 조회하는 SQL문을 작성해주세요. 
+이때 결과는 보호 시작일 순으로 조회해야 합니다.
+
+
+-- 코드를 입력하세요
+SELECT I.NAME, I.DATETIME FROM ANIMAL_INS I
+LEFT JOIN ANIMAL_OUTS AS O ON I.ANIMAL_ID = O.ANIMAL_ID
+WHERE O.DATETIME IS NULL
+ORDER BY I.DATETIME
+LIMIT 3
+
+21. 
+관리자의 실수로 일부 동물의 입양일이 잘못 입력되었습니다. 보호 시작일보다 입양일이 더 빠른 동물의 아이디와 이름을 조회하는 SQL문을 작성해주세요. 
+이때 결과는 보호 시작일이 빠른 순으로 조회해야합니다.
+
+-- 코드를 입력하세요
+# 일부 동물의INS상의 DATETIME과 OUTS상의 DATETIME이 잘못 입력되었다
+# 이 문제를 해결하기 위해, 각 테이블의 DATETIME을 비교하는 작업이 필요함.
+# 입양일보다 보호 시작일이 느리면 그건 잘못 입력된 경우로 이해할 수 있음
+# 결과를 ORDER BY I.DATETIME으로
+# INS를 SELECT한 뒤, OUTS를 ANMAL_ID 기준으로 JOIN
+# WHERE문으로 DATETIME 비교
+
+SELECT I.ANIMAL_ID, I.NAME FROM ANIMAL_INS AS I
+LEFT OUTER JOIN ANIMAL_OUTS AS O ON O.ANIMAL_ID=I.ANIMAL_ID
+WHERE O.DATETIME < I.DATETIME
+ORDER BY I.DATETIME
+
+# SELECT O.ANIMAL_ID, O.NAME
+# FROM ANIMAL_OUTS O
+# LEFT JOIN ANIMAL_INS I ON O.ANIMAL_ID = I.ANIMAL_ID
+# WHERE O.DATETIME < I.DATETIME
+# ORDER BY I.DATETIME
+
+
+22. 
+보호소에서 중성화 수술을 거친 동물 정보를 알아보려 합니다. 보호소에 들어올 당시에는 중성화1되지 않았지만, 
+보호소를 나갈 당시에는 중성화된 동물의 아이디와 생물 종, 이름을 조회하는 아이디 순으로 조회하는 SQL 문을 작성해주세요.
+
+
+-- 코드를 입력하세요
+SELECT O.ANIMAL_ID, O.ANIMAL_TYPE, O.NAME FROM ANIMAL_OUTS AS O 
+LEFT JOIN ANIMAL_INS AS I ON I.ANIMAL_ID = O.ANIMAL_ID
+# WHERE I.SEX_UPON_INTAKE LIKE '%Intact%'AND O.SEX_UPON_OUTCOME NOT LIKE '%Intact%'
+WHERE ((I.SEX_UPON_INTAKE = "Intact Male" or I.SEX_UPON_INTAKE = "Intact Female") AND (O.SEX_UPON_OUTCOME = "Spayed Female" OR O.SEX_UPON_OUTCOME = "Spayed Male" OR O.SEX_UPON_OUTCOME = "Neutered Male" OR O.SEX_UPON_OUTCOME = "Neutered Male"))
+ORDER BY O.ANIMAL_ID
+
+
+# SELECT 
+#   O.ANIMAL_ID, 
+#   O.ANIMAL_TYPE,
+#   O.NAME
+#  FROM ANIMAL_OUTS AS O
+#  JOIN ANIMAL_INS AS I ON I.ANIMAL_ID = O.ANIMAL_ID 
+#  WHERE I.SEX_UPON_INTAKE LIKE '%Intact%'
+#  AND O.SEX_UPON_OUTCOME NOT LIKE '%Intact%'
+# ORDER BY O.ANIMAL_ID ASC;
+
+# -- 코드를 입력하세요
+# SELECT  O.ANIMAL_ID, O.ANIMAL_TYPE, O.NAME
+# FROM (SELECT ANIMAL_ID FROM ANIMAL_INS WHERE SEX_UPON_INTAKE LIKE 'Intact%') I, ANIMAL_OUTS O
+# WHERE O.ANIMAL_ID = I.ANIMAL_ID AND O.SEX_UPON_OUTCOME NOT LIKE 'Intact%'
+
+23. 리스트 내 이름 조회
+
+동물 보호소에 들어온 동물 중 이름이 Lucy, Ella, Pickle, Rogan, Sabrina, Mitty인 
+동물의 아이디와 이름, 성별 및 중성화 여부를 조회하는 SQL 문을 작성해주세요.
+
+-- 코드를 입력하세요
+# 
+
+SELECT ANIMAL_ID, NAME, SEX_UPON_INTAKE FROM ANIMAL_INS AS I
+WHERE I.NAME IN ('Lucy', 'Ella','Pickle','Rogan','Sabrina','Mitty')
+ORDER BY I.ANIMAL_ID ASC
+
+
+24. 특정 문자열 포함되는 칼럼
+보호소에 돌아가신 할머니가 기르던 개를 찾는 사람이 찾아왔습니다. 
+이 사람이 말하길 할머니가 기르던 개는 이름에 'el'이 들어간다고 합니다. 
+동물 보호소에 들어온 동물 이름 중, 이름에 EL이 들어가는 개의 아이디와 이름을 조회하는 SQL문을 작성해주세요. 
+이때 결과는 이름 순으로 조회해주세요. 단, 이름의 대소문자는 구분하지 않습니다.
+
+-- 코드를 입력하세요
+SELECT ANIMAL_ID, NAME FROM ANIMAL_INS AS I
+WHERE I.ANIMAL_TYPE = 'Dog' AND ((I.NAME LIKE "%EL%") OR (I.NAME LIKE "%eL%") OR (I.NAME LIKE "%El%") OR (I.NAME LIKE "%el%"))
+ORDER BY I.NAME
+
+# https://stackoverflow.com/questions/23372550/what-does-sql-select-symbol-mean/23372603
+
+# WHERE
+#     upper(NAME) LIKE '%'||upper('el')||'%' AND ANIMAL_TYPE LIKE 'Dog'
+
+
+
