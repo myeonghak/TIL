@@ -1,0 +1,106 @@
+[이진 트리]
+https://geonlee.tistory.com/72
+이진트리에 대한 직관적 설명, gif 포함
+
+
+이진 트리의 추상적 자료구조
+1. 연산의 정의:
+	1) size(): 현재 트리에 포함되어 있는 노드의 수를 구함
+	2) depth(): 현재 트리의 깊이(도는 높이)를 구함
+	3) 순회(traversal)
+	
+
+2. 이진 트리의 구현 - 노드(node):
+	1) data
+	2) left child
+	3) right child
+
+3. 이진 트리의 구현 - 트리(tree):
+	1) __init__ 메서드를 정의할 때, 어트리뷰트로 지정
+
+4. 이진 트리의 구현 - size():
+	1) 실행 시 트리의 size를 return하도록.
+	2) 재귀적인 방법으로 쉽게 구할 수 있음.
+	3) terminal condition, trivial case를 잘 지정해 주어야 함.
+	
+	4) def size(self):
+		l=self.left.size() if self.left else 0
+		r=self.right.size() if self.right else 0
+		return l+r+1
+	
+
+5. 이진 트리의 구현 - depth():
+	1) 이 역시 재귀적인 방법으로 쉽게 구할 수 있음
+	2) 전체 이진트리의 depth() = left subtree의 depth와 right subtree의 depth 중 큰 것+ 1 (root)
+	
+	
+6. 이진 트리의 순회
+	1) 깊이 우선 순회 (depth first traversal)
+		자기 자신 노드 x를 어느 순서에 방문할 것인가에 따라 3가지로 나뉨.
+		
+		- 중위 순회 (in-order traversal) : 왼쪽 서브트리를 순회한 뒤 노드 x 를 방문, 그리고 나서 오른쪽 서브트리를 순회
+		- 전위 순회 (pre-order traversal) : 노드 x 를 방문한 후에 왼쪽 서브트리를 순회, 마지막으로 오른쪽 서브트리를 순회
+		- 후위 순회 (post-order traversal) : 왼쪽 서브트리를 순회, 오른쪽 서브트리를 순회, 그리고 나서 마지막으로 노드 x 를 방문
+	
+	2) 넓이 우선 순회 (breadth first traversal)
+	
+	
+7. 깊이 우선 순회 구현
+	1) 중위 순회 (in-order traversal)
+	class Node:
+		def inorder(self):
+		traversal = []
+		if self.left:
+			traversal += self.left.inorder()
+		
+		traversal.append(self.data)
+			
+		if self.right:
+			traversal += self.right.inorder()
+			
+		return traversal
+		
+	<tree 전체>
+	class BinaryTree:
+		def inorder(self):
+			if self.root:
+				return self.root.inorder()
+			else:
+				return []
+				
+
+	2) 전위 순회 (pre-order traversal)
+	class Node:
+		def preorder(self):
+		traversal = []
+		traversal.append(self.data)
+		if self.left:
+			traversal += self.left.preorder()
+		
+		if self.right:
+			traversal += self.right.preorder()
+			
+		return traversal
+		
+	<tree 전체>
+	class BinaryTree:
+		def preorder(self):
+			if self.root:
+				return self.root.preorder()
+			else:
+				return []
+	
+	
+	
+	3) 후위 순회 (post-order traversal)
+	
+	
+	
+8. 넓이 우선 순회 구현 (Breadth first traversal)
+	1) 원칙
+		- 수준(level)이 낮은 노드를 우선으로 방문
+		- 같은 수준의 노드들 사이에서는, 부모 노드의 방문 순서에 따라 방문
+		- 왼쪽 자식 노드를 오른쪽 자식보다 먼저 방문
+	
+	2) 재귀적 방법이 적합한가?
+		- no! 
