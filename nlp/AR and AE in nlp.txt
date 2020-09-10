@@ -1,0 +1,18 @@
+
+* 자연어처리에서의 AR과 AE 
+https://blog.pingpong.us/xlnet-review/
+
+[Autoregressive (AR)]
+일반적인 Language Model (LM)의 학습 방법으로 이전 token들을 보고 다음 token을 예측하는 문제를 품. 
+대표적으로 ELMO, GPT RNNLM 등이 이에 해당됨
+
+[AutoEncoding (AE)]
+Auto Encoder는 주어진 input에 대해 그 input을 그대로 예측하는 문제를 풀고, 
+Denoising Auto Encoder은 noise가 섞인 input을 원래의 input으로 예측하는 문제를 품.
+BERT같은 경우는주어진 input sequence에 임의로 추가한 noise([MASK] token)가 주어졌을 때,[MASK] token 을 원래 input token으로 복구하고자 함.
+따라서 Denoising Auto Encoder의 방식으로 볼 수 있음.
+
+[XLNet]
+AR과 AE의 장점을 살리고 단점을 극복하기 위한 새로운 Permutation Language Modeling Method를 제안함.
+generalized AR model임.
+
