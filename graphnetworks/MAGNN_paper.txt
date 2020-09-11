@@ -1,0 +1,249 @@
+[MAGNN: Metapath Aggregated Graph Neural Network for Heterogeneous Graph Embedding]
+
+
+1. 요약
+
+	매우 많은 실세계의 그래프 혹은 네트워크는, 노드 타입과 관계 타입의 다양성을 포함하여 태생적으로 이질적이다.
+	이질적 그래프 임베딩은 이질적 그래프의 풍부한 구조적이고 의미론적인 정보를 저차원 공간의 노드 representaion으로 임베딩하는 것이다.
+	현존하는 모델들은 보통 이질적 그래프에 여러 개의 metapath를 정의하여 복합적인 관계를 파악하고 이웃 선택을 유도한다. 
+
+	그러나, 이러한 모델을은 노드의 content feature를 생략하거나, metapath 도중의 중간 노드들을 버리거나, 오직 하나의 metapath만을 고려한다.
+	이러한 세가지의 한계를 다루기 위해, 최종 성능을 개선하기 위한 MAGNN(Metapath Aggregated Graph Neural Network)이라는 새로운 모델을 제안한다.
+
+	특히, MAGNN은 3개의 주된 구성 요소를 사용한다.
+	입력 노드 특성(attribute)을 캡슐화하기 위한 content transformation, 
+	중간의 의미론적 노드를 통합하기 위한 intra-metapath aggregation,
+	복수의 metapath로부터 오는 메시지를 결합하기 위한 inter-metapath aggregation이 바로 그것이다.
+
+	노드 분류, 노드 군집화, 링크 예측을 위한 3개의 실세계의 이질적 그래프 데이터셋을 통해 실험한 결과,
+	MAGNN은 다른 SOTA baseline에 비해 더욱 정확한 예측 결과를 이루어냈다.
+
+2. 도입
+	1) 많은 실세계 데이터는 그래프의 구조로 표현되는데, 노드와 엣지로 구체화된다. 이들의 비 유클리드적인 특성으로 인해 기존의 머신러닝 모델로 모델링하기에는 어려움이 따른다.
+	대부분의 통계기반 모델은 유클리드 공간 내 고정된 크기의 입력값을 가정한다. 따라서 그래프의 노드가 저차원의 유클리드 공간 내에 표현될 수 있다면 유용할 것.
+	
+	2) 다양한 그래프 임베딩 기법들이 제안되어 왔음.
+		1] LINE
+		: 노드간의 1계와 2계 근사를 사용함으로써 노드 임베딩을 생성함.
+		2] Random-walk-based method (DeepWalk, node2vec, TADW)
+		: random walk로 생성된 노드 sequence를 skip-gram model의 입력으로 사용함.
+		3] Graph Neural Network (스펙트럼 기반 GNN - Spectral-based GNN(ChebNet,GCN))
+		: 전체 그래프의 Fourier domain에서 graph convolution operation을 수행함.
+		4] Spatial-based GNN (GraphSAGE, GAT)
+		: 그래프 도메인에 직접적으로 graph convolution 연산을 수행함으로써 spectral-based model의 일반화 및 scalability 문제를 해결함.
+		최근 연구자들 사이에서 각광받는 분야임.
+		
+	3) 기존 GNN 방법론의 한계 - assumption on homogeneous graph 
+	GNN 접근법이 많은 task에서 SOTA를 기록했으나, GNN은 오직 하나의 노드 타입과 엣지 타입을 갖는 동질적인 그래프를 입력으로 받을 것을 가정하고 있음.
+	대부분의 실제 세계 그래프는 다양한 노드와 엣지로 구성되어 있으며 이들은 다른 피처 공간 내의 요소들과 연관되어 있음.
+	(ex. 공저자 네트워크에서는 최소 두개 타입의 노드를 포함함. 예를 들어 작가와 논문.)
+	
+	이러한 종류의 그래프를 이질적 정보 네트워크(HINs, Heterogeneous Information Networks) 혹은 이질적 그래프(heterogeneous graph)로 부를 것임.
+	이 그래프 구조적/노드 내용상의 이질성은 GNN이 그들이 포함하고 있는 풍부하고 다양한 정보를 저차원 벡터 공간 내로 인코딩하는 것을 어렵게 함.
+	
+	4) Metapath 방법론
+	현존하는 대부분의 이질적 그래프 임베딩 방법론은 metapath의 아이디어에 기반함. 
+	metapath란, 
+	그래프 내에 포함된 노드 타입간의 복합적인 관계를 묘사하는, 네트워크 스키마 상에 정의된 엣지 타입과 노드 타입의 정렬된 sequence이다.
+	
+	가령 학술 네트워크에서 저자(Author),논문(Paper),저널(Venue) 세가지의 구성이 있을 때
+	Author-Paper-Author (APA) and Author-Paper-Venue-Paper-Author(APVPA)는 
+	작가간의 두 종류의 관계를 묘사하는 metapath임. (각각 공저자와 동일 저널 저자)
+	
+	그러므로 우리는 metapath를 두 노드간의 high-order proximity로 볼 수 있음.
+	전통적인 GNN은 모든 노드를 동등하게 다루기 때문에, 이질적 그래프 상의 복잡한 구조적이고 의미론적 정보를 모델링할 수 없음.
+	
+	5) metapath-based embedding 방법론의 한계
+	노드 분류 및 링크 예측 등 다양한 task에서 기존의 전통적 network embedding 방법론을 outperform 했지만,
+	아래의 3가지 한계 중 적어도 한가지의 문제점을 겪음.
+	
+		1] node content feature를 사용하지 못함. 
+		-> node content feature가 풍부한 이질적 그래프에서 성능이 떨어짐
+		
+		2] 두 end node만을 고려함으로써 metapath 중간 단계의 노드를 생략함 
+		-> 정보 손실 야기
+		
+		3] 이질적 그래프를 embedding하기 위해 오직 하나의 metapath에 의존함.
+		-> 다른 metapath로부터의 정보의 측면을 손실하고, 수동적인 metapath 선택을 요구함. 이는 성능 최적화를 어렵게 함.
+		
+		
+		
+	6) MAGNN 제안
+	: MAGNN은 위의 문제들을 node content transformation, intra-metapath aggregation, inter-metapath aggregation을 적용함으로써 해결 (노드 임베딩 생성시)
+	
+		1] node content transformation (노드 컨텐트 변형)
+		: 다른 노드 타입마다 동일하지 않은 차원을 가질 가능성이 있는 이질적 노드 특징을 
+			동일한 잠재 벡터 공간 내로 project하기 위해 type-specific linear transformation을 처음으로 도입함.
+		
+		2] intra-metapath aggregation (메타패스 내 통합)
+		: 매 metapath마다 attention 메커니즘을 사용함. 이러한 intra-metapath aggregation 동안,
+		각 타겟 노드들은 노드를 그 노드의 metapath 기반 이웃과 연결하며 metapath 인스턴스로부터 노드 정보를 추출하고 결합함.
+		
+		이러한 방법으로, 이웃 노드들과 metapath 맥락 사이에서부터 이질적 그래프들의 구조적이고 의미론적 정보를 잡아냄.
+		
+		3] inter-metapath aggregation (메타패스 간 통합)
+		: MAGNN은 attention 메커니즘을 사용해 복수의 metapath로부터 획득한 잠재 벡터들을 최종 노드 임베딩으로 통합함.
+		복수의 메타패스를 통합함으로써, 모델은 이질적 그래프 내에 깊이 베어 있는 포괄적인 의미를 학습할 수 있음.
+		
+	
+2. 예비 작업
+	-> 관련된 용어를 정의함
+
+3. 관련된 연구
+	일반적인 그래프 임베딩을 위한 GNN에 관련된 연구와, 이질적 그래프를 위해 고안된 그래프 임베딩 방법을 소개함.
+	
+	1) Graph Neural Network
+	: GNN의 목표는 모든 노드 v에 대해 저차원 벡터 representation h_v를 학습하는 것임. 이는 많은 downstream task에 사용될 수 있음
+	(노드 분류, 노드 군집화, 링크 예측)
+	
+	각각의 노드는 그 고유의 특징과 그의 이웃에 의해 자연스럽게 정의된다는 것이 이러한 아이디어 내의 사상임.
+	이러한 아이디어에 뒤 이어, 그리고 그래프 신호 처리에 기반해, spectral-based GNN은 Graph convolution을 그래프의 푸리에 도메인에 수행하기 위해 처음 개발되었음.
+	
+	ChebNet은 Chebyshev 다항식을 사용해 그래프 푸리에 도메인 내의 그래프 신호 (node feature)를 필터링함.
+	이러한 종류의 또 다른 영향력있는 모델은 GCN으로, ChebNet의 파라미터들을 제약하고 단순화하여 과적합 문제를 해결하고 성능을 개선하였음.
+	
+	그러나, spectral-based GNN은 scalability와 일반화 성능이 떨어지는 문제가 있음. 이는 모든 layer에 전체 그래프를 입력값으로 사용해야하며,
+	학습된 필터들은 graph Laplacian의 고유기저에 의존하기 때문. 이는 특정한 그래프 구조에 밀접히 관련되어 있음.
+	
+	
+	
+	spatial-based GNN은 이러한 두 가지의 한계를 다루기 위해 제안되었음.
+	이러한 종류의 GNN은 graph 도메인 내부에 직접적으로 convolution을 정의함. 이는 feature 정보를 각 노드마다의 이웃으로부터 통합함으로 얻어짐.
+	이렇게 함으로써 이미지 데이터의 CNN의 convolution 연산을 모사함.
+	
+	
+	영향력있는 GNN 프레임워크인 GraphSAGE는, 노드 임베딩의 효율적인 생성을 위한 일반적인 통합기 함수(aggregator function)의 개념에서 구축되었음.
+	통합기 함수는 목표 노드의 지역적 이웃을 표집하고, 추출하고, 변형함. 그렇게 함으로써 unseen 노드와 그래프에 대해 병렬적 학습과 일반화를 가능케함.
+	다른 많은 spatial-based GNN 변형 알고리즘들은 이러한 아이디어에서 제안되었음.
+	
+	Transformer에서 착안하여, GAT는 attention 메커니즘을 통합기 함수에 결합시켜 타겟 노드의 관점에서 본 각 이웃의 정보에 대한 상대적인 중요성을 감안하게 했음.
+	
+	GGNN은 통합기 함수에 GRU를 결합하였는데, 통합된 이웃 정보를 현 time-step의 GRU 입력값으로 간주함으로써 적용함.
+	
+	GaAN은 GRU와 gated multi-head attention 메커니즘을 결합해 spatiotemporal graph를 다룸.
+	
+	STAR-GCN은 복수의 GCN 인코더-디코더를 쌓아 평점 예측 성능을 진작시킴.
+	
+	위에 언급된 모든 GNN은 동질적 그래프를 위해 고안되었거나, 추천 시스템과 같은 특별한 구조를 갖는 그래프를 위해 설계되었음.
+	이는
+	
+	대부분의 현존하는 GNN이 함께 공유된 임베딩 공간 내의 노드의 특성으로 작동하기 때문에,
+	이들은 자연스럽게 노드 특성들이 다른 공간 내에 놓여 있는 이질적 그래프에 적용될 수 없음.
+		
+
+	2) Heterogeneous Graph Embedding
+	이질적 그래프 임베딩은 이질적 그래프 내의 노드들을 저차원 벡터 공간 내로 사영하는 데 목표가 있다.
+	이 난해한 주제는 많은 연구에서 다루어 졌음.
+	
+	예를 들어, metapath2vec은 단일 metapath에 의해 유도되는 random walk를 생성하여 skip-gram 모델에 투입해
+	노드 임베딩을 생성했음.
+	
+	유저가 정의한 metapath가 주어졌을 때,
+	
+	ESim은 표집된 긍정/부정 metapath 인스턴스로부터 학습하여 노드 임베딩을 생성함.
+	HIN2vec은 복수의 예측 학습 task를 수행하여 node와 이질적 그래프의 metapath representation을 학습함.
+	
+	matapath가 주어졌을때,
+	HERec는 이질적 그래프를 동질적 그래프를 metapath 이웃에 기반한 동질적 그래프로 변환함. 그리고 DeepWalk 모델을 적용해 목표 타입의 노드 임베딩을 학습함.
+	
+	
+	HERec처럼, HAN은 이질적 그래프를 복수의 metapath 기반 동질 그래프로 비슷한 방식을 사용해 변형하는데,
+	graph attention network 구조를 사용해 이웃들로부터 오는 정보를 통합하며 다양한 metapath를 결합하기 위해 attention 메커니즘을 사용함.
+	
+	다른 모델은, PME가 있는데, 노드 임베딩을 그에 상응하는 관계 공간에 사영하고, 사영된 노드 간의 근접성을 최적화 함으로써 학습함.
+	
+	그러나, 모든 이질적 그래프 임베딩 방법론은 노드 content feature상의 한계를 가지거나, metapath 상의 중간 단계 노드의 정보를 버리거나, 오직 1개의 metapath만을 사용하는 한계가 있음.
+	
+	그들이 동질적 그래프 임베딩 방법론에서 일부 이질적 그래프 데이터셋 상의 성능을 개선시켰으나, 이질적 그래프에서 임베딩 된 정보를 더 포괄적으로 활용함으로써 개선의 여지가 있음.
+	
+	
+	
+4. 방법론
+	이 장에서 MAGNN을 도입함. 이는 3개의 주요 부분으로 구성되어 있음. 
+	(node content transformation, intra-metapath aggregation, and inter-metapath aggregation.)
+
+	1) Node Content Transformation
+	노드 특성에 관련된 이질적 그래프에 대해, 다른 노드 타입들은 피처 벡터의 불일치한 차원을 가질 수 있음.
+	같은 차원을 갖는다 할지라도, 다른 피처 공간 내에 놓여있을 것. 예를 들어 n1 차원의 텍스트 bag-of-words 벡터와 n2 차원의 이미지 밀도 히스토그램 벡터가 있다면
+	n1=n2가 성립할지라도 직접적으로 둘을 연산할 수 없음. 다른 차원의 피처 벡터들은 통합된 framework에서 처리할 때 몹시 까다로움. 
+	그러므로, 우리는 무엇보다도 다른 타입의 노드 피처를 같은 잠재 벡터 공간내로 사영해야 할 필요가 있다.
+	
+	따라서 노드 벡터를 MAGNN에 넣기 전에,
+	각 타입의 노드마다 특징 벡터를 같은 잠재 특성 공간 내로 사영함으로써 타입 특화된 선형 변환을 적용한다.
+	
+	node content 변환은 node content 피처에서 유래한 그래프 이질성을 다룸.
+	이 작업을 수행한 뒤 모든 노드의 사영된 피처들은 같은 차원을 공유하고, 이는 다음 모델 구성 요소의 통합 단계를 가능케 한다.
+	
+
+	2) Intra-metapath Aggregation (metapath 내부 통합)
+	metapath P가 주어졌을 때, metapath 내부의 통합 레이어는 metapath 인스턴스 P를 인코딩함으로써
+	타겟 노드, metapath기반 이웃, 맥락(context) 간에 임베딩 된 구조적이고 의미적인 정보를 학습함.
+	
+	metapath 내부 통합은 특별한 metapath 인스턴스 인코더를 사용해 모든 노드 피처를 metapath 인스턴스에 따라 하나의 벡터로 변형함.
+	
+	metapath 인스턴스를 벡터 representation으로 인코딩한 뒤, 그래프 어텐션 레이어를 적용해 타겟 노드 v와 관련된 P metapath 인스턴스 가중 합을 구함.
+	
+	핵심 아이디어는 다른 metapath 인스턴스는 타겟 노드의 representation에 다른 정도로 기여할 것이라는 것임.
+	우리는 이를 정규화된 중요도 가중치를 각 metapath 인스턴스마다 학습하고 모든 인스턴스마다 가중합을 구함으로써 모델링할 수 있음.
+	
+	v는 target node, u는 metapath상 이웃 노드
+	
+	3) Inter-metapath Aggregation(metapath간 통합)
+	각 metapath 내의 노드와 엣지 데이터를 통합한 후, inter-metapath aggregation 레이어를 사용해 모든 metapath에 의해 드러난 의미론적 정보를 결합할 필요가 있음.
+	
+	직접적인 metapath간 통합 방법으로는 이러한 노드 벡터들의 원소간 평균을 취해주는 것임. 이러한 접근을 어텐션 메커니즘을 사용해 다른 metapath에 다른 가중치를 할당함으로써 확장할 수 있음.
+	이 연산은 metapath가 이질적 그래프에서 똑같이 중요하지는 않다는 점에서 합리적인 접근임.
+	
+	먼저, 각 metapath Pi를 모든 노드 v에 대해 변환된 metapath-specific 노드 벡터를 평균함으로써 요약함.
+	그 뒤, 어텐션 메커니즘을 사용해 노드 v의 metapath-specific 노드 벡터를 결합함.
+	
+	마지막으로, MAGNN은 비선형 함수를 통한 추가적인 선형 변환을 통해 노드 임베딩을 원하는 output 차원을 갖는 벡터 공간으로 사영함.
+	이 사영은 task-specific함. 이는 노드 분류를 위한 선형 분류기로 해석될수도 있고, 링크 예측을 위한 노드 유사도 측도와 관련된 공간으로의 사영이라고 볼 수도 있음.
+	
+	4) Metapath-instance Encoder
+	: 각 metapath 인스턴스를 인코딩하기 위해, 3개의 후보 인코더 함수를 검증했음.
+		- Mean encoder: 이 함수는 metapath 인스턴스 P(v,u)에 따른 노드 벡터의 원소별 평균을 취함.
+		- Linear encoder: 이 함수는 선형 결합을 덧붙인 mean encoder의 확장임.
+		- Relational rotataion encoder:
+		복잡계 공간 내의 relational rotation에 기반을 둔 metapath 인스턴스 인코더를 연구함. (이는 knowledge graph embedding을 위한 RotatE에서 제안된 방식임)
+		mean, linear encoder는 metapath 인스턴스를 본질적으로 집합으로 간주하는데, 이는 metapath 내부의 sequential한 구조에 내재된 정보를 무시하게 됨.
+		Relational rotation은 이러한 지식을 모델링할 방법을 제공함.
+		
+		
+	5) 학습
+	지난 장에서 소개된 요소들을 적용한 후, 최종 node representation을 얻어냄. 이는 다양한 downstream task에 사용될 수 있음.
+	다양한 task의 특성과 node label의 가용성에 따라, MAGNN을 2개의 주된 학습 패러다임에서 학습할 수 있음.
+	이는 semi-supervised learning과 unsupervised learning임.
+	
+		1] semi-supervised learning
+		label된 일부 노드의 지도에 따라 cross-entropy를 최소화하는 역전파와 gradient descent 알고리즘을 사용해 모델 가중치를 최적화함.
+		이로써 의미있는 이질적 그래프의 유의미한 node 임베딩을 학습할 수 있음.
+	
+		2] unsupervised learning
+		어떠한 node label 없이, negative sampling을 통해 특정 loss function을 최소화함으로써 모델 가중치를 최적화할 수 있음.
+	
+5. 실험
+	RQ1. MAGNN이 노드 분류에 얼마나 잘 작동하는가?
+	RQ2. MAGNN이 노드 군집화를 얼마나 잘 수행하는가?
+	RQ3. MAGNN이 노드 쌍 간의 그럴싸한 링크를 얼마나 잘 예측하는가?
+	RQ4. MAGNN의 앞서 언급한 부분에 대한 세 주된 구성 요소의 영향은 어떤가? 
+	RQ5. 다른 그래프 임베딩 방법론의 representation 능력을 어떻게 이해하는가
+	
+	1) 데이터셋
+
+	IMDb 데이터셋
+	: 영화 및 tv 프로그램에 대한 온라인 데이터 베이스. 출연, 제작진, 줄거리 요약등의 정보가 포함됨.
+	4,278 영화, 2,081 감독, 5,257 배우를 포함함.
+	영화는 Action, Comedy, Drama 세가지의 클래스로 label 되었음.
+	각 영화는 플롯 키워드의 BOW representation으로 묘사되었음.
+	
+	semi-supervised learning model을 위해, 
+	movie node는 training(400, 9.35%), validation(400,9.35%), testing set(3478,81.3%)으로 분리되었음.
+
+	2) Baseline
+	전통적 동질 그래프 임베딩 모델, 전통적 이질 그래프 임베딩 모델, 동질 그래프 GNN, 이질 그래프 GNN에 대해 성능 비교를 수행함.
+	
+
+
+
+
