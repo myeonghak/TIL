@@ -30,6 +30,7 @@ A collection of what I learned day by day, what I found interesting today, what 
 -	[Graph Neural Network](#graphnn)
 -	[Data preprocessing](#preprocessing)
 -	[Anormaly detection](#anormaly)
+-	[Graph Neural Network](#graphnetworks)
 
 ##### Other tools for ML
 
