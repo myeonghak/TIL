@@ -1,0 +1,16 @@
+https://medium.com/platfarm/%EC%96%B4%ED%85%90%EC%85%98-%EB%A9%94%EC%BB%A4%EB%8B%88%EC%A6%98%EA%B3%BC-transfomer-self-attention-842498fd3225
+
+어텐션과 셀프어텐션
+
+1. seq2seq의 attention
+-> encoder output과 decoder output 간의 연관성을 파악
+-> 어떤 특정 decoder output이 모든 time-step의 encoder output중 어떤 것과 가장 연관이 있는가?
+
+2. classification의 attention mechanism (bi-LSTM with Attention)
+-> LSTM의 마지막 hidden state가 어떤 time에 영향을 많이 받았는가?
+
+
+3. transformer (self-attention)
+-> 번역 문제에서, 원본 문장과 타겟 문장이 있을 때 원본 문장 내부의 단어간의 관계, 
+the boy ran away as soon as he found out the snake에서 the boy와 he의 관계를 파악하려면 기존의 attention으로는 안됨
+즉, 인코더 혹은 디코더 내부 자체의 attention을 의미함
