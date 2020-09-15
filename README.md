@@ -51,8 +51,6 @@ A collection of what I learned day by day, what I found interesting today, what 
 -	[Computer Science](/cs)
 -	[Database](/db)
 -	[Web](/web)
--	[Computer Science](/cs)
-
 <!-- ### Python -->
 
 <!-- - [-](ack/ack-bar.md) -->
