@@ -14,44 +14,44 @@ A collection of what I learned day by day, what I found interesting today, what 
 ##### Main Languages
 
 -	[Python](/python)
--	[R](#R)
--	[SQL](#sql)
+-	[R](/R)
+-	[SQL](/sql)
 
 ##### Machine Learning
 
--	[Statistics](#statistics)
--	[Mathematics](#math)
--	[Classical Machine Learning](#classicalml)
--	[Hyperparameter Optimization](#hptuning)
--	[Recommender Systems](#Recsys)
--	[NLP (Natural Language Preprocessing)](#NLP)
--	[MAB (Multi Armed Bandits)](#MAB)
--	[Image processing](#imageprocessing)
--	[Graph Neural Network](#graphnn)
--	[Data preprocessing](#preprocessing)
--	[Anormaly detection](#anormaly)
--	[Graph Embedding](#graphnetworks)
+-	[Statistics](/statistics)
+-	[Mathematics](/math)
+-	[Classical Machine Learning](/classicalml)
+-	[Hyperparameter Optimization](/hptuning)
+-	[Recommender Systems](/Recsys)
+-	[NLP (Natural Language Preprocessing)](/NLP)
+-	[MAB (Multi Armed Bandits)](/MAB)
+-	[Image processing](/imageprocessing)
+-	[Graph Neural Network](/graphnn)
+-	[Data preprocessing](/preprocessing)
+-	[Anormaly detection](/anormaly)
+-	[Graph Embedding](/graphnetworks)
 
 ##### Other tools for ML
 
--	[Visualization](#Visualization)
--	[XAI (eXplainable AI)](#XAI)
+-	[Visualization](/Visualization)
+-	[XAI (eXplainable AI)](/XAI)
 
 ##### Miscellaneous
 
--	[Git](#git)
--	[Linux](#linux)
--	[Vim](#vim)
--	[VS Code](#vscode)
--	[Google Colab](#colab)
--	[Jupyter](#jupyter)
--	[markdown](#markdown)
--	[LaTex](#latex)
--	[Algorithms](#algorithms)
--	[Computer Science](#cs)
--	[Database](#db)
--	[Web](#web)
--	[Computer Science](#cs)
+-	[Git](/git)
+-	[Linux](/linux)
+-	[Vim](/vim)
+-	[VS Code](/vscode)
+-	[Google Colab](/colab)
+-	[Jupyter](/jupyter)
+-	[markdown](/markdown)
+-	[LaTex](/latex)
+-	[Algorithms](/algorithms)
+-	[Computer Science](/cs)
+-	[Database](/db)
+-	[Web](/web)
+-	[Computer Science](/cs)
 
 <!-- ### Python -->
 
