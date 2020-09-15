@@ -13,7 +13,7 @@ A collection of what I learned day by day, what I found interesting today, what 
 
 ##### Main Languages
 
--	[Python](#python)
+-	[Python](/python)
 -	[R](#R)
 -	[SQL](#sql)
 
