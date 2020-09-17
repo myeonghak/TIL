@@ -1,0 +1,41 @@
+
+[matrix factorization, SVD++, PITF, FPMC]
+
+http://sanghyukchun.github.io/95/
+-> Implicit한 데이터의 경우, 어떻게 matrix completion을 디자인하고 해결할까?에 대한 3가지 논문 소개 (2016 기준)
+
+1) Collaborative Filtering for Implicit Feedback Datasets
+2) Logistic Matrix Factorization for Implicit Feedback Data
+
+3) Bayesian Personalized Ranking for Non-Uniformly Sampled Items
+
+클릭 데이터를 위한 CF 추천시스템
+https://towardsdatascience.com/building-a-collaborative-filtering-recommender-system-with-clickstream-data-dffc86c8c65
+
+
+파이스파크 implicit 데이터 추천
+https://towardsdatascience.com/large-scale-jobs-recommendation-engine-using-implicit-data-in-pyspark-ccf8df5d910e
+
+Fatorization Machine (Pair-wise) 참고했던 자료
+https://www.analyticsvidhya.com/blog/2018/01/factorization-machines/
+
+
+
+<SVD++>
+
+: "simplified" version of another one called "Asymmetric SVD". 
+-> 비대칭 SVD(Asymmetric SVD)에 비해 명시적인 평가(explicit rating)이 주어질 경우 더 좋은 성능을 낸다.
+-> 즉, 명시적 평가가 주어진 데이터의 경우 SVD++은 암시적인 평가를 추론해 냄으로써 더 나은 예측 결과를 낳음.
+
+
+
+
+<PITF>
+
+
+
+
+
+
+<FPMC>
+

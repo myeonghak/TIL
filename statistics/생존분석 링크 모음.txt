@@ -1,0 +1,54 @@
+[생존분석 링크 모음]
+
+https://robotcat.tistory.com/453
+생존분석의 기초적인 개념들 - censoring에 대해 설명해주는, 꽤 친절한 bioinformatics 전공생. 그러나 자신이 없어 보인다. 그래도 컨텐츠 굿
+
+
+https://bioinformaticsandme.tistory.com/223
+bioinformatics 전공생, 꽤 꼼꼼함
+
+https://3months.tistory.com/349
+딥플레이, 얕지만 핵심만 간단하게
+
+
+
+https://nbviewer.jupyter.org/github/sebp/scikit-survival/blob/master/examples/random-survival-forest.ipynb
+https://nbviewer.jupyter.org/github/sebp/scikit-survival/blob/master/examples/00-introduction.ipynb
+
+sksurvival 샘플들, 독일 유방암 데이터셋
+
+https://github.com/sebp/scikit-survival
+https://scikit-survival.readthedocs.io/en/latest/api.html
+sksurvival API
+
+https://scikit-survival.readthedocs.io/en/latest/understanding_predictions.html
+sksurvival 결과값 이해하기, risk score등에 대한 내용 나옴
+
+
+https://square.github.io/pysurvival/models/survival_forest.html
+pysurvival
+
+
+
+https://github.com/anurag-code/Survival-Analysis-Intuition-Implementation-in-Python/blob/master/Survival%20Analysis%20-%20Quick%20Implementation.ipynb
+단순 생존분석 자료
+
+https://towardsdatascience.com/survival-analysis-intuition-implementation-in-python-504fde4fcf8e
+https://towardsdatascience.com/survival-analysis-part-a-70213df21c2e?gi=32cd2f79f307
+https://medium.com/inside-machine-learning/survival-analysis-cb5832ffcd78 좀 더 심층적인 분석
+https://towardsdatascience.com/deep-learning-for-survival-analysis-fdd1505293c9?gi=7bdec8a08311 딥러닝
+tds 생존분석 아티클들
+
+
+
+https://en.wikipedia.org/wiki/Logrank_test
+로그랭크 검정, 두 그룹간의 위험함수의 추정치를 비교. 귀무가설을 기각할 경우 두 집단이 충분히 다르다는 것을 뒷받침할 수 있음.
+
+https://pedroconcejero.wordpress.com/2015/11/12/survival-random-forests-for-churn-prediction-3/
+churn 분석, 데이터 포함
+
+
+
+https://statkclee.github.io/model/model_survival_tree.html
+참고한 r코드
+

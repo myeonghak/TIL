@@ -1,0 +1,131 @@
+[자연어 처리 알고리즘의 변천사]
+
+1. word2vec, seq2seq 등 개념 재정립 + LSTM/GRU/RNN
+2. self-attention과 다른 attention의 차이
+3. BART
+4. GPT, XLNET 알고리즘 아이디어 
+5. 왜 HAN을 사용하지 않았는지에 대한 설명(변명)
+
+https://ratsgo.github.io/natural%20language%20processing/2019/09/11/xlnet/
+XLNET ratsgo 자료
+
+https://lovit.github.io/machine%20learning/2019/03/17/attention_in_nlp/
+Lovit 자료, attention mechanism
+
+
+이 글의 목적:
+전체적인 알고리즘 변천사의 흐름을 기록하고, 내가 소화한 형태의 쉬운 표현으로 정리하는 것.
+
+[1]
+Seq2Seq 모델에서, fixed size hidden state vector를 사용함으로써 번역 성능 개선을 이루어 냄. 이는 word embedding 정보를 사용하였기 때문임.
+기존의 전형적인 n-gram을 사용하는 통계적 접근을 사용한 기계 번역보다 작은 크기의 모델을 사용하면서도 단어간의 semantic information을 잘 함축시켜 성능이 좋아짐.
+
+[2]
+그러나 이 고정된 하나의 context vector로 표현하는 것은 불충분하다는 의견이 제기됨. Decoder RNN이 문장을 만들 때 각 단어가 필요한 정보가 다른데,
+seq2seq에서는 매 시점에 동일한 CV를 사용하기 때문.
+
+"A potential issue with this encoder–decoder approach is that 
+a neural network needs to be able to compress all the necessary information of a source sentence into a fixed-length vector."
+-> (고정된 길이의) encoder-decoder 방식의 문제는 신경망이 모든 필요한 정보를 고정된 길이의 벡터에 압축시켜야 한다는 점에 있다.
+
+"Instead, it encodes the input sentence into a sequence of vectors and 
+chooses a subset of these vectors adaptively while decoding the translation. 
+This frees a neural translation model from having to squash all the information of a source sentence, 
+regardless of its length, into a fixed-length vector."
+-> 대신, (대안책인 이 모델은) 입력 문장을 일련의 벡터로 인코딩하고 번역을 디코딩하는 중에 이러한 벡터들의 일부를 적절히 선택한다.
+이는 신경망 번역 모델이 모든 정보를 욱여넣어야하는 문제를 해결해 준다.
+
+
+[3] 문서 분류에서의 Attention
+문서 분류 문제에서, 문서가 가진 문서>문장>단어의 계층 구조를 활용하지 못하는 것이 문제라고 지적.
+또한 모든 단어가 문맥과 상관없이 동일한 영향력을 지님. 필요한 것들만 집중해서 처리하도록 하는 negation 처리가 필요함.
+-> 이러한 맥락에서 HAN(Hierarchical Attention Network)이라는 네트워크를 제안함.
+-> 총 5개의 sub-network로 구성된 구조를 제안 : (word encoder, word attention, sentence encoder, sentence attention, classifier) 
+-> 이러한 분류 모델에서는 임베딩이 딱히 필요 없으며, 단순히 특정 단어의 등장 여부만이 중요하기 때문에 복잡한 구조의 모델이 성능 향상에 도움이 되지 않는다고 주장
+-> 실제로도 단순한 bigram BOW 모델의 성능이 좋았음이 증명됨. 
+-> 따라서 분류 문제는 정보의 추출이 아닌, 필요한 정보의 선택으로 이해하는 것이 좋다.
+
+
+[4] Transformer
+지금까지 모두 RNN 모델을 사용하였는데, 이는 다음과 같은 한계를 지님.
+1) 모델의 크기가 큼 
+2) seq의 마지막 부분까지 계산이 완료되어야 학습 가능. 즉, 순차적인 방식으로 학습함. 그 결과 병렬적 작업 진행 불가.
+3) long dependency 학습에 한계가 있음. 멀리 떨어진 단어들의 정보를 한 context vector에 포함하기 위해 여러번의 행렬곱 연산 필요.
+
+이를 해결하기 위해 Self-attention 도입. 
+Transformer란 오로지 FFN만을 사용해 encoder/decoder/attention network 모두 "3" 파트를 구축한 시스템을 말함.
+
+1) 입력값: Word Embedding Sequence + Positional encoding (두 sequence의 "합"이 입력됨). 
+이후에는 이전 layer의 output sequence가 바로 input으로 입력됨.
+2) input sequence를 받은 뒤 각 sequence item(아마 한 문장)을 세 종류의 차원으로 변환함.
+이는 각각 q/k/v, query/key/value임. 
+Query q_i와 Key k_j는 x_i,x_j의 상관성을 측정하기 위한 정보임. 즉 문장 내 단어간의 상관성을 측정함.
+* 수식에서는 s_(i-1)가 query, h_j가 key라고 나오는데, i-1인 까닭은 대칭행렬의 윗부분만 계산하면 전체의 상관관계를 모두 구할 수 있기 때문에 저런 식으로 표현.
+
+query: 새로운 representation을 만들기 위한 위치에 해당하는 값 
+key: 이 query와 얼마나 상관성이 있는지를 측정하는 값
+value: q/k에 의하여 상관성(attention weight)이 측정되면, 이 값과 value v_j의 가중평균으로 최종 representation을 학습함.
+
+
+즉, query는 기준이 되는 단어라고 생각. 
+"나는 학교에 간다" -> "I go to school"에서, 
+"나"라는 단어가 query의 주인이고
+"나"라는 단어와 다른 j번째 단어들과의 관계를 key라는 벡터로,
+value는 이러한 상관관계들의 가중치를 의미함.
+
+
+3) seq2seq + attention에서는 key와 value가 모두 h_j였음. 그러나 Transformer에서는 key와 value의 정보를 나눠서 서로 다른 패러미터로 학습해서 성능이 더 우수.
+
+4) 또한 seq2seq과는 달리 다른 attention function을 사용함. 
+seq2seq은 additive attention(q와 k를 더해주는 방식)이고,
+transformer는 multiplicative attention(q와 k를 곱해주는 방식)임.
+
+5) attention score e_ij는, q_i와 k_j의 값의 내적을 key vector의 차원의 제곱근으로 나누어준 값이 됨. 
+이를 나누어주는 이유는 일종의 스케일링. (key vector의 차원이 높아질수록 내적의 값이 커질 가능성이 높고, 
+여기에 exponential을 씌워 softmax를 만들면 극단적인 값이 만들어 지기 때문
+
+6) 이렇게 모든 k_j에 대해 e_ij를 구해 softmax를 취하면 position n에 대한 (길이가 10이라면 n은 1~10) a_ij가 구해지고, 
+각 j에 해당하는 v_j를 곱해주어 position i에 대한 "새로운" representation을 만든다.
+여기서 "새로운"이란 단어 그 자체의 임베딩만을 의미하는 것이 아니라, 주변의 맥락을 반영한 representation이라는 의미.
+
+7) scaled dot product attention이라는 이름이 지어진 이유는 
+sqrt(d_k)로 scale 해주었으며 + dot product로 query와 key의 상관성을 측정했기 때문.
+
+8) attention의 output은 sequence item의 원래 차원 (ex 512)과 같지 않음.
+head가 8이라면 64차원으로 8개의 output이 나오고, 이를 concat해서 사용
+
+9) input sequence item x_i와 x_j가 얼마나 멀리 떨어져있는지와는 관계 없이 attention에 의해 곧바로 이어지기 때문에 효율적.
+RNN은 떨어진 거리만큼 PATH가 필요하기 때문에, 계산하는 과정에서 정보가 손실되거나 노이즈가 섞여들어와버림.
+
+10) 이후 ReLU가 포함된 2 layer FFN에 입력함. 이 레이어에서는 정리되지 않은 정보를 재정리함.
+
+11) residual connection:
+이렇게 가공이 완료된 값을 Input item에 더해줌. 
+이는 input sequence에 포함되지 않은 문맥적인 정보를 input seq에서 가공해서, input seq에 덧부어준다고 생각할 수 있음.
+
+
+12) masking
+decoder layer에서는 아직 안나온 item의 정보를 사용할 수 없음. 이를 제약 걸어 주기 위한 장치가 MASK임.
+
+13) encoder-decoder attention
+Decoder에서 단어를 생성할 때에는 encoder의 정보가 필요함. 그래서 encoder의 마지막 layer에서 나온 output seq을 key, value로 사용함.
+이렇게 어디에 주목해서 decoding할지를 판단하기 위해 고안된 attentio을 encoder-decoder attention이라고 함.
+"Encoder - decoder attention 은 decoder 가 item_i의 정보를 표현하기 위하여 input sequence 의 item_j의 정보를 얼마나 이용할지 결정하는 역할을 합니다."
+
+그리고 decoder의 트랜스포머 블록에는 decoder self-attention의 결과에 encoder-decoder attention의 결과가 더해져 FFN에 입력됨.
+
+14) self-attention
+위의 13)처럼 attention에서 query <-> key,value의 출처가 다른 구조를 그냥 attention이라고 했음.
+그러나 지금까지 Transformer에서 사용한 encoder/decoder layer 상의 attention은 각각 encoder/decoder에서 qkv를 모두 구했음.
+이런 경우를 self-attention이라고 함.
+
+
+15) Transformer의 장점
+1. 파라미터의 수가 적음
+2. FFN을 사용하기 때문에 병렬화가 쉽고 빠른 연산이 가능함.
+3. 그럼에도 멀리 떨어진 단어간의 정보가 직접 연결되기 때문에 정확한 모델링 가능.
+
+
+
+
+

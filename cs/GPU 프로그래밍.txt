@@ -1,0 +1,198 @@
+https://hamait.tistory.com/818
+
+한글 자료, pyCUDA
+
+https://towardsdatascience.com/heres-how-to-use-cupy-to-make-numpy-700x-faster-4b920dda1f56
+Here’s How to Use CuPy to Make Numpy Over 10X Faster
+
+
+https://towardsdatascience.com/heres-how-you-can-speedup-pandas-with-cudf-and-gpus-9ddc1716d5f2
+Here’s how you can speedup Pandas with cuDF and GPUs
+
+
+https://kaen2891.tistory.com/20
+쿠다란, 왜 사용하는 것인가
+
+
+https://tododiary.tistory.com/18
+그래픽 카드의 역사
+
+
+
+: CUDA (Compute Unified Device Architecture)는 NVIDIA에서 개발한 GPU 개발 툴이다. 
+사실 CUDA는 c, c++기반으로 짜여진 완전 기초적 H/W 접근을 해야하는데, 많은 연구자들이 딥러닝에 사용할 수 있도록, 쉽게 설치할 수 있도록 오픈하였다. 
+현재는 nvidia-driver, CUDA, CUDNN만 설치하면 딥러닝을 쉽게 사용할 수 있다. 
+CUDA를 사용하는 이유는 매우 간단한데, 많은 양의 연산을 동시에 처리하는 것이 목표이다. 
+그러므로 딥러닝, 채굴과 같은 수학적 계산에 많이 쓰인다.
+
+core당 데이터 연산 속도는 적게는 2배가량 느리지만, core의 수가 1500개 수준으로 아주 많음.
+따라서 multi core 연산에 유리함. 
+
+기존의 컴퓨터 연산은 CPU를 사용해, RAM에 있는 데이터를 연산한다. 이 연산에서 대개 single-core가 사용되고, OpenMP(MultiProcessing) 등을 이용하여 Multi-core 연산이 가능함.
+
+반면 GPU는 Many-core를 사용하고, VRAM(Video RAM)에 있는 데이터를 연산한다.
+
+
+[한마디로]
+CUDA란, GPU에서 수행하는 병렬처리 알고리즘을 C언어를 비롯한 산업표준 언어를 이용해 작성할 수 있도록 돕는 통합 개발 환경.
+이것도 어렵다.
+
+1. CUDA란 GPU로 병렬처리 연산을 수행할 수 있도록 돕는 개발 환경 툴.
+2. CUdnn은 Deep Neural Net 프로그래밍을 위해 사용하는 최적화 라이브러리.
+
+
+
+
+[본문]
+
+
+Numpy has been a gift to the Python community. 
+It’s allowed Data Scientists, Machine Learning Practitioners, and Statisticians to process huge amounts of data in matrix format in a way that’s easy and efficient.
+넘파이는 파이썬의 아주 유익한 도구. DS 작업을 효율적으로 수행할 수 있게 돕는다.
+
+Even on its own, Numpy is already a significant step up from Python in terms of speed.
+그 자체로도, 아주 빠르고 효율적임.
+ 
+Whenever you find your Python code running slow, especially if you see a lot of for-loops, 
+
+
+it’s always a good idea to move the data processing into Numpy and let its vectorization do the work at top speed!
+
+니 파이썬 코드가 너무 느릴 때마다, 특히 for문이 너무 많다면,
+numpy 코드로 데이터를 처리해 vectorization 작업을 최고의 속도로 만들어 주는 것이 좋다.
+이렇게 속도가 증가된다 하더라도, 넘파이는 오직 CPU에서만 돌아간다.
+8코어 정도밖에 없는 소비자용 CPU로는, 병렬 처리의 양, 그로 인한 속도 향상의 정도는 한정되어 있다.
+바로 이 지점에서 우리의 새로운 친구 cupy가 들어온다!
+
+Still, even with that speedup, Numpy is only running on the CPU. 
+With consumer CPUs typically having 8 cores or less, the amount of parallel processing, 
+and therefore the amount of speedup that can be achieved, is limited.
+That’s where our new friend CuPy comes in!
+
+
+
+What is CuPy?
+CuPy is a library that implements Numpy arrays on Nvidia GPUs by leveraging the CUDA GPU library. 
+With that implementation, superior parallel speedup can be achieved due to the many CUDA cores GPUs have.
+CuPy’s interface is a mirror of Numpy and in most cases, it can be used as a direct replacement.
+Just replace your Numpy code with compatible CuPy code and boom you have GPU speedup. 
+CuPy will support most of the array operations that Numpy has including indexing, broadcasting, math on arrays, and various matrix transformations.
+
+cupy가 뭐냐? cupy는 CUDA GPU 라이브러리를 사용함으로써 넘파이 array를 nvidia gpu에 활용하는 라이브러리다.
+이 활용으로, 더 우월한 병렬 가속이 달성될수 있다. 이는 GPU가 가진 CUDA cores 덕분이다.
+Cupy의 인터페이스는 넘파이의 복제형이고, 따라서 많은 경우, 직접적인 대체로 활용이 가능하다.
+그저 numpy 코드를 cupy로 바꾸어 주면, 곧바로 gpu 가속을 사용할 수 있는 셈이다.
+cupy는 넘파이가 가진 array 연산을 지원하는데, 이는 인덱싱/브로드캐스팅/어레이 연산/행렬 변환 등을 포함한다.
+
+
+You can also write custom Python code which leverages CUDA and GPU speedups if you have something specific that isn’t yet supported. 
+또한 아직 지원되지 않는 기능을 사용하기 위해서는 CUDA와 GPU 가속을 사용하는 자체 파이썬 코드를 작성할 수도 있다.
+
+All that’s required is a small snippet of your code in C++ format and CuPy will automatically do the GPU conversion, very similar to using Cython.
+약간의 C++ 포멧의 코드가 요구되고, Cupy는 자동적으로 GPU 개조를 수행한다. 이는 Cython을 사용하는 것과 매우 유사하다.
+
+To get started with CuPy we can install the library via pip:
+시작을 위해서 pip를 통해 cupy를 설치하자.
+
+pip install cupy
+
+
+Running on GPU with CuPy
+For these benchmarks I will be using a PC with the following setup:
+i7–8700k CPU
+1080 Ti GPU
+32 GB of DDR4 3000MHz RAM
+CUDA 9.0
+
+
+Once CuPy is installed we can import it in a similar way as Numpy:
+
+import numpy as np
+import cupy as cp
+import time
+
+For the rest of the coding, switching between Numpy and CuPy is as easy as replacing the Numpy np with CuPy’s cp. 
+The code below creates a 3D array with 1 Billion 1’s for both Numpy and CuPy. 
+To measure the speed of creating the arrays, 
+I used Python’s native time library:
+
+### Numpy and CPU
+s = time.time()
+x_cpu = np.ones((1000,1000,1000))
+e = time.time()
+print(e - s)
+### CuPy and GPU
+s = time.time()
+x_gpu = cp.ones((1000,1000,1000))
+cp.cuda.Stream.null.synchronize()
+e = time.time()
+print(e - s)
+
+That was easy!
+
+Notice how we added an extra line after the initialization of the cupy array. 
+What this does is ensure that our code finishes executing on the GPU before going to the next line.
+The incredible part was that even though this was only array creation, CuPy was still much faster. 
+Numpy created the array of 1 Billion 1’s in 1.68 seconds while CuPy only took 0.16; that’s a 10.5X speedup!
+But we can still do more.
+Let’s try doing some mathematical operations on the arrays. 
+This time we’ll multiply the entire array by 5 and again check the speed of Numpy vs CuPy.
+
+
+### Numpy and CPU
+
+s = time.time()
+x_cpu *= 5
+e = time.time()
+print(e - s)
+
+### CuPy and GPU
+
+s = time.time()
+x_gpu *= 5
+cp.cuda.Stream.null.synchronize()
+e = time.time()
+print(e - s)
+In this case, CuPy shreds Numpy. Numpy took 0.5845 while CuPy only took
+0.0575; that’s a 10.17X speedup!
+Let’s now try working with multiple arrays and do a few operations. 
+The code down below will do the following:
+Multiple the array by 5
+Multiple the array by itself
+Add the array to itself
+
+
+### Numpy and CPU
+
+s = time.time()
+x_cpu *= 5
+x_cpu *= x_cpu
+x_cpu += x_cpu
+e = time.time()
+print(e - s)
+
+### CuPy and GPU
+
+s = time.time()
+x_gpu *= 5
+x_gpu *= x_gpu
+x_gpu += x_gpu
+cp.cuda.Stream.null.synchronize()
+e = time.time()
+print(e - s)
+
+In this case, Numpy performed the process in 1.49 seconds on the CPU while CuPy performed the process in 0.0922 on the GPU; 
+a more modest but still great 16.16X speedup!
+Is it always super fast?
+Using CuPy is a great way to accelerate Numpy and matrix operations on the GPU by many times. 
+It’s important to note that the speedups you’ll get are highly dependant on the size of the array you’re working with. 
+The table below shows the difference in speed when we change the size of the array we’re processing:
+
+The speedup drastically kicks up once we get to about 10 million data points and gets much much faster once we cross that 100 million points mark. 
+Below that, Numpy is actually faster. Also, keep in mind that more GPU memory will help you process more data, 
+so it’s important to see if your GPU has enough memory to fit enough data where CuPy is worth it.
+
+Like to learn?
+
+Follow me on twitter where I post all about the latest and greatest AI, Technology, and Science! 
+Connect with me on LinkedIn too!

@@ -1,0 +1,16 @@
+머신러닝 환경 관리하는데 도커 개꿀이다! 라는 이야기
+https://89douner.tistory.com/m/95?category=878735
+
+Docker에서 Anaconda 가상환경에 tf-gpu 설치하기
+https://benghak.github.io/2019-03-21-anaconda_tensorflow/
+
+
+1. WSL + Docker
+https://blog.aliencube.org/ko/2018/04/11/running-docker-and-azure-cli-from-wsl/
+
+2. WSL2 + anaconda
+https://jinmang2.github.io/2020/04/27/wsl2/
+
+3. Anaconda + Docker
+https://m-learn.tistory.com/6
+

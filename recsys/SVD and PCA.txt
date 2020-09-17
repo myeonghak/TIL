@@ -1,0 +1,23 @@
+[SVD and PCA]
+
+https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca
+
+X가 n*p 행렬이라고 했을 때, n은 샘플의 개수이고 p는 변수의 수라고 해보자. 이 행렬이 centered, 즉 column mean이 빼진 (demeaned) 상태라 column mean이 0이라고 해보자.
+
+p*p 사이즈의 공분산 C는 다음과 같이 주어진다. C = XTX/(n-1)
+이 행렬은 대칭 행렬이므로, 다음과 같이 대각화될 수 있다.
+
+C = VLVT
+
+V는 고유벡터의 행렬이고(각 col이 고유벡터) L은 고유값이 점점 줄어드는 식으로 배치된 대각행렬이 된다.
+고유 벡터들은 데이터의 Principal axes(주축) 혹은 principal direction이라고 불리운다.
+이 주축에로의 데이터의 사영은 Principal Component라고 불리우고, PC score로도 알려져 있다. 이 값들은 새로이 변형된 변수라고도 볼수 있다.
+
+이 j번째 PC는 XV의 j번째 col으로 주어진다.
+새로운 PC 공간의 i번째 데이터 포인트의 좌표는 XV의 i번째 행으로 주어진다.
+
+
+이제 X에 대해 SVD를 수행한다면, 우리는 다음과 같은 식을 얻게 된다.
+X=USVT
+
+U는 

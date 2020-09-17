@@ -1,0 +1,53 @@
+http://sanghyukchun.github.io/95/
+
+
+
+[암묵적 피드백과 명시적 피드백]
+explicit feedback: 점수로 매겨서, 본인이 얼마나 선호하는지를 평가한다면 explicit
+implicit feedback: 그렇지 않고 구매, 조회 등으로 선호하는지를 평가한다면 implicit
+
+[암묵적 피드백이 갖는 문제들]
+ambiguity problem: 사용자가 구체적으로 item에 대한 preference를 제공하지 않기때문에, 사용자가 선호하지 않은 item과 관측하지 않았는데 좋아하는 item이 둘 다 0 값을 갖는다.
+sparsity problem: 일부분의 positive data와 대부분의 negetive observation으로 인해 overfitting된 모델이 만들어지기 쉽다.
+noisy data: 암묵적으로 선호도의 표시일 것이라는 feedback에 노이즈가 많이 섞여 있다. 구매했다고 할지라도 실제로 그 모델을 좋아할지를 확신할 수 없기 때문이다.
+
+
+
+
+[CF for Implicit Feedback Datasets]
+
+r_ui: 유저 u가 상품 i에게 내린 rating
+p_ui: 유저 u가 상품 i에게 갖는 preference를 표현한 vector 값, preference vector.
+c_ui: confidence level. 1+a*r_ui로 표현됨. 즉, a(알파)를 기울기로, 1을 절편으로 갖는 f(r_ui)의 함숫값. 
+이는 단순히 actiation func.을 통과한 결과와 유사하며, 따라서 constant한 값을 가짐.
+
+요약:  rating vector r을 preference vector p로 변환하고, 
+confidence level c를 정의한 후, p와 c를 사용해 RMSE objective function을 optimize하는 work.
+
+즉, 진짜로 얘가 이 상품을 좋아하는지 안좋아하는지 그 판단을 좀 더 정확하게 내리기 위해, 간접 rating을 가공해서 p와 c를 정의해 
+이를 가지고 학습시키는 방법.
+
+
+[Logistic MF for Implicit Feedback Data]
+핵심 아이디어: perference의 RMSE를 minimize하는 문제 대신, 관측 값 r과 optimization parameter Θ=(x,y,b) 등의 posteriori를 maximization하는 방식을 취함.
+r이 높을수록 해당 아이템을 좋아할 확률이 높아지는 것. 이 때, 확률값이 나오도록 logistic model을 정의함으로써 결과값은 선호 확률의 형태를 가지게 됨.
+
+gradient를 update하기 위해 비용이 많이 듦. (u와 i에 대해 linear하게 증가한다)
+-> scalability 문제가 있음. 이를 해결하기 위해 일부 sample만을 사용하는 방식을 제안하고 있음.
+
+[Bayesian Personalized Ranking for Non-Uniformly Sampled Items]
+ 
+ https://medium.com/@radleaf/bpr-and-recommendation-system-3d9a3975c132
+ 
+https://medium.com/radon-dev/als-implicit-collaborative-filtering-5ed653ba39fe
+https://medium.com/radon-dev/implicit-bayesian-personalized-ranking-in-tensorflow-b4dfa733c478
+
+
+
+최신 동향 논문 킵업
+https://jisoo-coding.tistory.com/27?category=750743
+1.  A Knowledge-Enhanced Deep Recommendation Framework Incorporating GAN-based Models
+2. DRN: A Deep Reinforcement Learning Framework for News Recommendation
+3. Behavior Sequence Transformer for E-commerce Recommendation in Alibaba
+4. KGAT: Knowledge Graph Attention Network for Recommendation 논문 분석
+5. ITEM2VEC: NEURAL ITEM EMBEDDING FOR COLLABORATIVE FILTERING

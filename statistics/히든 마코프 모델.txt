@@ -1,0 +1,8 @@
+https://untitledtblog.tistory.com/97
+마코프 모델의 직관적인 설명. 김성범 교수님의 자료와 유사한 구조
+
+https://datascienceschool.net/view-notebook/d18fae471dd5463bb5fc06d24dabfdc9/
+데싸 스쿨의 설명. 코드 포함, 그러나 설명이 잘 이해가 안됨.
+
+HMM을 이용해 우리가 풀고자 하는 문제는 관측 가능한 것은 오직 yt뿐이며, 
+yt는 qt에 종속적으로 발생한다고 할 때, yt의 sequence를 통해 qt의 sequence를 추론하는 것이다.

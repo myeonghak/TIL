@@ -1,0 +1,25 @@
+Explainable recommendations — why opening black boxes matters
+
+[추천 시스템의 Explainability]
+https://towardsdatascience.com/explainable-recommendations-why-opening-black-boxes-matters-bd5754af63a2
+
+	1. 추천 시스템의 형태는 다양하다. 그 중에서도 CF 기반의 LFM(Latent Factor Model)을 해당 포스트에서는 다룬다.
+		익히 알려져 있듯이, CF 모델에서는 이 상품을 나와 비슷한 유저가 좋아한다면 나 역시 이 상품을 좋아할 거라는 식의 접근을 취한다.
+	2. LFM은 다양한 MF 모델에 의해 만들어진다(ex. SVD). 그런데 Factor를 학습함에 있어 상품 그 자체에 대한 정보를 취하지 않기 때문에,
+		어떤 해석가능한 factor나 category에 직접적으로 맵핑되지 않는다.
+	3. 이 때문에 LFM 모델은 black box 모델으로 여겨진다. 
+	4. 해석 불가능한 모델은 다양한 방면에서 문제를 일으킨다. 첫째로 신뢰성(trust)이 없다는 점이다. 만일 시스템이 해석가능성에 대해 설명할 수 없다면,
+		사용자는 어떻게 해서 그 결정을 믿을 수 있겠는가?
+	5. 신뢰성 외에도 총 7개의 해석 가능한 추천시스템을 평가하는 척도가 있다.
+		1) Transparency(투명성): 시스템이 작동하는 원리에 대해 설명하는지
+		2) Scrutability(판독 가능성): 사용자가 시스템이 잘못되었다고 판단할 수 있도록 하는지
+		3) Trust(신뢰성): 시스템에 대한 유저의 신뢰성(confidence)을 올려주는지
+		4) Effectiveness(효율성): 사용자가 좋은 결정을 내리도록 도와주는지
+		5) Persuasiveness(설득성): 사용자에게 시착 해보거나 구매하도록 설득하는지
+		*6) Effectiveness(효율성): 유저가 결정을 더욱 빨리 내리도록 돕는지
+		7) Satisfaction(만족성): 사용의 편의성이나 효용을 증진시켜 주는지
+		
+	6. 모델의 해석 가능성을 늘리는 일은 아주 중요한데, 특히 해석가능성이 담보되지 않을 경우 의료 산업에서의 추천 같은 경우 심각한 문제를 야기할 수 있기 때문.
+	7. (연구 결과에 따르면) 유저는 투명하게 여겨졌다고 인지할 수 있는 추천을 선호한다고 한다. 
+		-> 즉, 추천 시스템의 성능에 영향을 미친다는 것
+		

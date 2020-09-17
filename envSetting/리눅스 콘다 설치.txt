@@ -1,0 +1,23 @@
+[아나콘다 설치]
+
+https://gist.github.com/kauffmanes/5e74916617f9993bc3479f401dfec7da
+
+다음 글을 보며 따라함.
+
+그러나 vscode를 설치하라더니 실패.
+(VScode 위에 띄워놓은 WSL임)
+
+알았다고 하니 conda: command not found 에러 발생.
+아마 재부팅하면 될수도 있을 거라고 생각됨(환경변수 때문인듯하여)
+
+그런데 재부팅도 안됨. 그래서 window 자체를 재부팅 해야하나 하는 중.
+
+지금 SVD 테스트 중이기 때문에 일단 보류.
+
+
+
+[WSL에서 재설치]
+
+https://starseeker711.tistory.com/182
+따라함. 파일 명은 최신명을 아나콘다 공홈에서 찾아서 설치.
+

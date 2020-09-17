@@ -1,0 +1,13 @@
+https://medium.com/radon-dev/als-implicit-collaborative-filtering-5ed653ba39fe
+
+[ALS Implicit CF]
+Implicit data로 CF하는 방법에 대해 다룬 아티클.
+
+[ALS]
+Alternating Least Squares: MF를 수행하는 알고리즘의 하나.
+
+"ALS is an iterative optimization process 
+where we for every iteration try to arrive closer and closer to a factorized representation of our original data."
+: ALS는 반복적 최적화 과정으로, 매 반복마다 원 데이터의 행렬곱 표현에 더욱 가깝게 나아가도록 시도하는 알고리즘.
+
+

@@ -1,0 +1,72 @@
+[추천시스템 링크]
+
+https://towardsdatascience.com/explainable-recommendations-why-opening-black-boxes-matters-bd5754af63a2
+*** XAI in Recsys
+
+
+
+https://wngaw.github.io/field-aware-factorization-machines-with-xlearn/
+xLearn (FFM)
+
+https://xlearn-doc.readthedocs.io/en/latest/python_api/index.html
+xLearn
+
+
+https://github.com/coreylynch/pyFM
+pyFM
+
+https://eda-ai-lab.tistory.com/85
+FM과 그 응용
+
+
+
+https://greeksharifa.github.io/machine_learning/2020/06/02/LMF/
+Logistic MF
+
+https://greeksharifa.github.io/machine_learning/2020/06/01/LightFM/
+https://greeksharifa.github.io/blog/page2/
+LightFM (Gorio Learning, 잘 정리된 블로그)
+
+
+
+https://gist.github.com/kevvzub/9ed6ee8a55ff1587c08c793d5f23dfda
+fm 예제 깃헙코드 (tensorflow 활용)
+
+https://getstream.io/blog/factorization-recommendation-systems/
+FM 추천시스템 -> 수식과 논문 설명, 약간의 코드
+
+https://yamalab.tistory.com/107
+임기태? 님 자료, FM 리뷰 및 코드
+
+
+https://towardsdatascience.com/building-a-collaborative-filtering-recommender-system-with-clickstream-data-dffc86c8c65
+클릭 데이터로 CF 모델 만들기
+
+https://www.analyticsvidhya.com/blog/2018/01/factorization-machines/
+영문 아티클, FFM 코드와 함께 설명해줌, 이론적인 설명이 괜찮음
+
+https://yeomko.tistory.com/8
+갈아먹는 머신러닝 ALS 설명
+
+https://medium.com/radon-dev/als-implicit-collaborative-filtering-5ed653ba39fe
+ALS implicit CF 논문 설명 아티클
+
+https://medium.com/radon-dev/implicit-bayesian-personalized-ranking-in-tensorflow-b4dfa733c478
+https://medium.com/@radleaf/bpr-and-recommendation-system-3d9a3975c132
+implicit data에 좋은 BPR 추천 시스템, Bayesian Personalized Ranking
+
+
+
+http://sanghyukchun.github.io/73/
+전상혁님 깃헙 블로그, MF에 대한 설명부터 ALS까지
+
+http://sanghyukchun.github.io/95/
+전상혁님 블로그, implicit data에 강건한 추천시스템
+
+
+https://recsys.acm.org/best-papers/
+** 추천시스템 우수 논문 수상작들 모음
+
+
+
+

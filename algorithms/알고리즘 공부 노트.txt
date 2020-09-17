@@ -1,0 +1,154 @@
+1. dict 사용 방법에 대한 팁
+key 값으로 dict의 value를 가져오려면 dict.get(key값)
+dictionary[key] 형식으로도 get을 사용 가능
+key in dictionary로도 포함하는지 여부 확인 가능
+
+
+2. string 내장 함수
+string은 remove, pop이 없음. 대신 replace를 사용할 수 있음. 주의할 점은 inplace가 안된다는 점임
+
+3. for loop range에서 interval 사용법
+for i in range(start,end,interval) 의 문법을 사용할 때, 역순으로 사용하려면 interval에 -를 붙여줘야함
+
+4. if에 else가 꼭 붙을 필요는 없다
+if/elif 하고 굳이 else를 해줄 필요 없음
+
+5. pop은 print가 아니라 return이다
+list.pop() 메서드를 쓰면 print되는게 아니라 return되는 것임. 인자를 안넣어주면 자동으로 마지막 값이 출력됨
+
+6. stack 냄새 맡아내기
+들어온 것이 꼭 나와야만 할 경우 stack
+들어온 것이 순서를 지켜서 나와야할 경우 queue
+
+7. break와 continue
+break는 아예 루프를 끊어버리고 종료시킴
+continue는 다음 루프로 넘어가게 됨
+
+
+8. 진법 정리
+	1) 0b(2진법), 0o(8진법), 0x(16진법) 수를 나타냄
+	2) 혹은 bin(10진법 수) 처럼 내장 함수 bin을 쓰면 이진법 값을 출력해줌
+	3) 혹은 int("1111",base=2) 와 같은 식으로 string을 넣어주면 진법 변환 가능
+
+9. 비트연산자
+-> ^=, |=, &= 모두 가능
+
+	1001 (10진법으로 9)
+	0010 (10진법으로 2)
+	
+	1) & (AND)
+	-> &는 둘 다 1인 경우만 뱉어냄
+	output: 0000, 10진으로 0 (한 경우도 없으므로)
+	
+	2) | (OR)
+	-> |는 둘 중 하나라도 1이면 1
+	output: 1011, 10진으로 11
+	
+	3) ^ (XOR)
+	-> ^는 둘이 다를 경우 (1이면 0, 0이면 1) True(1)가 나옴
+	output: 1011, 10진으로 11
+		
+10. list 인덱싱 조심하기
+2개를 지정하고 싶으면
+num[i:i+2]로 해야함. 그 다음거만 지정한다고 num[i:i+1] 하면 1개만 지정됨.
+
+
+11. list 내장함수 index
+원하는 인덱스에 원하는 값을 넣을 수 있음
+
+
+12. generator
+-> 리스트에서 하나씩 뱉어낼 때 다음과 같은 함수를 사용할 수 있음
+
+def number_generator():
+    x = [1, 2, 3]
+    yield from x
+
+for i in number_generator():
+    print(i)
+	
+13. *의 unpacking 기능
+
+https://mingrammer.com/understanding-the-asterisk-of-python/
+https://dailyheumsi.tistory.com/41
+
+a = ((1,2), (3,4)) 
+b = [[1,2,3,4]] 
+print(*a) print(*b) 
+# output: (1, 2) (3, 4) [1, 2, 3, 4]
+
+
+14. 1021_RemoveOutermostParentheses에서의 교훈
+	1) 내가 처음에 계획한 방식에 대한 믿음을 가지자.
+	*** 2) 단순히 renew해야하는지, cumulative하게 renew해야 하는지 구분하라!!
+	
+
+	
+15. 1309_DecrpytStringfromAlphabets
+-> class Solution:
+    def freqAlphabets(self, s: str) -> str:
+        i = len(s) - 1
+        ans = []
+        
+        while i >= 0:
+            if s[i] == '#':
+                ans.append(alpha(s[i-2:i]))
+                i -= 3
+            else:
+                ans.append(alpha(s[i]))
+                i -= 1
+        
+        return ''.join(reversed(ans))
+                
+
+def alpha(num):
+    return chr(int(num) + ord('a') - 1)
+	
+	<교훈>
+	1) i로 찾고싶은 것을 찾은 뒤, 길이가 긴 부분을 추출해 온다면 i-="3" 을 해버리면 된다
+	2) 함수를 두개 써도 된다!
+	3) ''.join(reversed(ans))
+		ans="1234"
+		''.join(reversed(ans))
+		-> "4321"
+		
+		
+16. 다중 for 문에서, condition 만족될 때 continue하는(상위 iter의 다음 단계로 넘어가기) 기능 구현하기
+	: 다중 for문의 경우 continue 가 되어도 상위의 for loop가 굴러가기 때문에 내가 의도한대로 실행이 안된다.
+	이 경우에 대한 해결책으로 크게 5가지가 소개되었는데,
+	https://stackoverflow.com/questions/14829640/how-to-continue-in-nested-loops-in-python
+	
+	1) Break from the inner loop (if there's nothing else after it)
+	2) Put the outer loop's body in a function and return from the function
+	3) Raise an exception and catch it at the outer level
+	4) Set a flag, break from the inner loop and test it at an outer level.
+	5) Refactor the code so you no longer have to do this.
+	
+	
+	내가 해결한 방법은 함수를 사용하는 방법이다.
+	함수를 구현해서 루프 안에 넣어 놓으면 조건이 만족될 경우 바로 값을 출력해버리기 때문에 다음 루프를 고민할 필요가 없다.
+	
+	
+17. dict["키"] 대신 dict.get("키")을 쓰는 이유
+-> get은 defaultvalue라는 arg를 가짐. 만약 dict 안에 "키"가 없어도 입력해준 defaultvalue로 대체해줌.
+
+18. dict에서 value로 key를 직접 가져오는 것은 불가능하다 (;;;)
+-> print([k for k,v in a.items() if v == b])
+
+이렇게 가져와야한다
+		
+19. "a">"b" 가능
+-> ascii code로 안바꿔도 됨...
+-> min("abcdddd") 이것도 됨;;;;
+
+20. string 자체를 넣어서 set을 만들수도 있다
+s="abcabcbacb"
+set(s)
+>>> {'a', 'b', 'c'}
+
+
+21. max와 같은 내장 매서드가 가진 시간 복잡도 고려하기
+-> max는 기본적으로 매번 리스트에서 가장 큰 것을 탐색하므로 O(n)의 복잡도를 가짐. 
+-> 따라서 최댓값을 재활용할 수 있다면 매번 구하지 말고 keep 하고 있는 것이 중요
+-> 코드가 짧다고 해서 시간 복잡도가 낮은 것은 아니다.
+

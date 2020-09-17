@@ -1,0 +1,41 @@
+[FM]
+
+[Prediction Under Sparsity]
+- 대부분의 예측 태스크는 n차원 실수 공간 내의 x에서 y로의 함수를 추정하는 일. 
+- 감독된 환경에서는, 목표 함수 y가 주어졌을 때 학습 데이터셋이 있음.
+- T를 target으로 갖는 함수 y가 feature vector x를 평가하고 그 점수에 따라 그 벡터들을 정렬하는 데 사용되는 랭킹 태스크를 조사했음.
+- scoring function들은 쌍 방식 학습 데이터 (pairwise training data)를 통해 학습될 수 있는데, 
+데이터셋 D의 원소인 특성 튜플 x^(A) 와 x^(B)은 x^(A)가 x^(B)보다 더 높게 랭크되어야한다는 것을 의미한다.
+- 쌍 방식 랭킹 관계는 antisymmetric 이므로, 양의 학습 샘플 (only positive training instances)을 사용하기 충분하다.
+
+- 이 논문에서는, x가 고도로 성긴(sparse)한 경우의 문제를 다룰 것이다. 즉, 벡터 x의 거의 모든 요소 x_i가 0인 경우의 문제를 다룬다.
+- m(x)를 특성벡터 x의 0이 아닌 요소의 수라고 하고, m_D는 모든 벡터 x에서 0이 아닌 요소 m(x)의 평균 수라고 하자.
+- 심각한 sparsity는 흔히 발생함. 큰 sparsity의 이유는 많은 범주형 변수때문임.
+
+
+
+
+[Factorization Machine(FM)]
+
+A. Factorization Machine Model
+	1) Model Equation: degree(d)=2일 경우.
+	
+	<v_i,v_j>는 사이즈가 k인 벡터의 내적임. 여기서 k는 factorization의 dimensionality임 (SVD의 r과 같음)
+	
+	
+	2) Expressiveness: positive definite matrix W에 대해서, k가 충분히 클 경우 W=V*V^T인 V가 존재한다고 알려져 있다.
+						k가 충분히 클 경우 FM은 상호작용 매트릭스 W를 표현할 수 있다.
+						그러나 sparse한 상황에서는 k가 작게 선택되어야하는데, 이는 W의 복잡한 상호관계를 추정할 충분한 데이터가 없기 때문이다.
+						따라서 k를 제한함으로써,(즉 FM 의 효율성을 더함으로써) 더욱 나은 일반화 성능을 이끌어 낼 수 있으며 따라서 sparsity 하에서도 향상된 상호작용 matrix를 얻을 수 있다.
+						
+	
+	
+	3) Parameter Estimation Under Sparsity: Sparse한 상황에서, 변수간의 상호작용을 직접적으로 그리고 독립적으로 추정할 충분한 데이터가 없기 마련이다.
+											FM은 이러한 환경에서도 상호작용을 잘 추정하는데, 이는 상호작용 파라미터간의 독립성을, factorizing 함으로써 훼손시키기 때문이다.
+											일반적으로 이는 한 상호작용에 대한 데이터는 연관된 상호작용의 파라미터를 추정하는데 도움이 된다는 것이다.
+											
+											
+	4) Computation : FM은 계산적 측면에서도 쓸만하다. 직접적으로 계산되는 복잡도는 O(kn^2)인데, 이를 재정리하면 O(kn)으로 줄일 수 있다.
+					이는 여타 MF 접근법과도 비슷한 계산 비용이다. (sparse한 상황에서는 summation할 때 0이 아닌 것들만 더해주면 되기 때문.)
+					
+	

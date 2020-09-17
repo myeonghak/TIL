@@ -1,0 +1,88 @@
+[Understanding Latent Space in Machine Learning]
+
+https://stats.stackexchange.com/questions/341535/curse-of-dimensionality-does-cosine-similarity-work-better-and-if-so-why
+고차원 공간에서 cos sim은 차원의 저주를 겪는다. cos sim은 본질적으로 euclidean과 유사하다. (normalized)
+
+https://towardsdatascience.com/understanding-latent-space-in-machine-learning-de5a7c687d8d
+
+<What is Latent Space?>
+
+If I have to describe latent space in one sentence, it simply means a representation of compressed data.
+: 잠재공간을 한마디로 설명하라 한다면, 압축된 데이터의 표현을 의미한다 하겠다..
+
+
+- 만약 MNIST 데이터를 분류하는 모델을 학습시킨다면, 이미지간의 "구조적 유사성"을 학습시키는 것도 동시에 일어난다.
+- 사실, 애초에 숫자를 구분할 수 있는 것은 이러한 각 숫자마다의 특징을 학습하였기 때문이다.
+- 이러한 과정이 감춰져 있는데, 이는 말 그대로 Latent하기 때문이다.
+- '잠재 공간'의 개념은, 잠재공간의 활용이 딥러닝의 핵심에 있기 때문에 중요하다. - "데이터의 특징을 학습하고, 패턴을 찾기 위해 데이터의 표현을 단순화시키는 것"
+
+The concept of “latent space” is important because it’s utility is at the core of ‘deep learning’ — 
+learning the features of data and simplifying data representations for the purpose of finding patterns.
+
+
+<Why do we compress data in ML?> 왜 우리는 머신러닝에서 데이터를 압축하는가.
+데이터 압축(Data Compression)은 기존의 표현(representation) 보다 더 적은 bit로 정보를 인코딩하는 절차를 의미한다.
+더 흔하게는(more often than not), 데이터는 머신러닝에서 데이터 포인트에 관한 중요한 정보를 학습하기 위해 압축된다.
+
+가령, FCN을 이용해서 이미지를 분류한다고 해보자. 이때, 모델은 각 레이어에서 특징과 특정 결과값에 기여하는 특징의 조합을 배운다.
+( As the model ‘learns’, it is simply learning features at each layer (edges, angles, etc.) and 
+attributing a combination of features to a specific output.)
+
+그러나 모델이 데이터포인트로부터 학습할때마다, 입력값 데이터의 차원은 궁극적으로 다시 증강되기 전에 우선 줄여진다. (AE 스트럭처를 상기하라.)
+차원이 줄어들 경우, 우리는 이 형태를 손실되는(lossy) 압축이라고 한다.
+
+모델은 압축된 데이터로부터 재조립하도록 강요받기때문에, 유관한 정보를 저장하고 잡음(noise)을 무시하도록 학습해야한다.
+이것이 바로 압축의 가치이다. 불필요한 정보는 날리고, 중요한 특징에만 집중하고.
+-> 이 압축된 상태(Compressed State)가 바로 데이터의 잠재 공간 표현 (Latent Space Representation)이다.
+
+<what do I mean by space?> 공간이라는 표현이 의미하는바는?
+5x5x1 데이터가 있다고 하자. 잠재 공간의 차원이 3x1이라면, 이미지를 3차원 plane위의 한 지점을 의미한다.
+이것이 바로 공간이 의미하는 바다. 
+
+"잠재공간에서의 포인트를 그리거나 생각할때, 우리는 '유사한' 데이터포인트가 가까이 위치하는 공간 내의 좌표를 떠올릴 수 있다."
+
+
+
+<what do I mean by similar?> 그럼 뭐가 유사한건가?
+만약 의자 둘과 책상 하나를 구별하는 문제를 푼다고 하자(무엇이냐?를 푸는 문제.). 그럼 우리는 형태와 같은 정보만을 받아들여 의자임을 이해한다.
+이 문제를 풀때 우리는 자연스럽게 색깔과 장식과 같은 정보는 제거한다. 
+이는 차원 축소를 수행할 때 불필요한 정보를 걸러내고 필요한 데이터만을 잠재 공간 표현에 담아내는 것과 같다.
+결과적으로, 두 의자의 표현은 덜 구분되고 더욱 가까워지게 된다. 공간 내에 표현하게 된다면, 가까이 위치하는 셈이다.
+* 여기서의 가까움이란 추상적인 가까움을 의미함. 딱 정해진 유클리드 거리가 아님. 공간 내의 거리를 정의하는 데에는 다양한 정의가 있기 때문임.
+
+<Why Does Latent Space Matter?>
+어떻게 잠재공간이 사용되고, 언제 사용하고, "왜" 사용하는가?
+잠재공간은 우리의 많은 신경망에서 잠재되어 있다. 그러나 잠재공간을 이해하는것이 도움이되기도하고, 필요하기까지한 경우가 있다.
+
+<Representation Learning>
+잠재공간표현은 원 데이터에서 표현해야할 중요한 정보를 포함한다. 이 표현은 원 데이터의 특징들을 표현해야한다.
+달리 말해, 모델이 데이터의 특성을 학습하고, 그 표현을 분석하기 편하도록 만들기 위해 단순화한다.
+이것이 바로 Representation Learning이라고 불리는 개념의 핵심이다.
+Representation Learning: 한 시스템이 원 데이터로부터 특징 파악이나 분류를 수행하는 데 필요한 표현을 발견하도록 돕는 일련의 기술.
+
+<Representation Learning 1 : Manifolds (매니폴드 학습)>
+매니폴드학습은 표현 학습의 일부이다.
+매니폴드 학습에서, 잠재공간은 핵심적인 개념이다. 
+매니폴드란 데이터 과학에서 어떤 방법으로 "유사한" 데이터의 부분집합 혹은 그룹으로 이해된다.
+
+이 '유사성'은, 보통 고차원 공간에서 인지할 수 없거나 모호한데, 우리의 데이터가 잠재 공간에서 표현될 경우 발견될 수 있다.
+
+https://greatjoy.tistory.com/51
+https://scikit-learn.org/stable/modules/manifold.html
+싸이킷런 매니폴드 학습, 다양한 매니폴드 학습 알고리즘에 대해 소개하고 있음 (tsne, Isomap 등)
+https://towardsdatascience.com/manifolds-in-data-science-a-brief-overview-2e9dde9437e5
+데이터과학에서의 매니폴드학습에 관하여
+
+
+
+<Interpolating on latent space>
+의자가 [0.4, 0.5]로 표현되고, 책상이 [0.6, 0.75]로 표현되면 그 둘 사이의 어떤 지점을 잠재공간에서 표집한다.
+그 2d vector를 디코더에 넣으면, 의자와 책상 사이의 그 어떤 '새로운' 이미지가 생성된다. 
+'새로운'이라고 마크를 단 이유는 새로만들어진 이미지가 사실상 기존의 데이터 샘플과 독립적이지는 않기 때문이다.
+
+잠재공간 내에서 선형 보간 (linear interpolation)한다면 두 잠재 공간 내 포인트가 나타내는 어떤 이미지 사이의 독특한 이미지가 생성될 것이다.
+
+
+
+
+

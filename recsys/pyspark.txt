@@ -1,0 +1,20 @@
+[Pyspark 설치]
+
+https://medium.com/@siisee111/ubuntu18-04%EC%97%90-spark-%EC%84%A4%EC%B9%98-7e6308db1fd9
+
+https://lovit.github.io/spark/2019/01/29/spark_0_install/
+
+두개 섞어서 봄. 환경변수 잡아주니 pyspark 명령어로 바로 실행 가능 ㅋㅋ
+
+
+ipynb pw
+->
+'sha1:5b945c899df8:9a484394885d98c469825747c444b4168a1874f7'
+
+
+
+
+
+https://medium.com/analytics-vidhya/crafting-recommendation-engine-in-pyspark-a7ca242ad40a
+파이스파크 추천 엔진 만들기 -> 
+
