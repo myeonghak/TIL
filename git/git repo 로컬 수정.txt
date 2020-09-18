@@ -1,0 +1,7 @@
+* 로컬 저장소에 내려받은 뒤 깃헙 레포 수정하기
+	1) 대상 폴더에서 git init
+	2) git remote add origin [git repo 주소]
+	3) git pull origin master
+	4) git add .
+	5) git commit -m "message"
+	6) git push origin master
