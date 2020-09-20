@@ -1,0 +1,35 @@
+https://towardsdatascience.com/understanding-locality-sensitive-hashing-49f6d1f6134
+
+[Locality Sensitive Hashing]
+
+1. Motivation
+최근접 이웃을 찾는 일은 아주 흔함. 복제본 혹은 유사한 문서, 음악, 비디오를 검색하는 것을 생각해볼 수 있음.
+단순히 모든 가능성을 확인해 보는 방법은 정확한 최근접 이웃을 찾아주기야 하겠지만 확장가능성이 전혀 없음.
+이 목적을 달성하기 위한 근사적인 알고리즘이 활발히 연구되고 있었음.
+비록 이 알고리즘은 정확한 답을 제공해주지는 않지만, 대개의 경우 좋은 근사치를 제공해 줌.
+이러한 알고리즘들은 더 빠르고 확장 가능함.
+
+지역 민감 해싱 (LSH)은 그런 알고리즘 중 하나임. LSH는 다양하게 응용됨. 그 방법으로는
+- 근접 복제본 감지: LSH는 막대한 양의 문서, 웹페이지, 다른 파일의 복제본을 역복제하는 데 사용됨
+- 게놈 단위 연관 연구: 생물학자들은 LSH를 게놈 데이터베이스에서 비슷한 유전자 표현을 찾아내는 데 사용함
+- 대규모 이미지 검색: 구글은 LSH와 PageRank를 사용해 이미지 검색 기술을 만들었음 (VisualRank) 
+- 음성/비디오 지문화: 멀티미디어 기술에서, LSH는 음성/비디오 데이터의 지문화를 위해 넓게 사용됨.
+이 블로그에서는, 이 알고리즘의 작동 방식에 대해 이해해볼 것임.
+
+LSH는 LSH families라고 알려진, 데이터 포인트를 버킷으로 해쉬하여 가까운 곳에 위치한 데이터 포인트들이 같은 버킷에 높은 확률로 위치하도록 하면서도,
+멀리 떨어진 데이터 포인트들은 다른 버킷에 포함되도록 하는 함수의 그룹을 이름. 
+이는 다양한 정도의 유사성을 지닌 관측치들을 식별하기 더 쉽게 해줌.
+
+
+Finding similar documents
+Let’s try to understand how we can leverage LSH in solving an actual problem. 
+The problem that we’re trying to solve:
+Goal: You have been given a large collections of documents. You want to find “near duplicate” pairs.
+In the context of this problem, we can break down the LSH algorithm into 3 broad steps:
+
+Shingling
+Min hashing
+Locality-sensitive hashing
+
+Don’t read much into the figure for now. 
+It’s just to give you the idea of the process flow. We’ll discuss each step in detail.
