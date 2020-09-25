@@ -1,0 +1,74 @@
+[An Introduction to Recommender Systems]
+
+- Web이 상거래 플랫폼으로 성장하면서 RS 기술이 급속도로 발전함. 
+- 그 중에서도 특히 고객의 feedback을 쉽게 얻을 수 있다는 점은 촉매로 작용함
+
+- (explicit feedback) 예를 들어 넷플릭스 평점은 유저가 얼마나 다양한 상품을 좋아하는지 혹은 그렇지 않은지를 알려줌.
+- (implicit feedback) 웹 기반 패러다임에서 별점이 아닌 다른 형태의 feedback은 좀 더 수집하기 쉬움. 
+
+- 추천이 제공되는 대상인 주체는 user라고 불리며, 추천되는 대상은 item이라고 불림. 
+- 따라서 추천 분석은 과거의 user와 item의 interaction에 근거함. 그 이유는 과거의 관심과 성향은 종종 미래 선택의 좋은 지표이기 때문임.
+- 그렇지 않은 모델의 예외는 knowledge-based recsys가 있는데, 이는 과거 기록보다는 유저의 특정된 requirement에 기반해 상품을 제공함.
+
+- 추천의 기초적인 원칙은 user와 item 중심적 활동 간에 중요한 의존 관계가 있다는 것이다.
+- 역사 다큐를 보는 사람은 액션 영화보다 교육 자료를 보는 것을 즐길 것
+
+- 많은 사례에서, 다양한 카테고리의 아이템들이 유의미한 상관관계를 보여줄 수 있는데, 이는 좀 더 정확한 추천을 만드는 데 사용될 수 있음.
+- 그렇지 않으면, 의존 관계들은 카테고리보다는 좀 더 미세한 개별 상품의 특성 안에 존재할 수 있다.
+- 이러한 의존 관계들은 평점 행렬에서 데이터 의존적인 방법으로 '학습'될 수 있고, 이 결과 모델은 목표 유저들을 위한 예측을 만드는 데 사용될 수 있다.
+- 더 많은 평가된 상품들이 한 유저에 대해 가용하다면, 그 유저의 미래 행동에 대한 강건한 예측을 수행하기가 더 쉬워진다.
+- 다양한 학습 모델이 이 작업을 위해 사용될 수 있다. 다양한 유저의 구매나 평가 행위는 코호트를 만드는 데 사용될 수 있고 이를 기반으로 추천을 수행할 수 있다.
+
+
+1.2 Goals of Recommender Systems
+
+- 추천 문제가 수식화 될 수 있는 방식은 다음과 같음
+	1) Prediction version of problem (matrix completion problem)
+	2) Ranking version of problem
+	: 특정 고객이 선호할만한 top-k item을 추출함. 반대로 상품을 기준으로 top-k user를 추출할 수도 있음. 둘은 완전히 유사하지만, 전자가 더 흔함.
+
+- 추천 시스템의 목적은 판매량 증가(매출 상승)임. 이러한 목적을 위해, 추천시스템의 일반적인 운영적이고 기술적인 (operational and technical) 목표는 다음과 같음 
+	1) Relevance: 유저에게 유관한 상품을 제공하는 것. 가장 중요하지만 이것 만으로는 부족함.
+	2) Novelty: 고객에게 신선한 제품을 제공하는 것 (단순히 고객에게 새로운 것, 이런 추리영화가 있었네?)
+	3) Serendipity: 신선함과 다름. 발견해서 기쁨을 느끼게 해주는, "surprising"한 추천. (고객이 자신이 좋아하는지조차 몰랐던 것, 느와르도 잼네?!)
+	이러한 추천은 장기적인 매출 향상을 일으킴. (낚시 재밌다.. 새로운거 또 산다..)
+	4) Increasing recommendation diversity: 다양한 추천을 제공해줌. 키보드 눌렀다고 계속 키보드만 보여주지 않음.
+	
+
+- unary rating: 유저가 관련성(affinity)만을 드러낼 수 있을 뿐 dislike를 표현할 수 없는 평가 상황, (ex. 뉴스 클릭)
+- reciprocal recommender: facebook, linkedin 등 상호간의 관계를 예측-추천
+
+- transductive setting: test instance에 대해 prediction이 학습 단계에서 불가능한 경우
+- inductive setting: 그 반대 경우
+
+-Knowledge-based recommender systems are particularly useful in the context of items that
+are not purchased very often.
+
+
+
+-Utility-Based Recommender Systems
+In utility-based recommender systems, a utility function is defined on the product features
+in order to compute the probability of a user liking the item [239]. 
+
+
+Demographic Recommender Systems
+
+1.5.5 Active Learning in Recommender Systems
+
+
+
+[스터디 내용]
+1. 
+
+
+
+
+
+
+
+
+
+proclivity 성향
+catalyst 촉매
+granularity 알갱이, 입자형, 입상
+reciprocal 상호간의
