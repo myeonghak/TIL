@@ -1,0 +1,97 @@
+Receys with implicit feedback
+
+	1.	OCCF(One class collaborative filtering): feedback이 0,1로만 주어지는 상황에서의 CF
+	
+	2.	gOCCF(graph-theoretic OCCF based on uninteresting items)를 살펴볼 것.
+	
+	3.	OCCF의 challenges
+		1) Less imformation: multi-class 상황에 비해 유저의 취향을 파악할 정보가 부족함
+		2) more sparse?
+		
+	4.	현존하는 OCCF 접근법
+		1) MF기반 알고리즘 (WRMF-Weighted regularized Matrix Factorization, BPRMF-BPR 로스펑션을 사용한 MF)
+		2) 그러나 sparse해지면 sparse해질수록, 급속하게 성능이 떨어지는 문제가 발생
+		
+	5.	zero injection
+		1) multi-class 상황에서의 sparsity 문제를 잘 해결함, 해당 연구실의 논문
+		2) 유저가 평가하지 않은 상품을 CF 모델로 pre-use prediction, 
+		이 중 확률값이 낮은 제품의 일부인 theta%를 uninteresting item(u-item)로 사용, 이를 negative preference로 활용함. 
+	
+	6.	OCCF에의 zero-injection 사용
+		1) 기존 OCCF 접근법보다 낮은 성능
+		2) theta에(injection percentage) 민감한 성능
+		
+	7.	gOCCF의 모티베이션
+		1) sparsity 상황에서도 강건한 성능
+		2) zero-injection의 파라미터에 큰 영향을 받는 것을, parameter-free 환경으로 만들어주자.
+		3) 그래프 모델링 방법을 추천에 적용하자
+		
+	8.	gOCCF의 방법론
+		1) one-class로 rating된 매트릭스의 빈 부분의 preference을 예측, WRMF등 사용)
+		2) 다양한 candidate negative graph를 생성, 한가지 positive 그래프와 함께 사용
+			그래프 분석을 통해 uninterested item의 수를 선정
+		3) 추후 고객과 아이템의 관계를 그래프로 모델링 했을 때, 이를 그래프 분석 방법으로 예측
+	
+	9.	positive/negative graph를 모델링하는 두가지 방법을 제시.
+	
+	10.	1) 단계는 WRMF로 추론, unrated item에 대한 예측값이 채워진 matrix를 구할 수 있음.
+	11.	2) negative graph뽑기
+		가장 naive한 방법은 brute-force 방법. 
+		예측한 interestingness의 역순으로 k개를 선정하여 그래프를 만드는 데, 이 수를 점차 늘려가며 계속해 나갈 수 있음. 
+		이 중 가장 좋은 추천 정확도를 보이는 k를 사용 가능.
+		-> 그러나 이 방법을 모두 해보기에는 k의 범위가 너무 넓음
+		
+	12.	이 방법은 너무 비효율적이므로 candidate을 몇개 선정한 뒤 그래프 분석을 통해, 
+		항상 가장 최적일 것 같은 negative link의 수(k) 결정
+		
+	13.	이를 위해 (1) topological properties, (2) information propagation을 사용
+	
+	14.	topological properties
+		: graph shattering theory 사용
+		-> 한 그래프가 주어졌을 때, 랜덤하게 순차적으로 링크를 지워나가다 보면 이 그래프의 connectivity가 붕괴되는 순간이 있는데, 
+		이 순간은 shattering point라고 정의함. 
+		
+		이 point를 생성해 나가는 과정을 시각화한 것을 shatterplot이라 함.
+		effective diameter: 그래프의 connectivity를 판단할 수 있는 measure.
+		이 connectivity가 붕괴된다는 것은, 어떤 허브 노드가 사라짐으로써 어떤 노드간의 거리가 급격히 증가하는 현상이 발생한다는 것.
+		이제 negative graph에 k를 점점 추가하며 effective diameter를 측정함.
+		
+		- negative graph역시 shattering point를 가짐
+		- positive graph와 동일한 수의 링크를 가질 때, 
+		기존의 positive graph와 유사한 topological property를 가짐 (다른 measure, 데이터셋에도 동일한 결과)
+		
+	15.	이 shatterplot에서  4개의 영역을 나눔.
+		1) ES region: extremely sparse region
+		2) S region: shattering region
+		3) R region: real graph region
+		4) D region: dense region
+		
+	16.	Information propagation
+		: 정보가 propagation하는 방식을 분석해 추천을 제공
+		기존의 positive graph와 새로 만든 negative graph를 추가해 활용하는 것이 목적. 
+		이 때 추가한 neg graph가 효과가 있다 할 수 있으려면, 기존의 pos graph의 정보 흐름을 변화할 수 있어야된다! 는게 결론. 
+		왜냐면 기존 그래프의 정보 흐름에 영향을 안주면 추천에 영향을 안미친다는 거니까. 
+		그래서 이 영향을 미칠 수 있는 neg graph를 찾는 것이 목적! 
+		
+		그래서 pos와 neg graph에 대한 PageRank 계산.
+		pos graph는 power rule dist를 따르고, S,ES region은 소수의 노드만 점수를 가짐. 
+		몇개의 노드만 neg score를 갖기 때문에, 이 그래프가 기존의 pos graph에 거의 영향을 줄 수 없다고 생각. 
+		D region도 마찬가지로, dense하기 때문에 대부분의 노드가 유사한 점수를 가짐. 따라서 pos graph에 이를 추가해도 거의 영향을 주지 못함.
+		R region은 pos graph와 유사하게 power rule dist를 따르기 때문에 pos graph에 영향을 미칠 수 있으리라 생각. 
+		그러나 이 영향이 추천에 긍정적 영향을 미치느냐?는 실험. (대답은 yes) 다른 데이터에서도 비슷한 결과가 나옴.
+		
+	17.	이제 결론적으로 데이터셋은 pos graph와 같은 수의 노드를 갖는 neg graph를 사용해 
+		One-class setting이 아닌 Binary class setting으로 변화함.
+		
+	18.	이를 binary class를 갖는 undirected graph로써 모델링 가능. 
+		1) separate graph: neg와 pos graph가 독립적으로 존재하는 환경. 
+			separate RWR(Random Walk with Restart), separate BP(Belief Propagation) 수행
+		2) signed graph: 두 그래프가 포개어진 형태
+		
+	19.	separate RWR, BP: 한가지 타입의 링크만을 고려 가능, 반대되는 링크에 대해 동작이 안되기 때문에 변형을 고안
+	20.	실험 수행, base line으로 popular, Zero Injection, OCCF sota를 사용.
+	21.	실험의 세가지의 질문
+		1) 제안한 Uninterest item 선택 방법이 추천에 유용한가?
+			-> pos와 neg 노드 수가 같을 경우 가장 좋은 성능
+		2) U-item을 추가하는게 기존 graph기반 추천에 도움이 되는가? yes!
+		3) 기존 OCCF sota보다 성능이 향상되는가? partly yes, but if in extreme sparse settings, totally yes.
