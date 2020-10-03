@@ -1,0 +1,253 @@
+
+2.1 Introduction
+
+	1) Neighborhood-based CF는 "memory based algorithm"이라고 불리우기도 함. CF를 위해 개발된 초기 모델임.
+	2) 2가지 주요한 타입이 존재함.
+		1. User-based CF: 타겟 유저 A와 비슷한 유저에 의해 제공된 rating을 사용해 추천을 제공함.
+		2. Item-based CF: 타겟 상품 B와 가장 비슷한 상품군 S를 만들어 냄. 그 S의 상품 중 타겟 유저 A가 제공한 상품의 평점들을 활용해 가중평균을 가하여 예상 평점을 추정함.
+		
+		이 두 방법의 핵심적인 차이는 
+		User-based의 예측 평점은 비슷한 유저의 평점에 의해 만들어지지만, 
+		Item-based의 예측 평점은 자기 자신의 평가에 의해 만들어진다는 점이다.
+		
+		또, User-based는 user-item matrix의 row의 유사도에 기반해 neighborhood가 결정되고,
+		반대로 Item-based는 col 끼리의 유사도에 기반해 결정됨. 
+		따라서 상보적인 관계를 갖는다고 할 수 있지만, 이 두 방법을 통해 만들어지는 추천에는 상당한 차이가 존재함.
+		
+		
+	3) 추가적 논의를 위한 설정:
+		matrix는 m*n이며, sparse하다.
+		
+	4) CF는 다음 둘 중 한가지 방식으로 formulate됨:
+	
+		1. User-item 조합의 평가 점수를 예측하기
+		: 가장 단순하고, 원시적인 형태의 RS임.
+	
+		2. top-k item이나 top-k user를 결정하기
+		: 전체를 볼 필요 없이 최고 순위의 item k개만 찾으면 되므로, 이런 방식으로 나아감.
+		top-k user를 찾는 것은 덜 흔하지만, 상품의 관점에서 마케팅 타겟군을 결정하는 데 중요한 기준이 될 수 있음.
+		
+
+2.2 Key Properties of Ratings Matrices
+	forced choice method: 중립 옵션을 제공하지 않는 경우
+	
+	Unary ratings: 긍정적인 선호를 표현할 수는 있으나, 부정적인 선호를 드러내지는 못하는 평가 시스템.
+		긍정 선호를 유도하는 경우 혹은 고객이 취한 action에 의해서 수집되는 경우가 존재함. 각각 페이스북의 like 버튼, 고객의 구매 사실에 대응 가능.
+		-> 이 경우를 implicit feedback이라고 함.
+	
+	*(?) Implicit feedback 상황은 본질적으로 다른데, 이는 분류 및 회귀 모델링의 Positive-unlabelied(PU) 학습 문제에서 Matrix completion와 유사한 형태이기 때문.
+	
+	
+	long-tail property: 오직 적은 수의 상품들만 빈번히 평가됨. 소수의 상품이 전체 평가의 대부분을 차지하는 것.
+		이러한 특성은, recommendation process에서 중요한 암시를 가짐.
+		
+		1) 자주 평가되는 상품은 상대적으로 경쟁력 있는 상품이고, 이는 상인 입장에서 더 적은 이윤을 얻을 수 있음을 의미함. 
+		long-tail을 판매하는 것이 더 이득임.
+		
+		2) 그러나 관측치가 적으므로, 추천을 하는 것이 더 어려움. 대부분의 rec 알고리즘은 인기 상품을 더 추천하기 쉬움. 그런데 이는 고객의 추천 만족도를 떨어뜨림.
+		
+		3) 인기 상품과 롱테일 상품의 rating pattern이 다르기때문에, Neiborhood based CF에서도 롱테일 상품을 추천하기 힘듦.
+	
+	
+2.3 Predicting Ratings with Neighborhood-Based Methods
+	1) neighborhood-based models의 두 기본적 원칙
+		1. User-based models: 비슷한 유저는 같은 상품에 비슷한 평가를 갖는다.
+		2. Item-based models: 비슷한 상품은 같은 유저에 의해 비슷한 평가를 받는다.
+			
+	2) "CF 문제는 분류/회귀 모델링 문제의 일반화로 볼 수 있으므로, neighborhood-based model은 머신러닝 맥락에서
+	nearset neighbor classifier의 일반화로 볼 수 있다.
+		
+	행 유사도에 기반해 nearest neighbor가 결정되는 classification 문제와는 다르게,
+	CF에서의 nearest neighbor는 행과 열 모두에 기반해 발견할 수 있음.
+	이는 예측하고자 하는 missing entries가 classification에서는 1개 열에서 발생하지만,
+	CF에서는 다른 행과 열에서 발생할 수 있기 때문임.
+	
+	
+	2.3.1 User-Based Neighborhood Models
+	: 유저간 유사도를 구하기 위해서는, 유사도 함수가 정의되어야 함. 이는 까다로운 일인데, 유저마다 평점을 내리는 패턴이 다르기 때문. (좋아요맨, 싫어요맨)
+	
+	1) Pearson Correlation Coefficient:
+	유저간 상관관계를 잡아내기 위한 측도 중 하나.
+	이 상관계수를 계산할 때, mu_u를 계산하는 방식이 두가지 있음.
+	이는 고객 u에 대해 평균을 구하는 것과, 비교 대상 v와 pair-wise로 매번 계산하는 방식이 있음.
+	그런데 그냥 첫번째를 쓰려고 함. 이는 계산 효율상의 이점도 있고 u와 v가 공유하는 값이 적은 극단적인 경우에 정보를 덜 함축하게 되는 문제가 있기 때문.
+	그러나 독자는 후자의 방법도 user-based에서 자주 사용됨을 알고 있어야함.
+	
+	
+	2.3.1.1 Similarity Function Variants
+	상관계수를 구할 때 고려되어야할 것은 유저마다 평점 패턴이 다르다는 것. 이를 보정하기 위해 row-mean을 공제해주는 방식을 사용함.
+	
+	significance weighting: 
+	만약 두 유저가 공통으로 적은 수의 평가를 가지고 있다면, 유사도 함수는 값이 어느 정도(discount factor에 의해) 공제되어야 함.
+	이는 이 유저 쌍에 대해 중요성을 덜 강조하게 만들기 위함. 이러한 방식을 significance weighting이라 함.
+	이 discount factor는 두 유저간 공통 평가가 B(beta)개 이하일 때 작동하게 됨.
+	이 discount factor는 min{|I_u & I_v|,B}/B 의 꼴로 계산됨.
+	
+	이러한 discounted similarity는 동료 그룹을 결정할때나, Neighborhood CF의 예측 값을 추정할 때 사용됨.
+	
+	
+	2.3.1.2  Variants of the Prediction Function
+	
+	1) z-scoring: 
+	앞서 살펴본 mean-centering한 값에 유저의 variance를 나누어 주어 zscore를 계산함. 이는 더 보정을 제대로 하주는 꼴.
+	이 때, 예측할 시에는 마지막에 variance를 곱해주어야 함!
+	
+	z-score와 mean-centering 방식 중 어느게 좋은지 의견은 분분함.
+	z-score 방식의 경우 받아들이기 힘든 값을 만들어 낸다는 문제점이 있음.
+	
+	2) 유사도 함수에 amplifying parameter (alpha) 적용
+	: Pearson CC에 alpha를 제곱해 줌. 이를 통해 강한 상관관계를 갖는 애들을 더 강하게 만들어 줌 (? 1 이하일텐데..)
+	
+	
+	2.3.1.3 Variation in Filtering Peer Groups
+	top-k 유사 유저를 뽑아내 peer group으로 삼는 방식은, 
+	약하게 관계된 유저와 부정적으로 관계된 유저를 뽑아내기도 함.
+	이들은 학습에 안좋은 영향을 미침. 일정하지도 않고.. 그래서 제거함.
+	
+	2.3.1.4 Impact of the Long Tail
+	롱테일 현상은 Information retrieval(정보검색) 분야에서도 흔히 발생함. CF 문제에서 제안된 해결책이 사용되기도 함.
+	TF-IDF의 IDF를 CF에서 사용할 수 있음.
+	-> 유사도 계산시, idf를 곱해주어 자주 등장하는 상품의 영향을 줄여줌. (item weighting)
+	
+	
+	
+	2.3.2 Item-Based Neighborhood Models
+	
+	1) 유저 기반 Neighborhood처럼, mean-centering을 실시해줌.
+	2) 방법은 매우 유사하지만, 자기 자신의 추천 평점에 기반해 추천을 내리므로 유저 기반보다 더욱 일관된 평점이 내려질 것임.
+	
+	
+	2.3.3 Efficient Implementation and Computational Complexity
+	1) Offline-phase:
+	이 단계에서는, peer group(유사한 k개 유저/상품)을 추출할 수 있도록 유저/상품간 유사도를 계산해야 함.
+	이 경우, 유저*상품이 m*n일 경우 
+	유저간의 peer group을 계산하면 O(m^2*n)의 시간복잡도를 가지고,
+	상품간의 peer group을 계산하면 O(m*n^2)의 시간복잡도를 가짐.
+	
+	2) Online-phase:
+	offline-phase에서 계산이 완료된 유사도를 기반으로 k개의 가장 근접한 유저를 사용해 실제 추천을 제공함.
+	k개의 top-k 유저를 뽑아 추천에 활용한다면 O(k)의 시간복잡도를 갖고, 모든 상품 n개에 대해 이 작업을 수행해 target user의 평점을 추측하면
+	O(k*n)의 복잡도를 가짐.
+	반대로 특정 상품에 대해 k개의 유저를 사용해 예상 평점을 추측하면 O(k*m)의 복잡도를 가지게 됨
+
+	
+	3) Offline phase와 Online Phase가 나뉘어져 있는데, 이 중 Offline phase가 압도적으로 많은 연산 자원을 사용한다는 것을 생각하면
+	한번 연산을 마쳐 놓음녀 Online phase는 상대적으로 효율적이고 가벼움.
+	
+	2.3.4 Comparing User-Based and Item-Based Methods
+	
+	1) User-based에 비해 Item-based가 더 정확도가 높음. 이는 추천을 추론할 때 참고하는 자료에 기반함. 자기가 좋다고 했던 것들을 위주로 추천을 가해주니 더 좋을 수밖에?
+	2) 그러나 데이터에 따라서 둘의 상대적인 성능 차이는 존재함. 
+	3) shiling attack: 
+	4) Item-based는 "니가 A를 좋아했으니 이것들을 추천한다"라는 식의 설명이 가능함.
+	그러나 User-based는 직접적인 연관이 있는 유저들이 아니기때문에 reasonable하지도 않고, privacy issue때문에 공개하기가 어려운 점이 있음.
+	5) 또한 Item-based는 
+		1. 유저의 수가 상품의 수에 비해 보통 더 많음.
+		(따라서 유관한 유저끼리의 결속이 약하기 마련)
+		
+		2. 유저가 추가되는 속도에 비해 상품이 추가되는 속도가 느림.
+		(따라서 유저의 수가 많기 떄문에 유저간의 상관 점수가 흔히 바뀜. 그러나 상품끼리는 그렇지 않다.)
+		
+		이 두가지 이유로 인해 더 robust한 결과를 제공함.
+	
+	2.3.5 Strengths and Weaknesses of Neighborhood-Based Methods
+	
+	1) 장점:
+		1. 간단하고, 구현이 쉬우므로 디버깅도 용이함
+		2. 해석 가능성이 뛰어남
+		3. 새로운 유저나 상품이 추가된 상황에서 상대적으로 robust함.
+		4. Offline phase는 무겁고 비용이 크지만 Online phase는 항상 효율적임
+	2) 단점:
+		1. 대규모 시스템에서 적용은 비현실적임. 
+		Offline phase가 아주 비효율적.
+		2. sparsity에 약함. 만일 terminator에 고객 A의 주변 이웃이 아무도 평가하지 않았으면, 그에 대한 예측 평점을 제공하는 것이 불가능함.
+		
+		
+	2.3.6 A Unified View of User-Based and Item-Based Methods
+	
+	1) User-based와 Item-based가 각각 행과 열끼리의 유사도를 계산한다는 점에서 한계가 있기 때문에, 이 둘을 통합하여
+	entries를 예측하는 문제로 만드는 방법을 생각해 볼 수 있음.
+	두 접근법은 각 row가 mean-centered 되어 있으면 거의 비슷한 것으로 간주할 수 있음.
+	
+	2) 예측 이후에도 row mean을 더해주면 일반성을 잃지 않을 수 있다.
+	
+	3) 각 row별로 mean-centering을 한 뒤 Pearson CC를 구하면 이는 코사인 상관계수와 (거의) 동일하다.
+	
+	4) 이 두 접근을 결합하여, 열과 행의 측면에서 가장 가까운 entry를 찾아 예측하는 방식을 적용할 수 있다.
+	
+
+2.4 Clustering and Neighborhood-Based Methods
+	
+	1)Clustering based method의 메인 아이디어
+	: offline-NN computation 과정을 offline-clustering computation으로 대체하는 것
+	기존에는 각 target user를 중심으로 centered된 peer group을 만들었다면,
+	clustering 방법은 반드시 centered 될 필요 없이 주변의 peer group만을 만들어냄.
+	
+	cluster 내부의 peer group에 기반해 추천을 시행하므로, 더 효율적임.
+	
+	2) efficiency and accuracy
+	accuracy가 조금 떨어지는 현상이 발생할 수 있음(cluster를 너무 잘게 만들면)
+	그러나 감쇠하는 정확도에 비해 efficiency의 효율이 큼.
+	
+	3) clustering 상의 제약 환경
+	: incomplete 데이터이므로, clustering 알고리즘 선정에 신경써야함. k-means가 괜찮음. 
+	incomplete 상황에서 mean과 거리를 계산할때는 관찰된 값을 사용해서만 시행.
+	
+	
+	
+2.5 Dimensionality Reduction and Neighborhood Methods
+계산 효율과 성능 측면에서의 향상을 위해 sparse한 rating matrix를 저차원 공간내에서의 dense한 representation으로 바꾸어 주는 방법.
+이를 latent factor model이라고 함.
+	
+	1) 2가지 고유한 방법이 있음
+		1. 행/열 둘 중 하나의 관점에서 dimension을 reduction함.
+		-> 이는 sparsity problem을 경감시켜주는 결과를 낳음.
+		-> 어떤 축을 기준으로 reduction했는지에 따라 User-based / Item-based neighborhood 모델을 만들 수 있음.
+		2. 행&열 두 축 동시에 축소하는 방식.
+		-> 이 latent representations는 전체 rating matrix를 만들어 내는 데 사용될 수 있음 (neighborhood 방식 사용하지 않고)
+		-> 이는 직접적으로 neighborhood 방식과 관련이 없으므로 다음 장에서 다룸
+		
+	2) SVD 방식과 PCA 방식이 있는데, 여기서는 SVD 방식을 다룰 것임.
+	
+	3) 결측인 rating에 대해서는 row의 평균을 넣는 방법과 col의 평균을 넣는 방법 두가지가 존재함.
+	
+	4) item을 기준으로 S=R^TR을 계산해서 positive semi-finite matrix를 만들어 줌. 이 matrix를 기준으로 
+	
+2.6 A Regression Modeling View of Neighborhood Methods
+	
+2.7 Graph Models for Neighborhood-Based Methods
+
+
+diffusion kernel?
+horting?
+
+	
+	
+equidistant 등거리의
+mandate 지시하다, 권한을 주다
+indeterminate 쉽게/정확히 가늠/규정할 수 없는
+transitivity 이행성
+bipartite 양자간의, 2부로 구성된
+propensity 성향, 경향
+	
+Q2. User-based는 Item-based보다 상대적으로 정확도가 낮을 수밖에 없다. 그런데 의외성이나 참신성 등은 더 나을 수 있지 않을까?
+
+
+
+
+[장영준님 발표]
+1. KNN 알고리즘의 관점
+	1) NN 추천 시스템은 KNN 알고리즘의 방식을 차용한 것으로 볼 수 있음.
+	2) LSH(locality Sensitive Hashing) -> Reformer에서 사용함. (계산 복잡성을 줄일 수 있음)
+	-> 메모리 문제를 병렬화해서 처리. 
+	3) 마할라노비스 거리와 같은 척도를 사용하면 robust한 특성
+
+2. 아마존 추천 시스템 케이스 스터디
+	
+	1) Amazon Neptune: 아마존이 사용하는 클라우드 기반 추천 시스템 엔진
+	-> item to item CF에 집중함
+	
+	2) Amazon EMR: Matrix Factorization
+	
+	3) Amazon SageMaker: Deep Matrix Factorization
+	
