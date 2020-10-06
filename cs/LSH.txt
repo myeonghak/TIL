@@ -1,0 +1,170 @@
+https://towardsdatascience.com/understanding-locality-sensitive-hashing-49f6d1f6134
+https://lovit.github.io/machine%20learning/vector%20indexing/2018/03/28/lsh/
+
+
+[Locality Sensitive Hashing]
+
+1. Motivation
+최근접 이웃을 찾는 일은 아주 흔함. 복제본 혹은 유사한 문서, 음악, 비디오를 검색하는 것을 생각해볼 수 있음.
+단순히 모든 가능성을 확인해 보는 방법은 정확한 최근접 이웃을 찾아주기야 하겠지만 확장가능성이 전혀 없음.
+이 목적을 달성하기 위한 근사적인 알고리즘이 활발히 연구되고 있었음.
+비록 이 알고리즘은 정확한 답을 제공해주지는 않지만, 대개의 경우 좋은 근사치를 제공해 줌.
+이러한 알고리즘들은 더 빠르고 확장 가능함.
+
+지역 민감 해싱 (LSH)은 그런 알고리즘 중 하나임. LSH는 다양하게 응용됨. 그 방법으로는
+- 근접 복제본 감지: LSH는 막대한 양의 문서, 웹페이지, 다른 파일의 복제본을 역복제하는 데 사용됨
+- 게놈 단위 연관 연구: 생물학자들은 LSH를 게놈 데이터베이스에서 비슷한 유전자 표현을 찾아내는 데 사용함
+- 대규모 이미지 검색: 구글은 LSH와 PageRank를 사용해 이미지 검색 기술을 만들었음 (VisualRank) 
+- 음성/비디오 지문화: 멀티미디어 기술에서, LSH는 음성/비디오 데이터의 지문화를 위해 넓게 사용됨.
+이 블로그에서는, 이 알고리즘의 작동 방식에 대해 이해해볼 것임.
+
+LSH는 LSH families라고 알려진, 데이터 포인트를 버킷으로 해쉬하여 가까운 곳에 위치한 데이터 포인트들이 같은 버킷에 높은 확률로 위치하도록 하면서도,
+멀리 떨어진 데이터 포인트들은 다른 버킷에 포함되도록 하는 함수의 그룹을 이름. 
+이는 다양한 정도의 유사성을 지닌 관측치들을 식별하기 더 쉽게 해줌.
+
+유사한 문서 찾기
+실제 문제를 풀면성 어떻게 LSH를 사용할 수 있을지 이해해보자.
+풀고자 하는 문제는,
+목표: 큰 문서 집합이 주어졌을 때, 유사 복제품 쌍을 찾고 싶음. 이 문제의 맥락에서, LSH 알고리즘을 3개의 큰 스텝으로 쪼갤 수 있음.
+
+1. shingling(지붕널펴기, 앞으로 조각으로 부를 것)
+2. 최소값 해싱
+3. locality-sensitive hashing(지역성 민감 해싱)
+
+
+shingling
+이 단계에서, 각 문서를 길이 k의 단어 집합으로 변환시키는 작업을 수행함. 핵심 아이디어는 문서집합 내 각 문서를 k-gram의 집합으로 표현하는 것임.
+
+예를 들어, 당신의 문서가 "Nadal"일 경우, 2-gram으로 쪼개면 {Na,ad,da,al}임. 
+유사한 방식으로, 3-gram은 {Nad,ada,dal}
+비슷한 문서는 더 많은 gram을 공유하고 있을 것임.
+문서 내 단락(paragraph)을 재배열하는 것은 이 gram에 큰 영향을 미치지 않음.
+k개의 값으로는 보통 8-10이 일반적으로 사용됨. 작은 k는 많은 조각을 만들어 낼 것이고, 이들은 대부분의 문서에서 중복으로 등장할 것임. 이는 문서를 구별하는 데 나쁘다고 할 수 있음.
+
+자카드 계수
+우리는 각 문서의, 조각으로 이루어진 표현을 구했음. 이제 각 문서간의 유사도를 측정할 척도가 필요함.
+자카드 계수를 사용 가능. 문서 A와 B 사이의 자카드 계수는, |A 교집합 B| / |A 합집합 B| 로 구할 수있음.
+이는 intersection over union (IOU)로 알려져 있기도 함.
+A: "Nadal", B:"Nadia"일 때, 2조각 표현은
+A: {Na, ad,da,al} 그리고 B: {Na,ad,di,ia}임.
+
+자카드 계수는 2/6이 나옴. 
+공통 조각이 많을수록 자카드 계수는 커지고, 문서들이 유사한 것을 의미하게 됨.
+이제 다뤄야할 두 개의 큰 문제를 이야기해보자.
+
+시간 복잡도
+여기서 멈출 수 있다고 생각할지도 모름. 그러나 확장성을 생각해보면, 이는 이대로 작동 안될것.
+n개 문서의 집합에서, n*(n-1)/2 비교를 수행해야되고, 이는 O(n²) 시간 복잡도를 가짐.
+1백만개의 문서를 가졌을 때, 비교의 횟수는 5*10¹¹가 됨. 이는 전혀 scalable하지 않음!
+
+공간 복잡도
+문서 행렬은 sparse matrix로, 이를 모두 저장하는 것은 큰 메모리 오버헤드가 될 것임. 이를 해결하는 방법은 해싱임.
+
+해싱
+해싱의 아이디어는 각 문서를 해싱 함수 H를 사용해 작은 기호로 바꾸는 것임. 우리의 코퍼스 안에 한 문서가 d로 표시된다고 해보자. 그러면,
+- H(d)는 기호로써, 메모리에 들어갈 만큼 작음.
+- d1,d2의 유사도가 높으면 P(H(d1)==H(d2))도 높음
+- d1,d2의 유사도가 낮으면 P(H(d1)==H(d2))도 낮음
+
+해싱함수의 선택은 우리가 사용하는 유사도 측도에 단단히 연결되어 있음. 
+자카드 유사도에 대해서는 min-hashing 함수가 적절함.
+
+Min-hashing 함수
+이 부분이 가장 중요하고 마술같은 부분이므로, 주목!
+1단계: 문서 조각 행렬의 행 인덱스의 무작위 순열(random permutation) (π).
+2단계: 해시 함수는 (순열된 순서의) column C가 1인 첫번째 행의 인덱스임. 이를 여러번 시행해 (다른 순열을 사용) 한 열의 기호를 생성함.
+
+Min-hashing 함수의 특성
+이 기호들의 유사도는 그들이 동의하는 min-hash 함수(행들)의 일부분임. 
+따라서 C1과 C3에 대한 기호의 유사도는 2/3임. (1번째와 3번째 행이 동일하므로)
+
+
+두 기호의 기대된 유사도는 열들의 자카드 유사도와 동일함.
+기호들이 더 길수록, 에러가 줄어듦.
+
+
+아래 예시에서 이를 어느 정도 볼 수 있음. 길이 3의 기호만을 가지고 있으므로 차이가 있음.
+그러나 길이를 늘리면 두 유사도는 더 가까워질 것임.
+
+따라서 min-hashing을 사용하는 것은 sparseness를 제거함으로써 공간 복잡도의 문제를 해결하고, 동시에 유사도를 보존함.
+실제 활용에서는, 인덱스에 대한 순열을 만드는 트릭이 있음. 이는 비디오의 15:52에 나옴.
+https://www.youtube.com/watch?v=96WOGPUgMfw
+
+
+Locality-sensitive hashing
+목표: 최소 t의 자카드 유사도를 갖는 문서 찾기
+LSH의 일반적인 아이디어는 2개의 문서의 기호들을 넣는다면, 이 두 문서가 후보군 쌍을 만드는지 혹은 그렇지 않은지(즉, 유사도가 threshold t보다 크다)를 알려주는 알고리즘을 찾는 것임.
+
+원 문서들 간의 자카드 유사도 대신 기호들의 유사도를 취하고 있음을 기억하라.
+특히 min-hash 기호 행렬은: 
+- 다양한 hash 함수를 사용해 기호 행렬 M의 열을 hash하라.
+- 만약 두 문서가 같은 버킷로 최소 하나의 해시 함수에 들어간다면 이 두 문서를 후보군 쌍으로 사용
+이제 문제는, 어떻게 다른 해시 함수를 만들어 낼 것이느냐 하는 것임. 여기서 band partition을 수행함.
+
+
+band partition
+알고리즘은 다음과 같음:
+기호 행렬을 b개의 밴드로 나누고, 각 밴드는 r개의 행을 가짐.
+각 밴드에 대해, 각 칼럼의 부분을 해시해 k개의 버킷으로 구성된 해시 테이블로 연결
+
+
+
+
+Band partition
+Here is the algorithm:
+Divide the signature matrix into b bands, each band having r rows
+For each band, hash its portion of each column to a hash table with k buckets
+Candidate column pairs are those that hash to the same bucket for at least 1 band
+Tune b and r to catch most similar pairs but few non similar pairs
+There are few considerations here. Ideally for each band we want to take k to be equal to all possible combinations of values that a column can take within a band. This will be equivalent to identity matching. But in this way k will be a huge number which is computationally infeasible. For ex: If for a band we have 5 rows in it. Now if the elements in the signature are 32 bit integers then k in this case will be (2³²)⁵ ~ 1.4615016e+48. You can see what’s the problem here. Normally k is taken around 1 million.
+The idea is that if 2 documents are similar then they will will appear as candidate pair in at least one of the bands.
+
+
+Choice of b & r
+
+If we take b large i.e more number of hash functions, then we reduce r as b*r is a constant (number of rows in signature matrix). Intuitively it means that we’re increasing the probability of finding a candidate pair. This case is equivalent to taking a small t (similarity threshold)
+Let’s say your signature matrix has 100 rows. Consider 2 cases:
+b1 = 10 → r = 10
+b2 = 20 → r = 5
+In 2nd case, there is higher chance for 2 documents to appear in same bucket at least once as they have more opportunities 
+(20 vs 10) and fewer elements of the signature are getting compared (5 vs 10).
+
+
+Higher b implies lower similarity threshold (higher false positives) and lower b implies higher similarity threshold (higher false negatives)
+Let’s try to understand this through an example.
+Setup:
+100k documents stored as signature of length 100
+Signature matrix: 100*100000
+Brute force comparison of signatures will result in 100C2 comparisons = 5 billion (quite a lot!)
+Let’s take b = 20 → r = 5
+similarity threshold (t) : 80%
+We want 2 documents (D1 & D2) with 80% similarity to be hashed in the same bucket for at least one of the 20 bands.
+P(D1 & D2 identical in a particular band) = (0.8)⁵ = 0.328
+P(D1 & D2 are not similar in all 20 bands) = (1–0.328)^20 = 0.00035
+This means in this scenario we have ~.035% chance of a false negative @ 80% similar documents.
+Also we want 2 documents (D3 & D4) with 30% similarity to be not hashed in the same bucket for any of the 20 bands (threshold = 80%).
+P(D3 & D4 identical in a particular band) = (0.3)⁵ = 0.00243
+P(D3 & D4 are similar in at least one of the 20 bands) = 1 — (1–0.00243)^20 = 0.0474
+This means in this scenario we have ~4.74% chance of a false positive @ 30% similar documents.
+So we can see that we have some false positives and few false negatives. These proportion will vary with choice of b and r.
+What we want here is something like below. If we have 2 documents which have similarity greater than the threshold then probability of them sharing the same bucket in at least one of the bands should be 1 else 0.
+
+Worst case will be if we have b = number of rows in signature matrix as shown below.
+
+Generalised case for any b and r is shown below.
+
+
+Choose b and r to get the best S-curve i.e minimum false negative and false positive rate
+
+
+
+LSH summary
+Tune M, b, r to get almost all document pairs with similar signatures, but eliminate most pairs that do not have similar signatures
+Check in main memory that candidate pairs really do have similar signatures
+Conclusion
+I hope that you have a good understanding of this powerful algorithm and how it reduces the search time. You can imagine how LSH can be applicable to literally any kind of data and how much it’s relevant in today’s world of big data.
+To read more on the code implementation of LSH, checkout this article. https://santhoshhari.github.io/Locality-Sensitive-Hashing/
+
+
+
+ 
