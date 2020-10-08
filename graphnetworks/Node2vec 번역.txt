@@ -1,0 +1,751 @@
+[node2vec: Scalable Feature Learning for Networks]
+
+1. Abstract
+Prediction tasks over nodes and edges in networks require careful effort in engineering features used by learning algorithms. 
+Recent research in the broader field of representation learning has led to significant progress in automating prediction by learning the features themselves. 
+네트워크 내의 노드와 엣지에 대한 예측 task는 학습 알고리즘에 의해 사용되는 feature의 engineering에 신중한 노력이 필요함.
+표현 학습의 확대된 영역에서의 최근 연구는 특성(feature)을 모델 스스로 학습함으로써 예측을 자동화하는 데 유의미한 진전을 이끌어 냈음.
+
+However, present feature learning approaches are not expressive enough to capture the diversity of connectivity patterns observed in networks.
+Here we propose node2vec, an algorithmic framework for learning continuous feature representations for nodes in networks. 
+그러나, 현재 특성 학습의 접근법은 네트워크 내에 관측되는 연결 패턴의 다양성을 잡아낼 수 있을만큼 충분히 표현력이 있지 않음. 
+여기서 우리는 node2vec을 제안함. 이는 네트워크 내의 노드들을 위한 연속적인 feature representation을 학습하기 위한 알고리즘적 프레임워크임.
+
+In node2vec, we learn a mapping of nodes to a low-dimensional space of features that maximizes the likelihood of preserving network neighborhoods of nodes. 
+We define a flexible notion of a node’s network neighborhood and design a biased random walk procedure,
+which efficiently explores diverse neighborhoods. 
+node2vec에서는, 노드의 네트워크상 이웃들을 보존하는 우도를 최대화하도록 만드는, feature의 저차원 공간으로의 맵핑을 학습함.
+우리는 노드의 네트워크상 이웃에 대한 유연한 개념을 정의하고, 효율적으로 다양한 이웃들을 탐색하는 편향된 랜덤 워크 절차(biased random walk procedure)를 설계함.
+
+
+Our algorithm generalizes prior work which is based on rigid notions of network neighborhoods, 
+and we argue that the added flexibility in exploring neighborhoods is the key to learning richer representations.
+우리의 알고리즘은 네트워크상 이웃에 대한 견고한 개념들에 기반한 이전의 작업을 일반화하며,
+우리는 이웃 탐색에 대한 추가된 유연성이 더 풍부한 representation을 학습하는 데 핵심적인 역할을 한다고 주장함.
+
+
+We demonstrate the efficacy of node2vec over existing state-ofthe-art techniques on multi-label classification and link prediction
+in several real-world networks from diverse domains. 
+Taken together, our work represents a new way for efficiently learning stateof-the-art task-independent representations in complex networks.
+다양한 도메인의 몇몇 실세계 네트워크의 다중 라벨 분류 문제 및 링크 예측 문제에서, 
+현존 SOTA 알고리즘에 비교한 node2vec의 효율성을 보이려 함.
+정리하자면, 우리의 작업은 복잡한 네트워크에서 SOTA의 task 독립적인 representation을 효율적으로 학습하는 새로운 방법을 보여줌.
+
+
+
+2. DISCUSSION AND CONCLUSION
+In this paper, we studied feature learning in networks as a search based optimization problem. This perspective gives us multiple advantages. 
+It can explain classic search strategies on the basis of the exploration-exploitation trade-off. 
+이 논문에서, 네트워크 내에서의 feature 학습을 검색 기반 최적화 문제로써 연구하였음. 이 관점은 여러 이점을 가져다 줌.
+고전적인 탐색 전략을 탐색-활용 trade-off 기반으로 설명함.
+
+Additionally, it provides a degree of interpretability to the learned representations when applied for a prediction task. 
+For instance, we observed that BFS can explore only limited neighborhoods. 
+추가적으로, 예측 task에 적용되었을 때 학습된 representation에 대한 설명가능성의 정도를 제공함.
+예를 들어, BFS 알고리즘이 오직 제한된 이웃들만 탐색할 수 있음을 관측하였음.
+
+This makes BFS suitable for characterizing structural equivalences in network that rely on the immediate local structure of nodes.
+On the other hand, DFS can freely explore network neighborhoods which is important in discovering homophilous communities at the cost of high variance.
+Both DeepWalk and LINE can be seen as rigid search strategies over networks. 
+이는 BFS 알고리즘을 노드의 지역적, 직접적 구조에 의존하는 네트워크상의 구조적으로 동일한 대상을 특성화하는 데 적합하게 해줌.
+반면, DFS 알고리즘은 네트워크 이웃들을 자유롭게 탐색함. 이는 고 분산의 비용을 감수하며 동종선호적인 커뮤니티를 발견해내는 데 중요함.
+DeepWalk와 Line은 각각 네트워크에 걸쳐 탐색하는 확고한 전략으로 간주될 수 있음.
+
+DeepWalk [24] proposes search using uniform random walks. 
+The obvious limitation with such a strategy is that it gives us no control over the explored neighborhoods. 
+LINE [28] proposes primarily a breadth-first strategy, sampling nodes and optimizing the likelihood independently over only 1-hop and 2-hop neighbors. 
+DeepWalk는 균일한 random walk를 사용한 탐색을 제안했음. 이 접근이 갖는 확실한 한계는 탐색된 이웃에 대해 어떠한 통제도 가하지 않는다는 것임.
+LiNE은 넓이 우선 전략을 최우선적으로 제안함. 이는 노드를 샘플링하여 오직 1-hop 혹은 2-hop 이웃에 대해서만 독립적인 우도를 최적화하는 방식을 취함.
+
+The effect of such an exploration is easier to characterize, but it is restrictive and provides no flexibility in exploring nodes at further depths. 
+In contrast, the search strategy in node2vec is both flexible and controllable exploring network neighborhoods through parameters p and q. 
+이러한 탐색은 특징을 잡아내기 더욱 편리하다는 효과가 있지만, 이는 제한적이며 노드를 더욱 깊이 탐색하는 데 유연성을 제공하지 못함.
+반면에, node2vec의 탐색 전략은 유연하고, 네트워크상 이웃을 탐색하는 데 통제 가능성을 제공함(이는 parameter p, q에 통해 달성됨)
+
+While these search parameters have intuitive interpretations, we obtain best results on complex networks when we can learn them directly from data. 
+이러한 탐색 parameter들이 직관적인 해석을 갖는 반면에, 데이터로부터 직접적으로 parameter를 학습할 수 있을 때 복잡한 네트워크에 대해 최선의 결과를 얻음.
+
+From a practical standpoint, node2vec is scalable and robust to perturbations. 
+We showed how extensions of node embeddings to link prediction outperform popular heuristic scores designed specifically for this task. 
+실용적인 관점에서, node2ved은 확장 가능하고 변화에 강건함.
+노드 임베딩의 링크 예측에 대한 확장이 기존의 유명한, 특히 링크 예측에 대해 설계된 휴리스틱 점수를 얼마나 개선하는지를 보여주었음.
+
+Our method permits additional binary operators beyond those listed in Table 1. 
+As a future work, we would like to explore the reasons behind the success of Hadamard operator over others, 
+as well as establish interpretable equivalence notions for edges based on the search parameters. 
+우리의 방법론은 추가적인 table1에서 보인 이항 연산 이외의 이항 연산도 가능하게 함.
+후속 작업으로써, 아다마르 연산이 왜 성공하는지에 대한 이유를 탐색하고자 함. 또한, 엣지들에 대한 탐색 parameter 기반의 해석 가능한 동일 대상에 대한 개념을 정립하고자 함.
+
+
+Future extensions of node2vec could involve networks with special structure such as heterogeneous information networks, 
+networks with explicit domain features for nodes and edges and signed-edge networks. 
+node2vec의 추후 연장은 이질적 정보 네트워크, signed-edge 네트워크, 명시적 도메인 특성을 노드와 엣지에 갖는 네트워크 등과 같은 특별한 구조를 가진 네트워크를 포함함. 
+
+Continuous feature representations are the backbone of many deep learning algorithms, 
+and it would be interesting to use node2vec representations as building blocks for end-to-end deep learning on graphs.
+연속적인 feature representation은 많은 딥러닝 알고리즘의 중추(backbone)임. 
+node2vec representation을 사용해 end-to-end 그래프 딥러닝을 위한 블록으로 사용하는 것은 흥미로울 것임.
+
+
+3. Intoduction
+Many important tasks in network analysis involve predictions over nodes and edges. 
+네트워크 분석의 여러 중요한 작업은 노드와 엣지에 대한 예측임.
+
+In a typical node classification task, we are interested in predicting the most probable labels of nodes in a network [33]. 
+우리는 전형적인 노드 분류 task에서, 네트워크 내 노드의 가장 가능성 있는 라벨을 예측하는 것이 관심이 있음.
+
+For example, in a social network, we might be interested in predicting interests of users, 
+or in a protein-protein interaction network we might be interested in predicting functional labels of proteins [25, 37]. 
+가령, 소셜 네트워크에서, 유저의 흥미를 예측하는 일에 관심이 있을 수 있고, 단백질간 상호작용 네트워크에서 단백질의 기능적 라벨을 예측하는 작업에 관심이 있을 수 있음.
+
+Similarly, in link prediction, we wish to predict whether a pair of nodes in a network should have an edge connecting them [18]. 
+비슷하게, 링크 예측에서, 네트워크 내의 노드 쌍이 그 사이를 연결하는 엣지를 가져야할지 말아야할지를 예측하고자 함.
+
+Link prediction is useful in a wide variety of domains; 
+링크 예측은 넓고 다양한 종류의 도메인에서 유용함.
+
+for instance, in genomics, it helps us discover novel interactions between genes, and in social networks, it can identify real-world friends [2, 34].
+예를 들어, 유전학에서, 유전자간의 새로운 상호작용을 발견하도록 도울 수 있고, 소셜 네트워크에서, 실세계의 친구관계를 찾아낼 수 있음.
+
+Any supervised machine learning algorithm requires a set of informative, discriminating, and independent features. 
+모든 지도학습 알고리즘은 정보를 담은, 분별력있는, 독립적인 feature(특성)을 요구함.
+
+In prediction problems on networks this means that one has to construct a feature vector representation for the nodes and edges. 
+네트워크상 예측 문제에서 이는 노드와 엣지에 대한 feature vector representation을 구성해야 한다는 것을 의미함.
+
+A typical solution involves hand-engineering domain-specific features based on expert knowledge. 
+전형적인 해결책으로는, 수작업으로 엔지니어링한 도메인 특화된 특성을 전문가 지식에 의거하여 포함시키는 것임.
+
+Even if one discounts the tedious effort required for feature engineering, 
+such features are usually designed for specific tasks and do not generalize across different prediction tasks.
+비록 피처 엔지니어링을 위한 이 지루한 작업을 깎아내리지만, 이러한 feature들은 보통 특정 task을 위해 설계되며 다른 예측 task 작업들에 걸쳐 일반화되지 않음.
+
+An alternative approach is to learn feature representations by solving an optimization problem [4]. 
+한 대체적인 접근은 feature representation을 최적화 문제를 해결하며 학습하는 것임.
+
+The challenge in feature learning is defining an objective function, 
+which involves a trade-off in balancing computational efficiency and predictive accuracy. 
+feature 학습을 위해 어려운 점은 목표 함수를 정의하는 것인데, 계산 효율성과 예측 정확성 간의 균형을 맞추는 것을 포함함.
+
+On one side of the spectrum, one could directly aim to find a feature representation that optimizes performance of a downstream prediction task. 
+다양한 방법 중 하나로, downstream 예측 작업의 성능을 최적화하는 feature representation을 찾는 것을 직접적으로 목표로 두는 방법이 있음.
+
+While this supervised procedure results in good accuracy, 
+it comes at the cost of high training time complexity due to a blowup in the number of parameters that need to be estimated. 
+이 지도학습적 절차가 좋은 정확도를 낳는 반면에, 높은 학습 시간 복잡도를 감수해야함. 추정되어야하는 parameter의 수가 매우 크기 때문임.
+
+
+At the other extreme, the objective function can be defined to be independent of the downstream prediction task 
+and the representations can be learned in a purely unsupervised way. 
+다른 극단으로는, 목표 함수는 downstream 예측 작업과는 독립적으로 정의될 수 있음. representation은 순수히 비지도적 방식으로 학습됨.
+
+This makes the optimization computationally efficient and with a carefully designed objective, 
+it results in task-independent features that closely match task-specific approaches in predictive accuracy [21, 23].
+이는 최적화를 계산적으로 효율적으로 만들고, 신중하게 설계된 목표 함수를 사용해 task 독립적인 feature를 만들어 낼 수 있음. 이 feature들은 task-specific 접근의 예측 성능을 근접하게 맞출 수 있음.
+
+However, current techniques fail to satisfactorily define and optimize a reasonable objective required for scalable unsupervised feature learning in networks. 
+그러나, 현재의 기법들은 네트워크의 확장가능한 비지도 feature 학습에서 합리적인 목표 함수를 만족스럽게 정의하고 최적화하는 데 실패함.
+
+Classic approaches based on linear and non-linear dimensionality reduction techniques such as Principal Component Analysis, 
+Multi-Dimensional Scaling and their extensions [3, 27, 30, 35] optimize an objective that transforms a representative data matrix of the network 
+such that it maximizes the variance of the data representation. 
+PCA, Multi-Dimensional Scaling과 그들의 확장과 같은 선형 및 비선형 차원 축소 기법에 기반한 고전적인 접근은 
+네트워크의 표현적 data matrix를 data representation의 분산을 최대화하도록 하는 목표 함수를 최적화함.
+
+
+Consequently, these approaches invariably involve eigendecomposition of the appropriate data matrix which is expensive for large real-world networks. 
+따라서, 이러한 접근법들은 언제나 적절한 data matrix의 고유값 분해를 포함하는데, 이는 거대한 실세계 네트워크에는 (계산상) 비싼 작업임.
+
+
+Moreover, the resulting latent representations give poor performance on various prediction tasks over networks.
+더욱이, 결과로 얻어지는 잠재 표현은 다양한 네트워크 예측 task에 좋지 않은 성능을 보임.
+
+Alternatively, we can design an objective that seeks to preserve local neighborhoods of nodes. 
+대체적으로, 노드의 지역적 이웃을 보존하는 것을 목표로하는 목적함수를 설계할 수 있음.
+
+The objective can be efficiently optimized using stochastic gradient descent (SGD) akin to backpropogation on just single hidden-layer feedforward neural networks.
+이 목적함수는 오직 한개의 히든 레이어 feed-forward 뉴럴 네트워크에 시행하는 역전파 알고리즘과 유사한 SGD를 사용함으로써 최적화될 수 있음.
+
+Recent attempts in this direction [24, 28] propose efficient algorithms but rely on a rigid notion of a network neighborhood, 
+which results in these approaches being largely insensitive to connectivity patterns unique to networks. 
+이러한 방향으로의 최근 시도는 효율적인 알고리즘을 제안하지만, 네트워크 이웃에 대한 확고한 개념에 의존하며,
+이는 이러한 접근들이 네트워크에 unique한 연결 패턴들에 대해 크게 둔감한 성질을 갖게 함.
+
+Specifically, nodes in networks could be organized based on communities they belong to (i.e., homophily); 
+특히, 네트워크 내의 노드들은 그들이 속한 커뮤니티에 기반해(즉, 동종선호적으로) 구성될 수 있음.
+
+in other cases, the organization could be based on the structural roles of nodes in the network (i.e., structural equivalence) [7, 10, 36]. 
+그 외의 경우로는, 조직은 네트워크 내의 노드들의 구조적인 역할에 기반할 수 있음(즉, 구조적 동일물).
+
+For instance, in Figure 1, we observe nodes u and s1 belonging to the same tightly knit community of nodes,
+예를 들어, 그림 1에서, 노드 u와 s_1은 같은 밀접히 맺어진 노드들의 커뮤니티에 속해있음을 관찰할 수 있음.
+
+while the nodes u and s6 in the two distinct communities share the same structural role of a hub node. 
+반면에 노드 두 구별되는 커뮤니티 내의 u와 s_6은 허브 노드라는 같은 구조적인 역할을 공유함.
+
+Real-world networks commonly exhibit a mixture of such equivalences. 
+실세계 네트워크는 공통적으로 이러한 동질물들의 혼합된 형태를 보임.
+
+Thus, it is essential to allow for a flexible algorithm that can learn node representations obeying both principles: 
+그러므로, 다음 두 원칙을 모두 따르는 노드 representation를 학습할 수 있는 유연한 알고리즘을 고려하는 것이 매우 중요함.
+
+ability to learn representations that embed nodes from the same network community closely together, 
+같은 네트워크 커뮤니티에서 나온 노드들을 밀접하게 임베딩하는 표현을 학습하는 능력,
+
+as well as to learn representations where nodes that share similar roles have similar embeddings. 
+그리고 비슷한 역할을 공유하는 노드들이 비슷한 임베딩을 가지도록 표현을 학습하는 능력.
+
+This would allow feature learning algorithms to generalize across a wide variety of domains and prediction tasks. 
+이는 feature 학습 알고리즘이 넓은 종류의 도메인과 예측 task에 걸쳐 일반화할 수 있도록 할 것임.
+
+Present work. 
+현재 연구.
+
+We propose node2vec, a semi-supervised algorithm for scalable feature learning in networks. 
+우리는 node2vec을 제안함. 이는 네트워크의 확장가능한 feature 학습을 위한 semi-supervised 알고리즘임.
+
+We optimize a custom graph-based objective function using SGD motivated by prior work on natural language processing [21]. 
+custom 그래프 기반 목적 함수를 SGD를 사용해 최적화했음. 이는 자연어처리 분야의 기존 작업(word2vec)에 영감을 얻음.
+
+Intuitively, our approach returns feature representations 
+that maximize the likelihood of preserving network neighborhoods of nodes in a d-dimensional feature space. 
+직관적으로, 우리의 접근은 d-차원 feature space 내에 노드들의 네트워크상 이웃을 보존하는 가능성을 극대화하는 feature representation을 반환함.
+
+We use a 2nd order random walk approach to generate (sample) network neighborhoods for nodes.
+우리는 노드들의 네트워크상 이웃을 생성(표집)하는 2계 random walk 접근법을 사용함.
+
+Our key contribution is in defining a flexible notion of a node’s network neighborhood. 
+우리의 핵심 공헌은 노드의 네트워크상 이웃에 대한 유연한 개념을 정의함에 있음.
+
+By choosing an appropriate notion of a neighborhood, node2vec can learn representations 
+that organize nodes based on their network roles and/or communities they belong to. 
+이웃의 적절한 개념을 선택함으로써, node2vec은 그들의 네트워크상 역할과(혹은) 그들이 포함된 커뮤니티를 형성하는 표현을 학습할 수 있음.
+
+
+We achieve this by developing a family of biased random walks, which efficiently explore diverse neighborhoods of a given node. 
+우리는 일군의 편향된 랜덤 워크(biased random walks)를 개발함으로써 성취했는데, 이는 주어진 한 노드의 다양한 이웃들을 효율적으로 탐색함.
+
+The resulting algorithm is flexible, giving us control over the search space through tunable parameters, 
+in contrast to rigid search procedures in prior work [24, 28]. 
+결과적으로 얻어진 알고리즘은 유연하고, 조정 가능한 파라미터를 통해 탐색 공간을 통제할 수 있게 해줌. 이는 기존 연구에서의 확정된 탐색 절차와는 반대되는 내용임.
+
+Consequently, our method generalizes prior work and can model the full spectrum of equivalences observed in networks. 
+따라서, 우리의 방법론은 기존 연구를 일반화하고 네트워크 내에 관측되는 동질물에 대한 모든 스펙트럼을 모델링할 수 있음.
+
+The parameters governing our search strategy have an intuitive interpretation and bias the walk towards different network exploration strategies. 
+우리의 탐색 전략을 통제하는 파라미터들은 직관적인 해석을 가지고 있으며, 다른 네트워크 탐색 전략에 대한 walk에 편향을 가함.
+
+These parameters can also be learned directly using a tiny fraction of labeled data in a semisupervised fashion.
+이러한 파라미터들은 또한 semi-supervised 방식으로, 아주 소수의 라벨 데이터만을 사용함으로써도 직접적으로 학습될 수 있음.
+
+We also show how feature representations of individual nodes can be extended to pairs of nodes (i.e., edges). 
+우리는 또한 각 개별 노드들의 feature representation이 노드의 쌍(즉, 엣지)에 확장되는지를 보임. 
+
+In order to generate feature representations of edges, 
+we compose the learned feature representations of the individual nodes using simple binary operators. 
+엣지의 feature representation을 생성하기 위해, 우리는 학습된 개별 노드의 학습된 feature representation을 단순한 이항 연산으로 합성했음.
+
+This compositionality lends node2vec to prediction tasks involving nodes as well as edges.
+이러한 합성성은 엣지 뿐만 아니라 노드를 포함한 예측 task에 node2vec를 사용할 수 있게함.
+
+Our experiments focus on two common prediction tasks in networks: a multi-label classification task, 
+where every node is assigned one or more class labels and a link prediction task, 
+where we predict the existence of an edge given a pair of nodes. 
+
+우리의 실험은 네트워크 상의 두 공통된 예측 task에 집중함: multi-label 분류 문제(모든 노드가 1개 혹은 그 이상의 클래스 라벨에 할당된 경우), 링크 예측 문제(한 쌍의 노드가 주어졌을 때, 엣지의 존재를 예측하는 문제) 
+
+We contrast the performance of node2vec with state-of-the-art feature learning algorithms [24, 28]. 
+우리는 node2ved의 성능을 SOTA feature 학습 알고리즘과 대조함.
+
+We experiment with several real-world networks from diverse domains, such as social networks, information networks, as well as networks from systems biology. 
+다양한 도메인의 여러 실세계 네트워크를 활용해 실험했음. 여기에는 소셜 네트워크, 정보 네트워크, 생물학 시스템의 네트워크 등이 포함됨.
+
+Experiments demonstrate that node2vec outperforms state-of-the-art methods by up to 26.7% on multi-label classification  and up to 12.6% on link prediction. 
+실험 결과 node2vec이 SOTA 방법론은 multi-label 분류에서 최대 26.7% 수준으로 앞질렀고, 링크 예측에서 12.6%를 앞질렀음.
+
+The algorithm shows competitive performance with even 10% labeled data and is also robust to perturbations in the form of noisy or missing edges. 
+이 알고리즘은 심지어 10%의 라벨 데이터만을 가지고도 강력한 성능을 보였음. 또한 결측 엣지 혹은 노이즈의 형태의 변동(perturbation)에도 강건함.
+
+Computationally, the major phases of node2vec are trivially parallelizable, and it can scale to large networks with millions of nodes in a few hours.
+계산적으로, node2vec의 주요 단계는 간단히 병렬화될 수 있으며, 이는 수백만의 노드를 가진 거대한 네트워크에도 수시간 내로 확장할 수 있음.
+
+Overall our paper makes the following contributions:
+전반적으로, 우리의 논문은 다음 기여를 이루었음.
+
+	1. We propose node2vec, an efficient scalable algorithm for feature learning in networks that efficiently optimizes a novel network-aware, 
+	neighborhood preserving objective using SGD.
+	1. 우리는 node2vec을 제안함. 이는 네트워크의 feature 학습을 위한 효율적이고 확장가능한 알고리즘으로, 네트워크를 고려한 새로운 이웃 보존 목적함수를 SGD 방식을 활용해 효율적으로 최적화함.
+	
+	2. We show how node2vec is in accordance with established principles in network science, 
+	providing flexibility in discovering representations conforming to different equivalences.
+	2. 우리는 node2vec이 다른 동질물들에 부합하는 representation을 발견하는 데 유연성을 제공하며 네트워크 과학에서의 정립된 원칙들과 부합한지를 보여줌. 
+	
+	3. We extend node2vec and other feature learning methods based on neighborhood preserving objectives, 
+	from nodes to pairs of nodes for edge-based prediction tasks.
+	3. 우리는 이웃 보존 목적함수에 기반한 node2vec과 다른 feature 학습 방법론의 범위를, 노드에서 노드 쌍으로 확장함. 이는 엣지 기반 예측 작업을 위함.
+	
+	4. We empirically evaluate node2vec for multi-label classification and link prediction on several real-world datasets.
+	4. 우리는 여러 실세계 데이터셋에 대해 multi-label 분류와 링크 예측 문제 관점에서 node2vec을 평가하였음.
+	
+The rest of the paper is structured as follows. In Section 2, we briefly survey related work in feature learning for networks. 
+나머지 논문은 다음과 같은 내용으로 구성됨. 2번째 섹션에서, 우리는 네트워크의 관련된 최근 연구에 대해 간단하게 조사함.
+
+We present the technical details for feature learning using node2vec in Section 3. 
+우리는 node2vec을 사용한 feature 학습의 기술적인 디테일을 섹션 3에서 보임.
+
+In Section 4, we empirically evaluate node2vec on prediction tasks over nodes and edges on various real-world networks 
+and assess the parameter sensitivity, perturbation analysis, and scalability aspects of our algorithm. 
+섹션 4에서, 우리는 경험적으로 node2vec을 다양한 실세계 네트워크의 노드와 엣지에 대한 예측 task에 대해 평가함.
+또한 파라미터 민감성, 변동성 분석, 확장가능성 측면을 살펴봄.
+
+We conclude with a discussion of the node2vec framework and highlight some promising directions for future work in Section 5. 
+Datasets and a reference implementation of node2vec are available on the project page: http://snap.stanford.edu/node2vec.
+node2vec 프레임워크의 논의를 섹션 5에서 마무리 지으며, 미래 연구에 대한 유망한 방향을 강조함. 
+
+
+
+
+4. RELATED WORK
+4. 유관 연구
+
+Feature engineering has been extensively studied by the machine learning community under various headings. 
+feature 엔지니어링은 머신러닝 커뮤니티에 의해 다양한 주제 하에 광범위하게 연구되어 왔음. 
+
+In networks, the conventional paradigm for generating features for nodes is 
+based on feature extraction techniques which typically involve some seed hand-crafted features based on network properties [8, 11]. 
+네트워크에서, 노드 feature 생성을 위한 기존의 패러다임은 네트워크 특성에 기반한 기초적인 수작업적 feature를 전형적으로 포함한 feature 추출 기법에 기반함.
+
+In contrast, our goal is to automate the whole process by casting feature extraction as a representation learning problem 
+in which case we do not require any hand-engineered features.
+반면에, 우리의 목표는 전체 프로세스를 feature 추출을 표현학습 문제로 처리함으로써 자동화하는 것임. 이렇게 되면 수작업으로 엔지니어링한 피처를 더이상 요구하지 않음.
+
+Unsupervised feature learning approaches typically exploit the spectral properties of various matrix representations of graphs, 
+especially the Laplacian and the adjacency matrices. 
+비지도적 feature 학습 접근법은 전형적으로 그래프의 다양한 matrix representation의 스펙트럼 특성을 활용함. 특히 라플라시안과 인접 행렬(adjacency matrix)를 사용.
+
+Under this linear algebra perspective, these methods can be viewed as dimensionality reduction techniques. 
+이러한 선형대수적 관점에서, 이러한 방법론은 차원 축소 기법으로 볼 수 있음.
+
+Several linear (e.g., PCA) and non-linear (e.g., IsoMap) dimensionality reduction techniques have been proposed [3, 27, 30, 35].
+다양한 선형(예를 들어 PCA) 및 비선형(예를 들어 IsoMap) 차원축소 기법이 제안되었음.
+
+These methods suffer from both computational and statistical performance drawbacks. 
+이러한 방법론은 계산적이고 통계적인 성능 한계에 시달림.
+
+In terms of computational efficiency,  
+eigendecomposition of a data matrix is expensive unless the solution quality is significantly compromised with approximations, 
+and hence, these methods are hard to scale to large networks. 
+계산적 효율성 측면에서는, 데이터 matrix의 고유값 분해는 근사 계산을 통해 해의 품질이 손상되지 않고서는 비용이 큼. 그리고 따라서, 이러한 방법들은 큰 네트워크에서 확장하기 어려움.
+
+Secondly, these methods optimize for objectives that are not robust to the diverse patterns observed in networks 
+(such as homophily and structural equivalence) and make assumptions about the relationship between the underlying network structure and the prediction task. 
+두번째로, 이러한 방법론은 네트워크에서 관찰되는 다양한 패턴들(동종선호성과 구조적 동질물 같은)에 강건하지 않은 목표함수를 최적화함. 또한 이러한 방법론은 잠재된 네트워크 구조 및 예측 task 간의 관계에 대해 가정을 둠.
+
+For instance, spectral clustering makes a strong homophily assumption that graph cuts will be useful for classification [29]. 
+예를 들어, 스펙트럼적 군집화는 그래프 분할이 분류에 유용할 것이라는 강력한 동종선호 가정을 취함. 
+
+Such assumptions are reasonable in many scenarios, but unsatisfactory in effectively generalizing across diverse networks.
+이러한 가정은 많은 시나리오에서 합리적이지만, 다양한 네트워크에 걸쳐 효율적으로 일반화할 수 있을만큼 만족스럽지는 않음.
+
+Recent advancements in representational learning for natural language processing opened new ways for feature learning of discrete objects such as words. 
+최근 자연어 처리 분야 내 표현 학습의 진전은 단어와 같은 분절적 객체의 feature 학습하는 데 새로운 방법을 제시했음.
+
+In particular, the Skip-gram model [21] aims to learn continuous feature representations for words by optimizing a neighborhood preserving likelihood objective. 
+특히, skip-gram 모델은 이웃을 보존하는 우도 목적함수를 최적화함으로써 연속적인 단어를 위한 feature representation을 학습하는 것을 목적으로 함.
+
+The algorithm proceeds as follows: It scans over the words of a document, 
+and for every word it aims to embed it such that the word’s features can predict nearby words (i.e., words inside some context window). 
+해당 알고리즘은 다음과 같이 진행됨. 문서의 단어들을 훑고, 각 단어에 대해 해당 단어의 feature를 사용해 근처의(즉, 몇몇 맥락 간격 이내의 단어들) 단어를 예측할 수 있도록 단어를 임베딩 하는 것을 목적으로 함. 
+
+The word feature representations are learned by optmizing the likelihood objective using SGD with negative sampling [22].
+단어 feature representation은 네거티브 샘플링을 활용하여 SGD 방식으로 우도 목적함수를 최적화함으로써 학습됨.
+
+The Skip-gram objective is based on the distributional hypothesis which states that words in similar contexts tend to have similar meanings [9]. 
+skip-gram 목적함수는 비슷한 맥락의 단어들은 비슷한 의미를 갖는 경향이 있다는 분포 가설에 기반함.
+
+That is, similar words tend to appear in similar word neighborhoods.
+즉, 유사한 단어는 비슷한 단어의 이웃에 등장한다는 것.
+
+Inspired by the Skip-gram model, recent research established an analogy for networks by representing a network as a “document” [24, 28]. 
+이 skip-gram 모델에서 착안하여, 최근 연구는 네트워크를 "문서"로 표현함으로써 네트워크에 대한 유추를 만들어 냈음.
+
+The same way as a document is an ordered sequence of words, 
+one could sample sequences of nodes from the underlying network and turn a network into a ordered sequence of nodes. 
+한 문서가 단어의 정렬된 시퀀스인 것처럼, 잠재 네트워크로부터 노드의 시퀀스를 샘플링할 수 있으며 네트워크를 정렬된 노드의 시퀀스로 만들 수 있다는 것.
+
+However, there are many possible sampling strategies for nodes, resulting in different learned feature representations. 
+그러나, 노드에 대한 많은 샘플링 전략이 가능하고, 이는 다른 학습된 feature representation으로 나타나게 됨.
+
+In fact, as we shall show, there is no clear winning sampling strategy that works across all networks and all prediction tasks. 
+사실, 앞으로 보여줄 예정이듯, 모든 예측 task와 모든 네트워크에 잘 작동하는 하나의 명확히 우세한 샘플링 전략은 없음.
+
+This is a major shortcoming of prior work which fail to offer any flexibility in sampling of nodes from a network [24, 28]. 
+이 것이 네트워크에서 노드를 샘플링함에 있어 어떤 유연성도 제공하지 못한다는, 기존 연구의 주된 단점임.
+
+Our algorithm node2vec overcomes this limitation by designing a flexible objective 
+that is not tied to a particular sampling strategy and provides parameters to tune the explored search space (see Section 3).
+우리의 알고리즘 node2vec은 유연한 목적함수를 설계함으로써 이 한계를 극복함. 이 목적함수는 특정 샘플링 전략에 매여있지 않으며, 탐험된 탐색 공간을 조정하는 파라미터를 제공함 (섹션 3을 보라.)
+
+Finally, for both node and edge based prediction tasks, 
+there is a body of recent work for supervised feature learning based on existing and novel graph-specific deep network architectures [15, 16, 17, 31, 39]. 
+마침내, 노드와 엣지 기반 예측 task에서, 현존하는 혹은 새로운 그래프-특정 딥 네트워크 아키텍처에 기반을 둔 지도적 feature 학습 최근 연구의 실체가 있음.
+
+These architectures directly minimize the loss function for a downstream prediction task 
+using several layers of non-linear transformations which results in high accuracy, 
+but at the cost of scalability due to high training time requirements.
+이러한 아키텍처들은 여러 층의 비선형적 변환을 사용해, downstream 예측 task를 위한 손실 함수를 직접적으로 최소화함으로써 높은 정확도를 달성함.
+그러나 긴 학습 시간을 요구하기 때문에 확장성이 떨어짐.
+
+
+3. Feture 학습 프레임워크
+최대 우도 최적화 문제로써 네트워크 내의 feature 학습을 수식화했음. G=(V,E)를 주어진 네트워크라고 할 때, 우리의 분석은 어떤 무방향/유방향, 가중된/비가주된 네트워크에도 일반적임.
+함수 f를 벡터 V에서 d차원 실수공간으로의 맵핑 함수라고 할 때, 이는 노드에서 feature representation으로 맵핑하는 함수임. 이를 우리의 downstream 예측 task를 위해 학습하고자 함.
+여기서 d는 우리의 feature representation의 차원을 나타내는 파라미터임. 동등하게, f는 |V|*d 파라미터의 크기를 갖는 행렬임. 
+이 V 안의 각 모든 소스 노드들에 대해, V의 부분집합 N_S(u)을 이웃 샘플링 전략 S에 의해 생성된 노드 u의 네트워크상 이웃으로 정의함. 
+
+우리는 skip-gram 아키텍처를 네트워크에 확대함으로써 진행함. 
+주어진 노드 u에 대해 이 노드의 feature representation f(u)가 주어졌을 때, 네트워크상 이웃 N_S(u)를 관측할 로그 확률을 최대화하는 목적 함수를 최적화하는 것을 목적으로 함.
+이러한 최적화 문제를 다룰 수 있는 형태로 만들기 위해, 다음 두가지의 표준적인 가정을 취함. 
+
+	- 조건부 독립: 이웃 노드를 관측하는 우도는 출발 노드(source node)의 feature representation이 주어졌을 때 어느 다른 이웃 노드를 발견하는 사건과 독립이라는 가정을 취함으로써 우도를 factorize함.
+	- 피처 공간 내의 대칭성: 출발 노드와 그 이웃 노드는 feature space 내에서 서로에게 대칭적인 효과를 가지고 있다는 가정. 
+		따라서, 모든 출발 노드-이웃 노드 쌍의 조건부 우도를 그들의 feature의 내적에 의해 파라미터화 한 softmax unit으로 모델링함.
+위의 가정들을 통해, 목적함수를 정의함.
+노드별 분할 함수 Z_n은 큰 네트워크에서 계산 비용이 큼. 그래서 네거티브 샘플링을 통해 이를 근사함. 
+목적함수를 f 피처를 정의하는 모델 파라미터에 대해 SGA(Stochastic Gradient Ascent)를 사용해 최적화함.
+
+Feature learning methods based on the Skip-gram architecture have been originally developed in the context of natural language [21].
+skip-gram 아키텍처에 기반한 feature 학습 방법론은 본래 자연어의 맥락에서 개발되었음.
+
+Given the linear nature of text, the notion of a neighborhood can be naturally defined using a sliding window over consecutive words.
+텍스트의 선형적인 특성으로 인해, 이웃의 개념은 자연적으로 연속적인 단어의 일정한 간격을 사용해 정의될 수 있음.
+
+Networks, however, are not linear, and thus a richer notion of a neighborhood is needed. 
+네트워크는, 그러나, 선형적이지 않기 때문에, 좀 더 풍부한 이웃에 대한 개념이 필요함.
+
+To resolve this issue, we propose a randomized procedure that samples many different neighborhoods of a given source node u. 
+이러한 문제를 해결하기 위해, 출발 노드 u가 주어졌을 때 많은 다른 이웃을 샘플링하는 무작위화 된 절차를 제안함.
+
+The neighborhoods NS(u) are not restricted to just immediate neighbors but can have vastly different structures depending on the sampling strategy S.
+이 이웃들 N_S(u)는 단지 직접적인 이웃에만 국한된 것이 아니라, 샘플링 전략 S에 의존하여 막대하게 다른 구조를 가질 수 있음.
+
+
+
+3.1 Classic search strategies
+3.1 고전적인 탐색 전략
+
+We view the problem of sampling neighborhoods of a source node as a form of local search. 
+우리는 소스 노드의 이웃을 샘플링하는 문제를 지역적 탐색의 형태로 보았음.
+
+Figure 1 shows a graph, where given a source node u we aim to generate (sample) its neighborhood NS(u). 
+그림 1은 출발 노드 u가 주어졌을 때 이 것의 이웃 노드 N_S(u)를 생성(샘플링)하고자하는 그래프를 보여줌.
+
+Importantly, to be able to fairly compare different sampling strategies S, 
+we shall constrain the size of the neighborhood set NS to k nodes and then sample multiple sets for a single node u. 
+중요한 것은, 다양한 샘플링 전략 S를 공정하게 비교하기 위해서는 이웃의 집합 N_S의 크기를 k개의 노드로 제약하고, 그리고 나서 한 노드 u에 대한 여러 집합을 샘플링 해야한다는 점임.
+
+
+Generally, there are two extreme sampling strategies for generating neighborhood set(s) NS of k nodes:
+일반적으로, k개 노드로 구성된 이웃 노드 집합(들) N_S를 생성하는 두 극단적인 샘플링 전략이 있음.
+
+	• Breadth-first Sampling (BFS) The neighborhood NS is restricted to nodes which are immediate neighbors of the source.
+	For example, in Figure 1 for a neighborhood of size k = 3, BFS samples nodes s1, s2, s3.
+	- 넓이 우선 샘플링 (BFS): 이웃 노드 N_S는 출처 노드의 직접적인 이웃인 노드들로 제한됨. 예를 들어, 그림 1에서 k개의 이웃 노드를 뽑으면 BFS는 s1,s2,s3를 뽑음.
+	
+	• Depth-first Sampling (DFS) The neighborhood consists of nodes sequentially sampled at increasing distances from the source node. 
+	In Figure 1, DFS samples s4, s5, s6.
+	- 깊이 우선 샘플링(DFS): 이웃 노드는 출처 노드로부터 거리를 늘려나가며 연속적으로 샘플링 된 노드들로 구성됨. 그림 1에서는 s4,s5,s6이 DFS로 샘플링된 노드가 됨.
+
+The breadth-first and depth-first sampling represent extreme scenarios in terms of the search space 
+they explore leading to interesting implications on the learned representations.
+넓이 우선과 깊이 우선 샘플링은 그들이 탐색하는 탐색 공간의 관점에서 각각 극단적인 시나리오를 나타내는데, 이는 학습된 representation에 대해 흥미로운 암시를 가짐.
+
+
+In particular, prediction tasks on nodes in networks often shuttle between two kinds of similarities: homophily and structural equivalence [12]. 
+특히, 네트워크 내 노드에 대한 예측 task는 종종 두 종류의 유사성 사이를 오감: 동종선호성과 구조적 동질성.
+
+Under the homophily hypothesis [7, 36] nodes that are highly interconnected 
+and belong to similar network clusters or communities should be embedded closely together 
+(e.g.,nodes s1 and u in Figure 1 belong to the same network community). 
+동종선호 가정 하에서 강하게 상호연결되고 비슷한 네트워크 군집/커뮤니티에 소속된 노드들은 서로 가깝게 임베딩 되어야함.
+(예를 들어, 노드 s1과 u는 같은 네트워크 커뮤니티 내에 속해 있음.)
+
+In contrast, under the structural equivalence hypothesis [10] nodes that have similar structural roles in networks 
+should be embedded closely together (e.g., nodes u and s6 in Figure 1 act as hubs of their corresponding communities). 
+반면에, 구조적 동질성 가정에서는 네트워크 내 비슷한 구조적 역할을 갖는 노드들은 서로 가깝게 임베딩 되어야 함.
+(예를 들어, 노드 u와 s6은 각각 그들의 커뮤니티에서 허브로 역할해야 함.)
+
+
+Importantly, unlike homophily, structural equivalence does not emphasize connectivity; 
+nodes could be far apart in the network and still have the same structural role. 
+중요한 것은, 동종선호와는 달리 구조적 동질성은 연결성을 강조하지 않는다는 것임.
+노드들은 네트워크 내에서 멀리 떨어질 수 있으나 같은 구조적 역할을 가질 수 있음.
+
+In real-world, these equivalence notions are not exclusive; 
+실세계에서, 이러한 동질성의 개념들(동종선호성, 구조적 동질성)은 배타적이지 않음.
+
+networks commonly exhibit both behaviors where some nodes exhibit homophily while others reflect structural equivalence.
+네트워크들은 흔히 두 행동을 동시에 보임. 즉 몇몇 노드들은 동종선호성을 보임과 동시에 구조적 동질성을 반영한다는 것임.
+
+We observe that BFS and DFS strategies play a key role in producing representations that reflect either of the above equivalences.
+In particular, the neighborhoods sampled by BFS lead to embeddings that correspond closely to structural equivalence. 
+우리는 BFS와 DFS 전략은 각각 상기 동질성들 중 하나를 반영하는 representation을 생산하는 데 핵심적인 역할을 한다는 것을 발견함.
+특히, BFS로 샘플링된 이웃들은 구조적 동질성에 밀접히 상응하는 임베딩을 낳음.
+
+Intuitively, we note that in order to ascertain structural equivalence, it is often sufficient to characterize the local neighborhoods accurately.
+직관적으로, 구조적 동질성을 확인하기 위해서는 보통 지역적 이웃을 정확히 특성화하는 것으로 충분하다는 것에 주목했음.
+
+For example, structural equivalence based on network roles such as bridges and hubs can be inferred just by observing the immediate neighborhoods of each node. 
+예를 들어, 연결 다리, 허브와 같은 네트워크 내 역할에 기반한 구조적 동질성은 각 노드의 직접적인 이웃을 관찰함으로써 추론될 수 있음.
+
+By restricting search to nearby nodes, BFS achieves this characterization and obtains a microscopic view of the neighborhood of every node. 
+인근 노드들로 탐색을 제한함으로써, BFS는 이 특성화를 획득하고 각 노드의 이웃에 대한 미시적인 관점을 얻을 수 있음.
+
+
+Additionally, in BFS, nodes in the sampled neighborhoods tend to repeat many times. 
+This is also important as it reduces the variance in characterizing the distribution of 1-hop nodes with respect the source node. 
+추가적으로, BFS에서는, 샘플링된 이웃 노드들은 여러번 반복해서 등장함.
+이는 출발 노드 관점에서 1-hop 노드들의 분포를 특성화하는 데 분산을 줄여준다는 점에서 중요함.
+
+However, a very small portion of the graph is explored for any given k.
+그러나, 어떤 주어진 k에 대해서든 그래프의 매우 작은 부분만이 탐색됨. 
+
+The opposite is true for DFS which can explore larger parts of the network 
+as it can move further away from the source node u (with sample size k being fixed). 
+DFS에서는 반대임. 즉, 출발 노드 u로부터 더 멀리 움직일 수 있기 때문에 네트워크의 더 많은 부분을 탐색할 수 있음 (k의 값이 고정되었을 때.)
+
+In DFS, the sampled nodes more accurately reflect a macro-view of the neighborhood 
+which is essential in inferring communities based on homophily. 
+DFS에서는, 샘플링된 노드들은 더욱 정확하게 이웃의 거시적 관점을 반영함. 이러한 사실은 동종선호성에 기반해 커뮤니티를 추론할 때 아주 중요함.
+
+However, the issue with DFS is that it is important to not only infer which node-to-node dependencies exist in a network, 
+but also to characterize the exact nature of these dependencies. 
+그러나, DFS의 문제는 어떤 네트워크 내의 노드간 의존성이 존재하는지를 추론하는 것이 중요할 뿐만 아니라 이러한 의존성의 정확한 성질을 특성화하는 것이 중요하다는 데 있음.
+
+This is hard given we have a constrain on the sample size and a large neighborhood to explore, resulting in high variance. 
+이는 샘플 사이즈에 대한 제약과 탐색해야할 큰 이웃이 주어진 경우 까다로운데, 결과적으로 높은 분산을 낳게 됨.
+
+Secondly, moving to much greater depths leads to complex dependencies 
+since a sampled node may be far from the source and potentially less representative.
+두번째로, 훨씬 큰 깊이로 이동하는 것은 복잡한 의존성을 낳게 됨. 샘플링된 노드는 출발 노드로부터 멀 것이며, 또 잠재적으로 덜 대표성을 띠기 때문임.
+
+3.2 node2vec
+Building on the above observations, we design a flexible neighborhood sampling strategy 
+which allows us to smoothly interpolate between BFS and DFS. 
+We achieve this by developing a flexible biased random walk procedure that can explore neighborhoods in a BFS as well as DFS fashion.
+
+상기의 관찰에 의거하여, 우리는 부드럽게 BFS와 DFS 사이를 보간해 주는 유연한 이웃 샘플링 전략을 설계함.
+우리는 BFS와 DFS 둘 다 활용한 방식으로 이웃을 탐색할 수 있는 유연한 편향된 랜덤 워크 절차(biased random walk procedure)를 개발함으로써 이를 달성함.
+
+
+3.2.1 Random Walks
+
+Formally, given a source node u, we simulate a random walk of fixed length l. 
+형식상, 출발 노드 u가 주어졌을 때, 우리는 고정된 길이 1로 랜덤워크를 시뮬레이션함.
+
+Let ci denote the ith node in the walk, starting with c0 = u. 
+c_i를 워크의 i번째 노드로 표기하고, 출발 노드를 c_0 = u라고 하자.
+
+Nodes ci are generated by the following distribution:
+where πvx is the unnormalized transition probability between nodes v and x, and Z is the normalizing constant.
+노드 c_i들은 다음 분포에서 생성된다.:
+이전 노드가 v일 때 다음 노드가 x일 조건부 확률 P = 만약 (v,x)가 그래프 내 엣지의 원소일 경우 π_vx/Z, 그렇지 않을 경우 0
+여기서 π_vx는 노드 v와 x간의 비정규화된 전이 확률이고, Z는 정규화 상수임.
+
+
+3.2.2 Search bias α
+탐색 편향 α
+
+The simplest way to bias our random walks would be to sample the next node based on the static edge weights w_vx i.e., π_vx = w_vx.
+(In case of unweighted graphs w_vx = 1.) 
+우리의 랜덤워크에 편향을 가할 가장 쉬운 방법은 정적인 엣지 가중치 w_vx(즉,π_vx = w_vx) 에 기반해 다음 노드를 샘플링 하는 것이다. (가중치가 없는 그래프의 경우 w_vx=1)
+
+However, this does not allow us to account for the network structure 
+and guide our search procedure to explore different types of network neighborhoods. 
+그러나, 이 방법은 네트워크 구조를 설명해 주지 않으며, 우리의 탐색 절차가 다른 타입의 네트워크상 이웃을 탐색하도록 해주지도 않음.
+
+Additionally, unlike BFS and DFS which are extreme sampling paradigms suited for structural equivalence and homophily respectively, 
+our random walks should accommodate for the fact that these notions of equivalence are not competing or exclusive,
+and real-world networks commonly exhibit a mixture of both.
+추가적으로, 구조적 동질성과 동종선호에 각각 적합한 극단적인 샘플링 패러다임인 BFS와 DFS와는 달리, 
+우리의 랜덤워크는 이러한 동질성 개념들이 경쟁적이거나 배타적이지 않으며 실세계 네트워크는 흔히 둘의 혼합된 형태를 띤다는 것을 수용할 수 있어야 함.
+
+
+We define a 2nd order random walk with two parameters p and q which guide the walk: 
+우리는 2계 랜덤워크를 2개의 파라미터 p,q로 정의함. 이 p와 q는 워크를 이끎.
+
+Consider a random walk that just traversed edge (t, v) and now resides at node v (Figure 2). 
+엣지 (t,v)를 막 순회한 랜덤워크를 고려해보자. 이제 이 워크는 노드 v에 있음.
+
+The walk now needs to decide on the next step so it evaluates the transition probabilities π_vx on edges (v, x) leading from v. 
+We set the unnormalized transition probability to πvx = α_pq(t, x) · w_vx, where
+이 워크는 이제 다음 스텝을 결정해야함. 따라서 v로부터 온 엣지 (v,x) 상의 전이확률 π_vx를 평가함.
+비정규화된 전이 확률을 π_vx=α_pq(t, x) · w_vx로 놓고, 이 때 α_pq(t, x)는 d_tx가 0일 경우 1/p, 1일 경우 1, 2일 경우 1/q로 정의됨.
+
+
+and dtx denotes the shortest path distance between nodes t and x.
+이 때, d_tx는 노드 t와 x간의 최단 경로 거리를 나타냄.
+
+Note that dtx must be one of {0, 1, 2}, and hence, the two parameters are necessary and sufficient to guide the walk.
+d_tx는 0,1,2 셋 중 하나여야 함에 주목하라. 따라서, 2개의 파라미터가 워크를 이끄는 데 필요하고 충분함.
+
+
+Intuitively, parameters p and q control how fast the walk explores and leaves the neighborhood of starting node u. 
+직관적으로, 파라미터 p와 q는 워크가 출발노드 u로부터 얼마나 빨리 이웃을 탐색하고 떠나는지를 통제함.
+
+In particular, the parameters allow our search procedure to (approximately) interpolate between BFS and DFS 
+and thereby reflect an affinity for different notions of node equivalences.
+특히, 이 파라미터들은 우리의 탐색 절차를 BFS와 DFS 사이를 (근사적으로) 보간하도록 해주며, 그에 따라 노드 동질성의 다른 개념들의 연관성을 반영함.
+
+Return parameter, p. 
+반환 파라미터, p.
+
+Parameter p controls the likelihood of immediately revisiting a node in the walk. 
+파라미터 p는 워크 내에서 즉각적으로 노드를 재방문할 우도를 통제함.
+
+Setting it to a high value (> max(q, 1)) ensures that we are less likely to sample an already visited node in the following two steps 
+(unless the next node in the walk had no other neighbor). 
+이를 높게 설정하는 것은(>max(q,1)) 다음 두 스텝에서 이미 방문한 노드를 샘플링할 확률이 더 낮도록 해줌. (워크 이내의 다음 노드가 다른 이웃을 가지고 있지 않는 이상)
+
+This strategy encourages moderate exploration and avoids 2-hop redundancy in sampling. 
+이 전략은 적당한 탐험을 촉진하고 샘플링에서의 2-hop 잉여성을 피해줌.
+
+On the other hand, if p is low (< min(q, 1)), 
+it would lead the walk to backtrack a step (Figure 2) and this would keep the walk “local” close to the starting node u.
+반면에, 만약 p가 낮을 경우 (< min(q, 1)), 워크를 한 스텝 물러나도록 유도할 것이며, 이는 워크를 시작 노드 u에 가까이, "지엽적으로" 남게 할 것임.
+
+In-out parameter, q. 
+출입 파라미터, q.
+
+Parameter q allows the search to differentiate between “inward” and “outward” nodes. 
+파라미터 q는 탐색을 노드의 "안쪽으로"와 "바깥쪽으로"를 구별하여 진행하도록 유도함.
+
+Going back to Figure 2, if q > 1, the random walk is biased towards nodes close to node t.
+그림 2로 돌아가서, 만일 q>1이면, 랜덤워크는 노드 t에 가까운 노드를 향해 편향될 것.
+
+Such walks obtain a local view of the underlying graph with respect to the start node in the walk and approximate BFS behavior 
+in the sense that our samples comprise of nodes within a small locality.
+이러한 워크는 잠재된 그래프의 출발 노드 관점에서 지엽적인 시야를 얻게 만들며, 우리의 샘플이 작은 지엽적 공간 내의 노드들로 구성된 샘플의 맥락에서 BFS 행위를 근사하게 만듦. 
+
+In contrast, if q < 1, the walk is more inclined to visit nodes which are further away from the node t. 
+반면에, 만약 q<1이면, 워크는 노드 t로부터 더 멀리 떨어진 노드를 방문하는 경향이 강해짐.
+
+Such behavior is reflective of DFS which encourages outward exploration. 
+이러한 행위는 바깥 방향의 탐색을 장려하는 DFS를 반영함. 
+
+However, an essential difference here is that we achieve DFS-like exploration within the random walk framework. 
+그러나, 여기서 근본적인 차이는 DFS식의 탐험을 랜덤워크 프레임워크 내에서 이뤄낸다는 것임.
+
+Hence, the sampled nodes are not at strictly increasing distances from a given source node u, 
+but in turn, we benefit from tractable preprocessing and superior sampling efficiency of random walks. 
+
+따라서, 샘플링된 노드들은 주어진 출발 노드 u로부터 꼭 거리가 증가하는 것만은 아니고, 
+그러나 결국, 우리는 손쉬운 전처리와 랜덤 워크의 우수한 샘플링 효율성에서 이점을 취하는 것임.
+
+Note that by setting π_v,x to be a function of the preceeding node in the walk t, the random walks are 2nd order Markovian.
+π_v,x을 워크 t 내의 진행 노드의 함수로 설정함으로써, 랜덤워크는 2계 마코비안이 된다는 점에 주목하라.
+
+Benefits of random walks. 
+랜덤워크의 이점
+
+There are several benefits of random walks over pure BFS/DFS approaches. 
+순수한 BFS/DFS 접근법에 비해 랜덤워크는 몇가지 이점이 있음.
+
+Random walks are computationally efficient in terms of both space and time requirements.
+랜덤 워크는 시간/공간적 요구사항이 계산적으로 효율적임.
+
+The space complexity to store the immediate neighbors of every node in the graph is O(|E|). 
+그래프 내 각 노드의 인접한 이웃을 저장하기 위한 공간 복잡도는 O(|E|)임.
+
+For 2nd order random walks, it is helpful to store the interconnections between the neighbors of every node, 
+which incurs a space complexity of O(a2 |V |) where a is the average degree of the graph and is usually small for realworld networks. 
+2계 랜덤워크에서는, 이웃과 모든 노드간의 상호 연결을 저장하는 것이 유익함. 이는 O(a^2*|V|)의 공간 복잡도를 초래함. 이 때 a는 그래프의 평균 차수이며, 보통 실세계 네트워크에서 작은 수임.
+
+The other key advantage of random walks over classic search-based sampling strategies is its time complexity. 
+랜덤워크의 또 다른 핵심적인 장점은 시간 복잡도임.
+
+In particular, by imposing graph connectivity in the sample generation process, 
+random walks provide a convenient mechanism to increase the effective sampling rate by reusing samples across different source nodes. 
+특히, 그래프 연결성을 샘플 생성 과정에 부과함으로써, 랜덤워크는 다른 출발 노드들에 걸쳐 샘플을 재사용함으로써 효과적인 샘플링의 비율을 증가하는 간편한 매커니즘을 제공함.
+
+By simulating a random walk of length l > k we can generate k samples for l − k nodes at once due to the Markovian nature of the random walk. 
+길이가 l>k인 랜덤워크를 시뮬레이션 함으로써 k개의 샘플을 l-k개의 노드에 대해 한번에 생성할 수 있음. 이는 랜덤워크의 마코비안적 특성때문임.
+
+Hence, our effective complexity is Ol k(l−k)per sample. 
+따라서, 우리의 효율적인 복잡도는 샘플당 O(l/k(l-k))이 됨. 
+
+For example, in Figure 1 we sample a random walk {u, s4, s5, s6, s8, s9} of length l = 6, 
+예를 들어, 길이가 l=6인 랜덤워크 {u, s4, s5, s6, s8, s9}를 그림 1에서 샘플함.
+
+which results in NS(u) = {s4, s5, s6}, NS(s4) = {s5, s6, s8} and NS(s5) = {s6, s8, s9}. 
+이는 N_S(u) = {s4, s5, s6}, N_S(s4) = {s5, s6, s8} 그리고 N_S(s5) = {s6, s8, s9}를 낳음.
+
+Note that sample reuse can introduce some bias in the overall procedure. 
+샘플 재활용은 전체 진행에 어떤 편향을 가할수도 있음을 상기하라.
+
+However, we observe that it greatly improves the efficiency.
+그러나, 이러한 방식이 매우 효율성을 증가시킨다는 것을 관찰했음.
+
+The pseudocode for node2vec, is given in Algorithm 1. 
+node2vec의 수도코드는 알고리즘 1에 제시됨.
+
+In any random walk, there is an implicit bias due to the choice of the start node u. 
+어떤 랜덤워크에서든, 출발 노드 u의 선택으로 인한 암묵적인 편향이 존재함.
+
+Since we learn representations for all nodes, we offset this bias by simulating r random walks of fixed length l starting from every node. 
+모든 노드에 대한 representation을 학습하기 때문에, 이 편향을 모든 노드에서 시작하는 고정된 길이 l의 r개의 랜덤워크를 시뮬레이션 함으로써 상쇄함.
+
+At every step of the walk, sampling is done based on the transition probabilities πvx. 
+워크의 각각 스텝마다. 샘플링은 전이 확률 π_vx에 기반해 이루어짐.
+
+The transition probabilities πvx for the 2nd order Markov chain can be precomputed and hence, 
+sampling of nodes while simulating the random walk can be done efficiently in O(1) time using alias sampling. 
+2계 마코프 체인을 위한 전이 확률 π_vx들은 사전 계산될 수 있고, 따라서 랜덤워크를 시뮬레이션하는 동안의 노드 샘플링은 별칭 샘플링을 사용해 O(1)의 복잡도로 효율적으로 계산될 수 있음. 
+
+The three phases of node2vec, i.e., 
+preprocessing to compute transition probabilities, random walk simulations and optimization using SGD, 
+are executed sequentially. 
+세 단계의 node2vec은, 즉, 전이 확률을 계산하는 전처리, 랜덤워크 시뮬레이션과 SGD 최적화가 순차적으로 수행됨.
+
+Each phase is parallelizable and executed asynchronously, contributing to the overall scalability of node2vec.
+node2vec is available at: http://snap.stanford.edu/node2vec.
+각 단계는 병렬화 가능하고 비동기적으로 실행될수 있으며, node2vec의 전체적인 확장 가능성에 기여하게 됨.
+
+
+3.3 Learning edge features
+엣지 feature 학습
+
+The node2vec algorithm provides a semi-supervised method to learn rich feature representations for nodes in a network. 
+node2vec 알고리즘은 네트워크상 노드의 풍부한 feature representation을 semi-supervised 방식으로 학습할 방법론을 제공함.
+
+However, we are often interested in prediction tasks involving pairs of nodes instead of individual nodes. 
+그러나, 종종 개별 노드 대신 특정 쌍의 노드들을 포함한 예측 task에 관심이 있을 수 있음.
+
+
+For instance, in link prediction, we predict whether a link exists between two nodes in a network. 
+예를 들어, 링크 예측에서는, 네트워크 상 두 노드 사이의 링크가 존재하는지 여부를 예측하려 함.
+
+Since our random walks are naturally based on the connectivity structure
+between nodes in the underlying network, we extend them to pairs of nodes 
+using a bootstrapping approach over the feature representations of the individual nodes.
+
+우리의 랜덤워크는 태생적으로 기저의 네트워크 내부 노드간의 연결적 구조에 기반하기 때문에, 
+그들을 개발 노드들의 feature representation에 걸친 부트 스트랩핑 접근법을 통해 노드의 쌍으로 확장함.
+
+Given two nodes u and v, we define a binary operator ◦ over the 
+corresponding feature vectors f(u) and f(v) in order to generate a representation g(u, v) such that  ~
+where d' is the representation size for the pair (u, v). 
+
+두 노드 u와 v가 주어졌을 때, 우리는 이진 연산자 ◦를 각각 노드에 상응하는 feature vector f(u),f(v)에 대해 정의함.
+이는 g(u,v)라는 representation을 생성하기 위함인데, g는 V x V 에서 d'차원 실수공간으로 연결되는 함수임. 이 때 d'는 쌍 (u,v)의 representation의 크기를 나타냄. 
+
+We want our operators to be generally defined for any pair of nodes, 
+even if an edge does not exist between the pair since doing so makes the representations 
+useful for link prediction where our test set contains both true and false edges (i.e., do not exist). 
+우리는 비록 쌍 사이에 엣지가 존재하지 않는다 하더라도 모든 노드 쌍에 대해 일반적으로 정의되기를 바람. 
+이렇게 함으로써 테스트 셋에 true/false 엣지(즉, 존재하지 않음) 둘 다 포함되어 있다 하더라도 representation 들을 링크 예측에 유용하게 사용할 수 있기 때문임.
+
+We consider several choices for the operator ◦ such that d 0 = d which are summarized in Table 1.
+d'=d가 되게 하는 여러가지 연산자에 대한 옵션들을 table 1에 정리했음.
+
+
