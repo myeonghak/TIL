@@ -1,0 +1,484 @@
+[Graph Attention Network]
+
+요약
+
+We present graph attention networks (GATs), novel neural network architectures that operate on graph-structured data, 
+leveraging masked self-attentional layers to address the shortcomings of prior methods based on graph convolutions or their approximations. 
+우리는 그래프 어텐션 네트워크 (GATs)를 제안함. 이는 그래프 형태의 데이터에서 작동하는 새로운 뉴럴 넷 아키텍쳐로써, 마스크된 셀프 어텐션 레이어를 사용해 
+그래프 컨볼루션 혹은 그 근사를 사용한 기존 방법론의 단점을 해결함.
+
+By stacking layers in which nodes are able to attend over their neighborhoods’ features, 
+we enable (implicitly) specifying different weights to different nodes in a neighborhood, 
+without requiring any kind of costly matrix operation (such as inversion) or depending on knowing the graph structure upfront.
+그들의 이웃의 feature에 집중할 수 있는 노드로 구성된 레이어를 쌓음으로써,
+우리는 (암시적으로) 주변의 다른 노드들에 다른 가중치를 상술할 수 있게 했고,
+이는 별도의 연산 비용이 큰 행렬 연산(도치와 같은)이 필요하거나 미리 그래프 구조를 아는지 여부에 구애받지 않음.
+
+
+In this way, we address several key challenges of spectral-based graph neural networks simultaneously, 
+and make our model readily applicable to inductive as well as transductive problems. 
+이 방법으로, 우리는 스펙트럼 기반의 그래프 뉴럴 네트워크의 몇가지 어려움들을 동시에 해결할 수 있고, 
+우리의 모델을 transductive한 문제 뿐만 아니라 inductive한 문제에 쉽게 적용할 수 있도록 해줌.
+
+Our GAT models have achieved or matched state-of-theart results across four established transductive and inductive graph benchmarks:
+the Cora, Citeseer and Pubmed citation network datasets, as well as a proteinprotein interaction dataset 
+(wherein test graphs remain unseen during training).
+
+
+우리의 GAT 모델은 다음 분야에서 SOTA 결과를 달성했거나 버금가는 성과를 거두었음. 이는 transductive 그리고 inductive한 그래프 벤치마크로,
+the Cora, Citeseer and Pubmed citation network datasets, as well as a proteinprotein interaction dataset을 포함함. (학습시 테스트 그래프는 보여지지 않음)
+
+
+
+1 INTRODUCTION
+1. 도입
+
+Convolutional Neural Networks (CNNs) have been successfully applied to tackle problems such as image classification (He et al., 2016), 
+semantic segmentation (Jegou et al., 2017) or machine translation (Gehring et al., 2016), 
+where the underlying data representation has a grid-like structure.
+컨볼루션 뉴럴 네트워크는 이미지 분류,시멘틱 세그멘테이션, 기계번역과 같은 문제를 해결하는데 성공적으로 적용되어 왔음. 
+
+
+These architectures efficiently reuse their local filters, with learnable parameters, by applying them to all the input positions.
+이러한 아키텍처들은 학습 가능한 파라미터를 가진 지역적인 필터를, 모든 인풋 입력에 대해 적용함으로써 효율적으로 재활용함.
+
+However, many interesting tasks involve data that can not be represented in a grid-like structure and that instead lies in an irregular domain. 
+그러나, 많은 흥미로운 작업들이 grid 형태의 구조로 표현될 수 없는, 불규칙적인 도메인의 데이터를 포함함.
+
+This is the case of 3D meshes, social networks, telecommunication networks, biological networks or brain connectomes. 
+Such data can usually be represented in the form of graphs.
+이는 3D 메시, 소셜 네트워크, 무선 통신 네트워크, 생물학적 네트워크, 뇌 커넥톰 등의 경우에서 발생함.
+이런 데이터는 보통 그래프의 형태로 표현됨.
+
+
+There have been several attempts in the literature to extend neural networks to deal with arbitrarily structured graphs. 
+임의적으로 구조화된 그래프를 다루기 위한 뉴럴 네트워크의 범위를 확장하는 맥락에서 다양한 시도가 이루어짐.
+
+Early work used recursive neural networks to process data represented in graph domains as directed acyclic graphs 
+(Frasconi et al., 1998; Sperduti & Starita, 1997). 
+초기 연구에서는 그래프 도메인에서 표현된 데이터를 유방향 비순환형 그래프로 다루기 위해 RNN을 사용했음.
+
+Graph Neural Networks (GNNs) were introduced in Gori et al. (2005) and Scarselli et al. (2009) 
+as a generalization of recursive neural networks that can directly deal with a more general class of graphs, 
+e.g. cyclic, directed and undirected graphs. 
+그래프 뉴럴 네트워크(GNN)은 좀 더 그래프의 일반적인 클래스(예를 들어, 순환적, 유방향/무방향 그래프)를 직접적으로 다루기 위한 RNN의 일반화된 형태로써 도입됨. 
+
+GNNs consist of an iterative process, which propagates the node states until equilibrium; 
+followed by a neural network, which produces an output for each node based on its state. 
+GNN은 노드의 상태를 균형 시점까지 전파하는 반복적인 절차로 구성되어 있음. 이는 뉴럴 네트워크에 의해 따라지며, 이 뉴럴 넷은 해당 기(시점)에 기반해 각 노드에 대한 아웃풋을 출력함.
+
+This idea was adopted and improved by Li et al. (2016), which propose to use gated recurrent units (Cho et al., 2014) in the propagation step.
+이 아이디어는 전파 단계에서 GRU를 사용할 것을 제안하는 연구에서 채택되고, 개선됨.
+
+Nevertheless, there is an increasing interest in generalizing convolutions to the graph domain. 
+그럼에도 불구하고, 그래프 도메인에서 컨볼루션을 일반화하는 것에 대한 관심이 커지고 있음.
+
+Advances in this direction are often categorized as spectral approaches and non-spectral approaches.
+이 방향에서의 진전은 종종 스펙트럼적 접근법과 비 스펙트럼적 접근으로 범주화됨.
+
+On one hand, spectral approaches work with a spectral representation of the graphs 
+and have been successfully applied in the context of node classification. 
+한 편으로는, 스펙트럼적 접근법은 그래프의 스펙트럼적 representation로써 노드 분류의 맥락에서 성공적으로 적용되었음.
+
+In Bruna et al. (2014), the convolution operation is defined in the Fourier domain by computing the eigendecomposition of the graph Laplacian, 
+resulting in potentially intense computations and non-spatially localized filters. 
+컨볼루션 연산은 퓨리에 도메인에서 그래프 라플라시안의 고유값 분해를 계산함으로써 정의되었고, 이는 잠재적으로 강도 높은 연산과 비-공간적으로 지역화된 필터를 낳게 되었음.
+
+These issues were addressed by subsequent works. Henaff et al. (2015) introduced a parameterization of the spectral filters 
+with smooth coefficients in order to make them spatially localized. 
+이러한 문제들은 그에 뒤따르는 연구에 의해 처리되었음. 스펙트럼 필터들을 공간적으로 지역화되도록 만들기 위한 스무스 계수(smooth coefficients)를 사용해, 
+스펙트럼 필터의 파라미터화를 도입함.
+
+
+Later, Defferrard et al. (2016) proposed to approximate the filters by means of a Chebyshev expansion of the graph Laplacian, 
+removing the need to compute the eigenvectors of the Laplacian and yielding spatially localized filters. 
+이후, 그래프 라플라시안의 체비셰브 확장을 사용해 필터를 근사하는 방식이 제안되었는데, 이는 라플라시안의 고유벡터를 계산할 필요를 없애고 공간적으로 지역화된 필터를 만들어냈음.
+
+Finally, Kipf & Welling (2017) simplified the previous method by restricting the filters to operate in a 1-step neighborhood around each node. 
+마침내, 각 노드 주변의 1-step 이웃에만 작동하도록 필터를 제한함으로써 기존의 방법론을 단순화한 연구가 발표되었음.
+
+However, in all of the aforementioned spectral approaches, the learned filters depend on the Laplacian eigenbasis, 
+which depends on the graph structure. 
+Thus, a model trained on a specific structure can not be directly applied to a graph with a different structure.
+그러나, 앞서 언급한 모든 스펙트럴한 접근법에서, 학습된 필터들은 라플라시안 고유기저에 의존하는데, 이는 그래프 구조에 의존함.
+그러므로, 특정 구조에서 학습된 모델은 직접적으로 다른 구조를 가진 그래프에 적용될 수 없음.
+
+
+On the other hand, we have non-spectral approaches (Duvenaud et al., 2015; Atwood & Towsley, 2016; 
+Hamilton et al., 2017), which define convolutions directly on the graph, operating on groups of spatially close neighbors. 
+반면에, 비-스펙트럼적 접근도 있음. 이는 그래프에 컨볼루션을 직접적으로 정의하는 것으로, 공간적으로 가까운 이웃들의 그룹에 작용함.
+
+One of the challenges of these approaches is to define an operator 
+which works with different sized neighborhoods and maintains the weight sharing property of CNNs. 
+이러한 접근법의 난점 중 하나는, 다른 크기의 이웃들을 처리하고 CNN의 특성을 공유하는 가중치를 유지하는 연산자를 정의하는 것임.
+
+In some cases, this requires learning a specific weight matrix for each node degree (Duvenaud et al., 2015), 
+using the powers of a transition matrix to define the neighborhood   
+while learning weights for each input channel and neighborhood degree (Atwood & Towsley, 2016), 
+or extracting and normalizing neighborhoods containing a fixed number of nodes (Niepert et al., 2016). Monti et al. (2016)
+몇몇 경우에, 이는 각 입력 채널과 이웃 차수에 대한 가중치를 학습하는 도중에, 혹은 고정된 수의 노드를 포함하는 이웃들을 추출하고 정규화하는 도중에
+이웃을 정의하기 위해 전이 행렬의 거듭제곱을 사용하여 각 노드 차수에 대한 특정 가중치 행렬을 학습하는 것이 필요함.
+(??)
+
+
+presented mixture model CNNs (MoNet), a spatial approach which provides a unified generalization of CNN architectures to graphs. 
+제시된 "혼합 모형 CNN (MoNet)"은 그래프 구조에의 CNN 아키텍처의 통일된 일반화를 제공하는 공간적인 접근임.
+
+More recently, Hamilton et al. (2017) introduced GraphSAGE, a method for computing node representations in an inductive manner. 
+더 최근에는, GraphSAGE가 소개되었는데, 이는 귀납적인 방식으로 노드 representation을 계산하는 방법론임.
+
+This technique operates by sampling a fixed-size neighborhood of each node, and then performing a specific aggregator over it 
+(such as the mean over all the sampled neighbors’ feature vectors, or the result of feeding them through a recurrent neural network). 
+이 기법은 각 노드의 고정된 숫자의 이웃을 샘플링하고, 특정 통합연산(aggregator)를 이들에 수행함으로써 작동함.
+(가령 표집된 이웃의 feature 벡터의 평균 혹은 RNN에 이들을 입력한 결과물)
+
+This approach has yielded impressive performance across several large-scale inductive benchmarks.
+이러한 접근법은 다양한 큰 규모의 inductive 벤치마크에서 인상적인 성능을 보였음.
+
+Attention mechanisms have become almost a de facto standard in many sequence-based tasks (Bahdanau et al., 2015; Gehring et al., 2016). 
+One of the benefits of attention mechanisms is that they allow for dealing with variable sized inputs, 
+focusing on the most relevant parts of the input to make decisions. 
+어텐션 메커니즘은 많은 순차 기반 task에서 거의 de facto(사실상의) 표준이 되었음.
+어텐션 메커니즘의 이점 중 하나는 변수 크기의 입력값을 다루도록 해주며, 입력값의 가장 유관한 부분에 집중하여 결정을 내린다는 것임.
+
+When an attention mechanism is used to compute a representation of a single sequence, 
+it is commonly referred to as self-attention or intra-attention. 
+어텐션 메커니즘이 한 시퀀스의 representation을 계산하는 데 사용될 때, 이를 셀프어텐션 혹은 인트라 어텐션이라고 부름.
+
+Together with Recurrent Neural Networks (RNNs) or convolutions, self-attention has proven to be useful for tasks 
+such as machine reading (Cheng et al., 2016) and learning sentence representations (Lin et al., 2017). 
+RNN 혹은 CNN과 함께, 셀프어텐션은 기계 독해와 문장 표현 학습 등의 task에서 유용함이 밝혀졌음.
+
+However, Vaswani et al. (2017) showed that not only self-attention can improve a method based on RNNs or convolutions, 
+but also that it is sufficient for constructing a powerful model obtaining state-of-the-art performance on the machine translation task.
+하지만, 셀프어텐션은 RNN/CNN 기반의 방법론을 개선시킬 수 있을 뿐만 아니라, 기계 번역 task에서 SOTA 성능을 얻을 수 있는 강력한 모델을 만들기에도 충분하다는 것이 보여짐.
+
+Inspired by this recent work, we introduce an attention-based architecture to perform node classification of graph-structured data. 
+The idea is to compute the hidden representations of each node in the graph, 
+by attending over its neighbors, following a self-attention strategy. 
+이러한 최근 연구에 착안하여, 그래프 구조의 데이터의 노드 분류를 수행하기 위해 어텐션 기반 아키텍처를 도입함.
+이 아이디어는 그래프 내 각 노드의 hidden representation을 계산하는 것임. 각 노드의 이웃들에 집중함으로써, 셀프어텐션 전략을 따름.
+
+The attention architecture has several interesting properties: 
+(1) the operation is efficient, since it is parallelizable across nodeneighbor pairs; 
+(2) it can be applied to graph nodes having different degrees by specifying arbitrary weights to the neighbors; and 
+(3) the model is directly applicable to inductive learning problems, 
+including tasks where the model has to generalize to completely unseen graphs. 
+
+어텐션 아키텍처는 몇가지 흥미로운 특성을 가짐.
+(1) 연산이 효율적임. 이는 노드 이웃 쌍에 대해 병렬화 가능하기 때문.
+(2) 이웃들에 대해 임의의 가중치를 할당함으로써 다른 차수를 갖는 그래프 노드들에도 적용할 수 있음.
+(3) 이 모델은 모델이 완벽히 미확인된 그래프들에도 일반화해야하는 task를 포함해 직접적으로 inductive한 학습 문제에도 적용될 수 있음. 
+
+
+We validate the proposed approach on four challenging benchmarks: 
+Cora, Citeseer and Pubmed citation networks as well as an inductive protein-protein interaction dataset, 
+achieving or matching state-of-the-art results that highlight the potential of attention-based models when dealing with arbitrarily structured graphs.
+제안된 접근을 4개의 어려운 벤치마크에 검증했음.
+SOTA 결과를 이루거나 거의 도달한 수준의 결과를 낳음. 
+
+
+It is worth noting that, as Kipf & Welling (2017) and Atwood & Towsley (2016), 
+our work can also be reformulated as a particular instance of MoNet (Monti et al., 2016). 
+Moreover, our approach of sharing a neural network computation across edges 
+is reminiscent of the formulation of relational networks (Santoro et al., 2017) 
+and VAIN (Hoshen, 2017), wherein relations between objects or agents are aggregated pair-wise, by employing a shared mechanism. 
+
+우리의 연구가 MoNet의 특정한 사례로 재표현될 수 있다는 것은 주목할만 함.
+더욱이, 우리의 엣지에 걸쳐 뉴럴 네트워크 연산을 공유하는 접근법은 관계적 네트워크와 VAIN의 공식화를 연상시킴.
+이들은 공유된 메커니즘을 사용함으로써 객체 혹은 주체간의 관계가 쌍으로 통합되는 방식임.
+
+Similarly, our proposed attention model can be connected to the works by Duan et al. 
+(2017) and Denil et al. (2017), which use a neighborhood attention operation to compute attention coefficients 
+between different objects in an environment. 
+
+비슷하게, 우리의 제안된 어텐션 모델은 Duan과 Denil의 연구와 연결될 수 있음.
+이 연구는 이웃간 어텐션 연산을 환경 내의 다른 객체간의 어텐션 계수를 계산하는 데 사용하는 방법론임.
+
+
+Other related approaches include locally linear embedding (LLE) (Roweis & Saul, 2000) and memory networks (Weston et al., 2014). 
+LLE selects a fixed number of neighbors around each data point, 
+and learns a weight coefficient for each neighbor to reconstruct each point as a weighted sum of its neighbors. 
+다른 관련된 접근법은 LLE(Locally Linear Embedding)와 memory network임.
+LLE는 고정된 수의 이웃을 각 데이터 포인트에서 선택함. 그리고 각 지점을 재복구하기 위해 각 이웃에 대한 가중치 계수를 이웃들의 가중 합으로써 학습함.
+
+
+A second optimization step extracts the point’s feature embedding. 
+Memory networks also share some connections with our work, 
+두번째 최적화 단계는 지점의 특징 임베딩을 뽑아내는 것임.
+메모리 네트워크는 우리의 연구와 몇몇 연결점을 공유하는데,
+
+
+in particular, if we interpret the neighborhood of a node as the memory, 
+which is used to compute the node features by attending over its values, 
+and then is updated by storing the new features in the same position.
+특히, 만약 우리가 각 노드의 이웃을 메모리로 해석한다면 그렇다.
+메모리는 각 값에 집중함으로써 노드 feature를 계산하는 데 사용되고, 같은 자리에 새로운 feature를 저장함으로써 업데이트되는 장치임.
+
+
+4 CONCLUSIONS
+We have presented graph attention networks (GATs), 
+우리는 GAT를 보였음.
+
+novel convolution-style neural networks that operate on graph-structured data, leveraging masked self-attentional layers. 
+새로운 컨볼루션 스타일 뉴럴 네트워크로, 그래프 형태의 데이터에 작동함. 이는 masksed self-attention 레이어를 사용함.
+
+The graph attentional layer utilized throughout these networks is computationally efficient 
+(does not require costly matrix operations, and is parallelizable across all nodes in the graph), 
+이 네트워크 전반에 걸쳐 사용된 그래프 어텐션 레이어는 계산적으로 효율적이고 (값비싼 행렬 연산을 요구하지 않으며, 그래프 내의 모든 노드에 걸쳐 병렬화 가능함)
+
+allows for (implicitly) assigning different importances to different nodes 
+within a neighborhood while dealing with different sized neighborhoods, 
+다른 크기의 이웃들을 다루는 동시에 이웃 간의 (암시적으로) 다른 노드에 다른 가중치를 할당하는 것을 가능케 함.
+
+and does not depend on knowing the entire graph structure upfront—
+thus addressing many of the theoretical issues with previous spectral-based approaches. 
+또한 전체 그래프 구조를 미리 아는지 여부에 의존하지 않으며, 그러므로 기존의 스펙트럴 기반 접근법의 많은 이론적인 문제를 다룰 수 있음.
+
+Our models leveraging attention have successfully achieved or matched state-of-the-art performance across four
+well-established node classification benchmarks, both transductive and inductive (especially, with
+completely unseen graphs used for testing).
+어텐션을 사용하는 우리의 모델은 성공적으로 SOTA를 이루거나 그에 도달한 성능을 냈음.
+
+There are several potential improvements and extensions to graph attention networks that could be addressed as future work, 
+추후 연구에서 다뤄질 수 있는 그래프 어텐션 네트워크의 몇몇 잠재적인 개선 여지와 확장 여지가 있음.
+
+such as overcoming the practical problems described in subsection 2.2 to be able to handle larger batch sizes. 
+가령 2.2 소절에서 묘사된, 더 큰 배치 크기를 다룰 수 있게 하는 실용적인 문제를 극복하는 것 등이 있음.
+
+A particularly interesting research direction would be taking advantage of the attention mechanism 
+to perform a thorough analysis on the model interpretability. 
+특히 흥미로운 연구 방향은 어텐션 메커니즘의 이점을 취해 모델 해석 가능성에 대한 깊은 분석을 수행하는 것임.
+
+Moreover, extending the method to perform graph classification 
+instead of node classification would also be relevant from the application perspective. 
+나아가, 노드 분류 대신 그래프 분류를 수행하기 위해 방법론을 확장하는 것은 응용 관점에서 또한 유관할 것임.
+
+Finally, extending the model to incorporate edge features (possibly indicating relationship among nodes) 
+would allow us to tackle a larger variety of problems.
+마지막으로, 엣지 feature를 통합하는 데 모델을 확장하는 것은 (아마도 노드간의 관계를 암시할) 훨씬 더 다양한 문제를 해결할 수 있도록 해줄 것임.
+
+
+2 GAT ARCHITECTURE
+In this section, we will present the building block layer used to construct arbitrary graph attention networks (through stacking this layer), 
+and directly outline its theoretical and practical benefits and limitations compared to prior work in the domain of neural graph processing.
+이 절에서, 우리는 임의적인 그래프 어텐션 네트워크를 구성하기 위해 사용된 블록 레이어를 쌓는 방식을 보여주려 함. 
+그리고 직접적으로 이 방법의 이론적이고 실용적인, 뉴럴 그래프 처리 도메인의 기존 연구와 비교한 이점과 한계의 큰 그림을 그리려 함.
+
+2.1 GRAPH ATTENTIONAL LAYER
+We will start by describing a single graph attentional layer, 
+as the sole layer utilized throughout all of the GAT architectures used in our experiments. 
+하나의 그래프 어텐션 레이어를 묘사함으로써 시작하려 함. 이는 모든 우리의 실험에서 사용된 GAT 아키텍쳐에 걸쳐 사용된 유일한 레이어임.
+
+The particular attentional setup utilized by us closely follows the work of Bahdanau et al. (2015)—
+but the framework is agnostic to the particular choice of attention mechanism.
+우리가 사용한 구체적인 추가적인 준비작업은 Neural machine translation by jointly learning to align and translate(어텐션을 도입한 연구)를 밀접히 따름.
+그러나 해당 프레임워크는 어떤 특정 어텐션 메커니즘을 선택하는지에 어그노스틱함.
+
+The input to our layer is a set of node features, h = {h_1, h_2, ... ,h_N} 
+우리의 레이어에 들어가는 입력값은 노드 피처의 집합으로, h = {h_1, h_2, ... ,h_N}로 표현됨. 이 때 h_i 벡터는 F차원 실수공간의 원소임.
+
+where N is the number of nodes, and F is the number of features in each node. 
+N은 노드의 수이고, F는 각 노드의 피처의 수임.
+
+The layer produces a new set of node features (of potentially different cardinality F'), h' = {h'_1, h'_2, ... , h'_N}, as its output.
+각 층은 새로운 노드 피처의 집합을 만들어 냄. 이 노드 피처는 잠재적으로 다른 기수 F'을 가짐. 출력값은 h' = {h'_1, h'_2, ... , h'_N}의 형태를 띰.
+
+
+In order to obtain sufficient expressive power to transform the input features into higher-level features, 
+at least one learnable linear transformation is required. 
+입력 피처를 고 수준의 피처로 변형시킬 만큼 충분한 표현력을 얻기 위해, 최소한 1개의 학습 가능한 선형 변환이 요구됨.
+
+To that end, as an initial step,  a shared linear transformation, parametrized by a weight matrix, W ∈ R F'×F , is applied to every node. 
+이 끝에는, 시작 단계로써, 가중치 행렬에 의해 패러미터화 된 공유된 선형 변환 W (이는 F'*F 차원 실수공간의 원소임)이 모든 각 노드에 적용됨.
+
+We then perform self-attention on the nodes—a shared attentional mechanism a : R computes attention coefficients 
+e_ij = a(W~h_i ,W~h_j ) 
+그 뒤, 셀프-어텐션을 노드들에 수행함. 이는 공유된 어텐션 메커니즘 a를 이름. 이 a는 ... 어텐션 계수를 계산함.
+
+that indicate the importance of node j’s features to node i. 
+이는 노드 j의 특성이 노드 i에 갖는 중요성을 암시함.
+
+In its most general formulation, the model allows every node to attend on every other node, 
+dropping all structural information. 
+가장 일반적인 수식 형태에서, 모델은 모든 다른 노드에 주의를 기울이도록 모든 노드를 유도할 수 있으며, 이 때 모든 구조적인 정보를 버림.
+
+We inject the graph structure into the mechanism by performing masked attention—we only compute eij for nodes j ∈ Ni , 
+where Ni is some neighborhood of node i in the graph.
+우리는 masked 어텐션을 수행함으로써 그래프 구조를 메커니즘에 주입할 수 있음. N_i의 원소인 j 노드에 대해 오직 e_ij만을 계산함.
+
+In all our experiments, these will be exactly the first-order neighbors of i (including i). 
+우리의 모든 실험에서, 이들은 정확히 i의 1계 이웃이 될 것임(i 포함).
+
+To make coefficients easily comparable across different nodes, we normalize them across all choices of j using the softmax function
+계수를 다른 노드에 거쳐 쉽게 비교 가능하게 만들기 위해, 소프트맥스 함수를 사용해 j의 모든 선택에 걸쳐 정규화함.
+
+In our experiments, the attention mechanism a is a single-layer feedforward neural network,
+parametrized by a weight vector ~a ∈ R^2F', and applying the LeakyReLU nonlinearity (with negative input slope α = 0.2). 
+우리의 실험에서, 어텐션 메커니즘 a는 single-layer feedforward 뉴럴 네트워크이며, 2F'차원 실수공간에서 정의되는 가중치 벡터 a에 의해 파라미터화 됨.
+또한 이 네트워크에는 LeakyReLU 비선형성이 적용됨(음수 입력값에는 기울기가 α = 0.2인).
+
+Fully expanded out, the coefficients computed by the attention mechanism (illustrated by Figure 1 (left)) may then be expressed as:
+완전히 전개될 경우, 어텐션 메커니즘에 의해 계산되는 계수들은 다음과 같이 표현될 것임:
+
+where ·^T represents transposition and || is the concatenation operation.
+여기서 ·^T는 전치를 나타내며, ||는 concat 연산을 의미함.
+
+Once obtained, the normalized attention coefficients are used to compute a linear combination of the features corresponding to them, 
+to serve as the final output features for every node (after potentially applying a nonlinearity, σ):
+정규화 어텐션 계수가 구해지면, 이 값은 그에 상응하는 피처들의 선형 결합을 계산하는데 사용되어, 모든 노드를 위한 최종 아웃풋 피처로 사용됨. (잠재적으로 비선형성 σ를 적용한 이후에)
+
+To stabilize the learning process of self-attention, 
+we have found extending our mechanism to employ multi-head attention to be beneficial, similarly to Vaswani et al. (2017). 
+셀프 어텐션의 학습 과정을 안정화하기 위해, 우리의 메커니즘을 멀티 헤드 어텐션의 이점을 활용하도록 확장했음.
+
+Specifically, K independent attention mechanisms execute the transformation of Equation 4, 
+and then their features are concatenated, resulting in the following output feature representation:
+특히, K개의 독립적인 어텐션 메커니즘은 수식 4의 선형변환을 수행하고, 그들의 피처는 concat으로 결합됨. 그 결과 다음과 같은 피처 representation을 결과값으로 얻음.
+(수식 5)
+
+where || represents concatenation, α^k_ij are normalized attention coefficients computed by the k-th
+attention mechanism (a^k), and W^k is the corresponding input linear transformation’s weight matrix.
+||은 concat 연산을 의미하고, α^k_ij은 k번째 어텐션 메커니즘에 의해 계산된 정규화된 어텐션 계수임. W^k는 그에 상응하는 선형 변환의 가중치 행렬 입력값임.
+
+Note that, in this setting, the final returned output, h', will consist of KF' features (rather than F') for each node.
+이 상황에서, 최종적으로 반환된 출력값 h'는 각 노드에 대한 KF' 피처로 구성됨 (F'가 아님)
+
+Specially, if we perform multi-head attention on the final (prediction) layer of the network, 
+concatenation is no longer sensible—instead, we employ averaging, and delay applying the final nonlinearity 
+(usually a softmax or logistic sigmoid for classification problems) until then:
+특히, 네트워크의 최종(예측) 레이어에서 멀티 헤드 어텐션을 수행할 경우, concat은 더 이상 민감하지 않음. 
+대신, 평균을 사용하고, 최종 비선형성(보통 분류 문제를 위해서는 소프트맥스 혹은 로지스틱 시그모이드) 적용을 그 때까지 지연함:
+
+The aggregation process of a multi-head graph attentional layer is illustrated by Figure 1 (right).
+멀티 헤드 그래프 어텐션 레이어의 통합(aggregation) 절차는 그림 1에서 묘사됨.
+
+2.2 COMPARISONS TO RELATED WORK
+2.2 관련 연구와의 비교
+
+The graph attentional layer described in subsection 2.1 directly addresses several issues 
+that were present in prior approaches to modelling graph-structured data with neural networks:
+2.1 소절에서 묘사된 그래프 어텐션 레이어는 뉴럴 네트워크의 그래프 구조의 데이터를 모델링하는 기존 접근법에서 보여진 몇가지 문제를 직접적으로 다루어 냄.
+
+	• Computationally, it is highly efficient: the operation of the self-attentional layer can be parallelized across all edges, 
+		and the computation of output features can be parallelized across all nodes. 
+		계산적으로, 이는 매우 효율적임: 셀프 어텐션 레이어의 작업은 모든 엣지에서 병렬화 가능하고, 출력 피처의 계산은 모든 노드에 걸쳐 병렬화 가능함.
+		
+		No eigendecompositions or similar costly matrix operations are required. 
+		어떤 고유값 분해나 비슷한 계산 비용이 큰 매트릭스 연산도 요구되지 않음.
+		
+		The time complexity of a single GAT attention head computing F' features may be expressed as O(|V|F F' + |E|F'), 
+		where F is the number of input features, and |V| and |E| are the numbers of nodes and edges in the graph, respectively. 
+		F'개의 피처를 계산하는 한 GAT 어텐션 헤드의 시간 복잡도는 O(|V|F F' + |E|F')로 표현될 수 있음. 여기서 F는 입력 피처의 수이고, 
+		|V|와 |E|는 그래프 내 노드와 엣지의 수를 각각 의미함.
+		
+		This complexity is on par with the baseline methods such as Graph Convolutional Networks (GCNs) (Kipf & Welling, 2017). 
+		이 복잡도는 GCN과 같은 베이스라인 방법론과 유사함.
+		
+		Applying multi-head attention multiplies the storage and parameter requirements by a factor of K, 
+		while the individual heads’ computations are fully independent and can be parallelized.
+		멀티 헤드 어텐션을 적용하는 것은 저장량과 K개 요소에 의한 파라피터 요구사항을 배가하는데,
+		반면 개별 헤드의 계산은 독립적이며 병렬화될 수 있음.
+		
+		
+	• As opposed to GCNs, our model allows for (implicitly) assigning different importances to nodes of a same neighborhood, 
+		enabling a leap in model capacity. 
+		GCN과는 반대로, 우리의 모델은 (암묵적으로) 같은 이웃을 공유하는 노드들간에 다른 중요도를 할당하는 것을 가능케 함. 이는 모델 성능의 도약을 가능케 함.
+		
+		
+		Furthermore, analyzing the learned attentional weights may lead to benefits in interpretability, 
+		as was the case in the machine translation domain (e.g. the qualitative analysis of Bahdanau et al. (2015)).
+		게다가, 학습된 어텐션 가중치를 분석하는 것은 해석 가능성에서 이점을 제공함. 이는 기계 번역 도메인에서의 사례와 같은 현상임.
+		
+	• The attention mechanism is applied in a shared manner to all edges in the graph, 
+		and therefore it does not depend on upfront access to the global graph structure or 
+		(features of) all of its nodes (a limitation of many prior techniques). 
+		어텐션 메커니즘은 그래프 내의 모든 엣지에 공유된 형태로 적용되는데, 따라서 전역적인 그래프 구조나 모든 그래프의 노드들(의 피처)에 대한 사전적인 접근에 의존하지 않음.
+		(이는 많은 기존의 기법들의 한계였음)
+		
+		This has several desirable implications: 
+		이는 몇 가지 바람직한 암시를 가짐.
+		
+		– The graph is not required to be undirected (we may simply leave out computing α_ij if edge j → i is not present).
+		그래프는 무방향일 필요가 없음 (만약 j->i가 보여지지 않으면, α_ij를 단순히 남겨두고 계산하지 않을 수 있음). 
+		
+		– It makes our technique directly applicable to inductive learning—including tasks 
+			where the model is evaluated on graphs that are completely unseen during training.
+		우리의 기법을 inductive learning에 직접적으로 적용할 수 있도록 해줌. 학습 전에 완전히 비공개 상태인 그래프에 우리의 모델이 평가받는 task를 포함함. 
+			
+			
+	• The recently published inductive method of Hamilton et al. (2017) samples a fixed-size neighborhood of each node, 
+		in order to keep its computational footprint consistent; 
+		Hamilton 등이 최근 공개한 Inductive한 방법론은 각 노드의 고정된 크기의 이웃을 샘플링하여, 계산적인 처리 공간을 일정하게 유지하는 방식을 취함.
+		
+		this does not allow it access to the entirety of the neighborhood while performing inference.
+		이는 추론을 수행하는 동안 이웃의 전체적인 구조에 접근하는 것을 가능케 하지 못함.
+		
+		Moreover, this technique achieved some of its strongest results 
+		when an LSTM (Hochreiter & Schmidhuber, 1997)-based neighborhood aggregator is used. 
+		더욱이, 이 방법론은 LSTM 기반 이웃 통합기(neighborhood aggregator)가 사용될 때 가장 강력한 결과를 낳았음.
+		
+		This assumes the existence of a consistent sequential node ordering across neighborhoods, 
+		and the authors have rectified it by consistently feeding randomly-ordered sequences to the LSTM. 
+		이는 이웃 영역에 걸쳐 순서대로 나타나는 일정한 크기의 순차적 노드가 존재함을 가정하며, 저자는 LSTM에 무작위로 배열된 시퀀스를 끊임없이 투입함으로써 보정했음.
+		
+		Our technique does not suffer from either of these issues—it works with the entirety of the neighborhood 
+		(at the expense of a variable computational footprint, 
+		which is still on-par with methods like the GCN), and does not assume any ordering within it.
+		우리의 기법은 이러한 문제에서 전혀 구애받지 않음. 
+		우리의 방법은 이웃의 전체와 작동하며,(변수 계산적 처리공간 비용의 희생을 통해, 이는 GCN과 같은 방법과 같음) 이 안의 어떤 순서도 가정하지 않음.
+		
+		
+	• As mentioned in Section 1, GAT can be reformulated as a particular instance of MoNet (Monti et al., 2016). 
+		1절에서 언급했듯, GAT는 MoNet의 특수한 예시로써 재구성될 수 있음.
+	
+		More specifically, setting the pseudo-coordinate function to be u(x, y) = f(x)||f(y), 
+		where f(x) represent (potentially MLP-transformed) features of node x and || is concatenation; 
+		and the weight function to be wj (u) = softmax(MLP(u)) 
+		(with the softmax performed over the entire neighborhood of a node) would make MoNet’s patch operator similar to ours. 
+		더 자세히는, 의사 좌표 함수를 u(x,y) = f(x)||f(y)로 설정하고 (여기서 f(x)는 (잠재적으로 MLP의 변형된) 노드 x의 피처를 의미하며 ||는 concat 연산을 의미함.)
+		가중치 함수 w_j(u)=softmax(MLP(u))로 (한 노드의 전체 이웃에 걸쳐 수행된 소프트맥스로) 설정함으로써 MoNet의 patch operator를 우리의 방법론과 유사하게 만듦.
+		
+		Nevertheless, one should note that, in comparison to previously considered MoNet instances, 
+		our model uses node features for similarity computations, 
+		rather than the node’s structural properties (which would assume knowing the graph structure upfront).
+		그럼에도 불구하고, 앞서 고려된 MoNet 사례와 비교하여, 우리의 모델은 노드 피처를 유사도 계산을 위해 사용함을 주목해야함.
+		그래프의 구조를 미리 알고 있음을 가정하는 노드의 구조적인 특성을 활용하는 방법이 아니라 노드 피처를 사용한다는 것.
+		
+		
+		
+		
+We were able to produce a version of the GAT layer that leverages sparse matrix operations, 
+reducing the storage complexity to linear in the number of nodes and edges and enabling the execution of GAT models on larger graph datasets. 
+희소 행렬(sparse matrix)연산을 사용하는 GAT의 다른 버전을 만들 수 있었음. 이는 저장 공간 복잡도를 노드와 엣지의 선형으로 줄여내고, 더 큰 그래프 데이터 셋에의 GAT 모델 활용을 가능케 함.
+
+However, the tensor manipulation framework we used only supports sparse matrix multiplication for rank-2 tensors, 
+which limits the batching capabilities of the layer as it is currently implemented (especially for datasets with multiple graphs). 
+그러나, 우리가 사용한 텐서 조작 프레임워크는 rank-2 텐서의 희소 행렬 곱만을 지원했기 때문에, 현재 사용중인 레이어의 배치화 작업의 능력이 제한됨. (특히 복수의 그래프를 가진 데이터 셋에 대해)
+
+Appropriately addressing this constraint is an important direction for future work. 
+이 제약을 적절히 처리하는 것은 미래 작업에의 중요한 방향이 될 것임.
+
+Depending on the regularity of the graph structure in place, 
+GPUs may not be able to offer major performance benefits compared to CPUs in these sparse scenarios. 
+적절한 그래프 구조상의 정규성에 의존하여, 이러한 sparse한 시나리오에서, GPU는 CPU에 비해 주된 성능적 이점을 제공하지 못할 수 있음. 
+
+It should also be noted that the size of the “receptive field” of our model is upper-bounded by the depth of the network 
+(similarly as for GCN and similar models).
+우리 모델의 인지 영역(receptive field)의 크기는 네트워크의 깊이에 상한됨에 주목해야함. (이는 GCN이나 유사한 모델과 비슷함)
+
+Techniques such as skip connections (He et al., 2016) could be readily applied for appropriately extending the depth, however. 
+skip connections와 같은 방법론은 적절히 깊이를 확장하는 데 쉽게 적용될 수 있기는 함.
+
+Lastly, parallelization across all the graph edges, especially in a distributed manner, may involve a lot of redundant computation, 
+as the neighborhoods will often highly overlap in graphs of interest.
+마지막으로, 모든 그래프 엣지에 걸친 병렬화는, 특히 분산된 방식에서, 많은 불필요한 연산을 포함할 수도 있는데, 이는 관심 하의 그래프 내부에서 이웃들이 보통 크게 겹치기 때문임.
+
+
+	
+	
+
+
+
+
+
