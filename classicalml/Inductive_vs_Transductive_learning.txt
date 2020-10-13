@@ -1,0 +1,150 @@
+[Inductive vs. Transductive Learning]
+
+https://towardsdatascience.com/inductive-vs-transductive-learning-e608e786f7d
+
+
+Induction and Transduction…You may have come across these two words many times when reading books and articles on machine learning. 
+머신러닝 관련 책이나 아티클을 읽으면 몇번 들어봤을 단어들임.
+
+In this article, let’s try to understand the differences in these two learning approaches 
+and how they can be used according to our use-case.
+이 아티클에서는, 이 두 학습 접근방법의 차이점에 대해 알아보고 우리의 실제 응용에 어떻게 사용될 수 있을지 보자.
+
+Understanding the Definitions
+정의 이해하기
+
+According to Wikipedia,
+Transduction is reasoning from observed, specific (training) cases to specific (test) cases. 
+In contrast, induction is reasoning from observed training cases to general rules, which are then applied to the test cases.
+위키피디아에 따르면, transduction은 관측된, 특정 (학습) 사례로부터 특정 (테스트) 사례를 추론하는 것이라고 함.
+반면에, Induction은 관측된 학습 사례를 일반적인 규칙으로 추론하여, 그 뒤 테스트 사례에 적용됨.
+
+Let’s breakdown and understand these two definitions.
+이 두 정의를 분해해서 이해해보자.
+
+
+Induction
+Induction is reasoning from observed training cases to general rules, which are then applied to the test cases.
+Induction은 관측된 학습 사례에서 일반적인 규칙을 추론하는 것으로, 이 규칙은 이후 테스트 사례에 적용됨.
+
+Inductive learning is the same as what we commonly know as traditional supervised learning. 
+Inductive learning은 전통적인 지도 학습과 동일함.
+
+We build and train a machine learning model based on a labelled training dataset we already have. 
+머신러닝 모델을 우리가 갖고있는 라벨된 학습 데이터셋으로부터 구축하고 학습함.
+
+Then we use this trained model to predict the labels of a testing dataset which we have never encountered before.
+그 뒤, 이 학습된 모델을 테스트 데이터 셋의 라벨을 예측하는 데 사용함. 이 데이터셋은 우리가 마주한 적 없는 데이터들임.
+
+
+Transduction
+Transduction is reasoning from observed, specific (training) cases to specific (test) cases.
+Transduction은 관측된, 특정 학습 사례에서 특정 테스트 사례를 추론하는 것임.
+
+In contrast to inductive learning, transductive learning techniques have observed all the data beforehand, 
+both the training and testing datasets. 
+inductive learning과는 반대로, transductive learning 기법은 모든 데이터를 사전에 관찰함. 즉 학습 데이터와 테스트 데이터셋 모두를 관찰.
+
+
+We learn from the already observed training dataset and then predict the labels of the testing dataset. 
+이미 관찰한 학습 데이터셋으로부터 학습하고, 그 뒤 테스트 데이터셋의 라벨을 예측했음.
+
+Even though we do not know the labels of the testing datasets, 
+we can make use of the patterns and additional information present in this data during the learning process.
+테스트 데이터셋의 라벨을 모를지라도, 학습 과정에서 데이터 내에 보여진 추가적인 정보와 패턴을 활용할 수 있음.
+
+Example transductive learning approaches include transductive SVM (TSVM) and graph-based label propagation algorithms (LPA).
+transductive learning 접근법의 예시로는 transductive SVM(TSVM)이라는 것과, graph-based label propagation 알고리즘(LAP)을 들 수 있음.
+
+
+What are the Differences?
+차이점이 무엇인가?
+
+Now that you have a clear idea about the definitions of inductive and transductive learning, let’s see what are the differences. 
+Inductive와 transductive learning의 정의에 대한 명확한 개념이 잡혔으니, 차이점에 대해 알아보자.
+
+The definitions pretty much speak out the differences, but let’s go through them so that it will be more clear.
+정의 그 자체로 차이점에 대해 많은 점을 말해주고 있지만, 더 명확하도록 살펴보자.
+
+The main difference is that during transductive learning, 
+you have already encountered both the training and testing datasets when training the model. 
+주된 차이점은, transductive learning 중에는 모델 학습 과정에서 학습 데이터와 테스트 데이터 모두를 마주한다는 것임.
+
+However, inductive learning encounters only the training data 
+when training the model and applies the learned model on a dataset which it has never seen before.
+그러나, inductive learning은 학습 과정에서는 학습 데이터를 사용하고, 학습된 모델을 한번도 본 적 없는 데이터셋에 적용함.
+
+Transduction does not build a predictive model. 
+transduction은 예측 모델을 만들지 않음.
+
+If a new data point is added to the testing dataset, 
+then we will have to re-run the algorithm from the beginning, train the model and then use it to predict the labels. 
+새로운 데이터 포인트가 테스트 데이터셋에 추가되면, 처음부터 다시 알고리즘을 재가동해야함. 다시 모델을 학습하고 이를 라벨 예측에 사용함.
+
+On the other hand, inductive learning builds a predictive model. 
+When you encounter new data points, there is no need to re-run the algorithm from the beginning.
+반면에, inductive learning은 예측 모델을 구축함. 새로운 데이터 포인트를 마주하면, 처음부터 학습을 재가동할 필요가 없음.
+
+In more simple terms, inductive learning tries to build a generic model where any new data point would be predicted, 
+based on an observed set of training data points. 
+더 간단한 용어로는, Inductive learning은 모든 새로운 데이터 포인트가 예측되는 생성적 모델을 구축하려 노력함. 이는 학습 데이터 포인트의 관측된 집합에 기반함.
+
+Here you can predict any point in the space of points, beyond the unlabelled points. 
+여기서, 포인트 공간 내의 모든 포인트를 예측할 수 있음. 라벨이 없는 포인트도 예외는 아님.
+
+In contrary, transductive learning builds a model that fits the training and testing data points it has already observed. 
+반면에, transductive learning은 이미 관측한 학습 및 테스트 데이터 포인트에 적합하는 모델을 구축함.
+
+This approach predicts labels of unlabelled points using the knowledge of the labelled points and additional information.
+Transductive learning can become costly in the case where new data points are introduced by an input stream. 
+이 방법론은 라벨이 없는 포인트의 라벨을 라벨된 포인트의 지식과 추가적인 정보를 활용해 예측함.
+transductive learning은 새로운 데이터 포인트가 입력 절차에 의해 도입되는 경우 계산 비용이 비쌈.
+
+Each time a new data point arrives, you will have to re-run everything. 
+새로운 데이터 포인트가 도착할때마다, 모든 것을 다시 재가동해야함.
+
+On the other hand, inductive learning initially builds a predictive model and new data points can be labelled 
+within a very short time with lesser computations.
+반면에, inductive learning은 처음에 예측 모델을 구축하고 새로운 데이터 포인트는 매우 짧은 시간 내에 더 적은 연산으로 라벨링 될 수 있음.
+
+
+Example Walkthrough
+예제 살펴보기
+
+Firstly, I will take the example shown in Figure 1. 
+먼저, 그림 1에 보인 예제를 보겠다.
+
+Consider that you have a set of points as shown in Figure 1. There are four labelled points A, B, C and D. 
+Our goal is to label (colour) the remaining unlabelled (uncoloured) points numbered from 1 to 14. 
+If we use inductive learning for this task, we will have to use these 4 labelled points and build a supervised learning model.
+
+
+At a glance, we can see that there are two separate clusters. 
+However, in inductive learning, since we have a very little number of training samples, 
+it will be quite hard to build a predictive model that captures the complete structure of the data. 
+
+For example, if a nearest neighbour approach is used, 
+points closer to the border such as 12 and 14 may be coloured as red instead of green as they are closer to the red points A and B 
+rather than the green points C and D (as shown in Figure 2).
+
+If we have some additional information about the data points such as connectivity information 
+between the points based on features like similarity (as shown in Figure 3), 
+we can use this additional information while training the model and labelling the unlabelled points.
+
+For example, we can use a transductive learning approach such as a semi-supervised graph-based label propagation algorithm 
+to label the unlabelled points as shown in Figure 4, 
+using the structural information of all the labelled and unlabelled points. 
+Points along the border such as 12 and 14 are connected to more green points than red points, 
+and hence they get labelled as green, rather than red.
+
+Note that we were able to apply a transductive learning approach such as label propagation 
+because we have encountered all the training and testing data points at the beginning 
+and the testing data have some additional information that may be useful. 
+If there are no testing data points at first, we will have to follow an inductive learning approach.
+
+Final Thoughts
+We have discussed the differences between inductive and transductive learning and have gone through an example. 
+Now that you have a basic idea of inductive and transductive learning approaches and their differences, 
+you can make use of this knowledge when you are developing your next machine learning model.
+
+
