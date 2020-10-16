@@ -27,10 +27,9 @@ A collection of what I learned day by day, what I found interesting today, what 
 -	[NLP (Natural Language Preprocessing)](/NLP)
 -	[MAB (Multi Armed Bandits)](/MAB)
 -	[Image processing](/imageprocessing)
--	[Graph Neural Network](/graphnn)
+-	[Graph Neural Network](/graphnetworks)
 -	[Data preprocessing](/preprocessing)
 -	[Anormaly detection](/anormaly)
--	[Graph Embedding](/graphnetworks)
 
 ##### Other tools for ML
 
