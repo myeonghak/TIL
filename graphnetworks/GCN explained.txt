@@ -1,0 +1,22 @@
+GCN explained
+
+
+https://youtu.be/2KRAOZIULzw
+
+	1.	message passing
+		: 연결되어 있는 connection을 통해서 노드간의 정보를 전달하고, 이후에 그 정보로부터 노드 스스로의 정보를 업데이트하는 두 과정으로 구성됨.
+		
+	2.	label propagating algorithm
+		:fraud 정보를 전달한다고 할 때, 끊임없이 주변의 fraud label 정보를 주고 받음으로써 상태를 업데이트 할 수 있음.
+		
+	3.	2.에서, 정보를 끊임없이 업데이트 함으로써 점차 fraud에 대한 정보를 유관한/연결된 노드들에게 전파할 수 있음. 
+		이런 작용을 label 정보를 이웃들에게 smoothing한다고 할 수 있음.
+		
+	4.	GCN은 이러한 label propagation algorithm과는 달리, 전체 입력 피처 값을 전파한다는 차이점이 있음.
+		따라서 피처값을 전달하는 작용을 feature smoothing이라고 부를 수 있음.
+		
+	5.	이웃 노드의 피처를 통합(aggregation function)
+		->결과로 나온 dense vector representation을 뉴럴레이어에 통과(W 행렬을 곱한 뒤 활성함수 통과)
+	
+	6.	GCN 레이어의 수는 정보가 도달될 수 있는 한도를 결정함. 
+		2 layer GCN의 경우 2마디 넘어서의 이웃까지에만 도달할 수 있는 것.
