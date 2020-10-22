@@ -1,0 +1,29 @@
+MVC 웹 프레임워크
+
+	1.	Model, View, Controler
+		- 데이터의 관점에서 생각하면 됨.
+		- Model: 데이터의 형식을 지정, 저장, 호출하는 작업을 수행하는 코드
+		- View: 보이는 것에 대해 다룸. 모델에서 호출한 데이터를 보여주는 역할을 수행. 웹의 경우 html, css로 나타내는 요소들
+		- Controller: 앞의 두 부분을 제어하는 역할. Model의 데이터를 View에 연결해서, 사용자가 GUI화면을 통해 데이터를 읽고,쓰고,지우고 할 수 있도록 전반적인 제어를 하는 파트
+		
+	2.	동적 웹을 식당에 비유했을 때,
+		Model: 식료품을 관리, 음식을 요리하는 주방장
+		View: 주방장이 낸 음식을 플레이팅하는 직원
+		Controller: 주문도 받고 서빙도 하는 매니저
+		
+	3.	MVC 프레임워크: 
+		이러한 MVC를 개발하기 위해 필요한 노력을 줄일 수 있도록, 이미 만들어진 형태로 제공하는 것
+		
+	4.	라이브러리 vs 프레임워크
+		라이브러리는 문짝, 창문 등의 부속, 가져다 쓰는 것
+		프레임워크는 기초적인 제품 골격을 갖춘 컨테이너, 그 위에 덧붙여 쓰는 것
+		
+	5.	언어별로 MVC 프레임워크가 존재
+		- java: spring 프레임워크
+		- php: laravel, codeigniter, symfony
+		- python: MTV(Model,View,Template) 프레임워크인 django
+		- ruby: ruby on rails
+		- scala: play
+		- c#: .NET core
+		
+	6.	routing(라우팅): 어떤 주소로 갔을 때 어떤 페이지를 보여줄 지를 정의해 놓는 것
