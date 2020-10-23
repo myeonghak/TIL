@@ -1,0 +1,15 @@
+[마케팅 데이터 분석 스터디 3회차]
+
+<도강혁님 마케팅 데이터분석 발표- section4: 개인화된 마케팅>
+
+
+<김규철님 알고리즘 마케팅 발표 - 3장, 프로모션과 광고>
+
+LonelyScreen AirPlay Receiver -> 프리젠테이션 어플!
+
+
+CPA: cost per acquisition, 브랜드 관점에서 캠페인의 전반적인 효율을 측정하는 metric
+
+
+다접촉 애트리뷰션(last touch attribution을 극복하기 위한 방법)
+: 베이지안 네트워크, 커쇼 ?
