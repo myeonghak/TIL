@@ -1,0 +1,13 @@
+[코랩 터미널 접근]
+
+여러 방법들이 제시되었으나, 아래의 코드로 실행하는 것이 가장 좋은 듯 함.
+
+
+!pip install kora
+from kora import console
+console.start()  # and click link
+
+
+그 외에도,
+! bash라는 커맨드로 접근하는 방법이 있음.
+
