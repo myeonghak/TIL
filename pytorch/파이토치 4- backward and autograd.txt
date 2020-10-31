@@ -1,0 +1,13 @@
+파이토치 4: backward and autograd
+
+	1.	w값 업데이트를 위해 역전파를 포함한 computational graph를 사용
+	2.	여기서 x, y등의 데이터 값은 변화하지 않으므로 그대로 유지되고, 
+		w의 값만 역전파의 결과로 갱신됨
+		
+	3.	torch.autograd.Variable(value, requires_grad=True)을 사용해 해당 변수의 가중치을 자동으로 구해 업데이트 되도록 설정
+	
+	4.	loss.backward()손실 값의 계산을 마치고, 역전파를 시작하도록 유도
+	
+	5.	w.grad.data.zero_(): 
+		가중치 업데이트가 끝난 후 가중치를 0으로 초기화시켜 줌. 
+		이는 autograd가 item.grad 어트리뷰트에 저장된 모든 계산이 완료된 기울기의 총합을 저장하기 때문임.
