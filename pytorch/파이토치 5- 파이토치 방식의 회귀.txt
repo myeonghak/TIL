@@ -1,0 +1,12 @@
+파이토치 5: 파이토치 방식의 선형 회귀 
+
+	1.	우리의 신경망 모델의 학습은 순전파와 역전파로 구성되어 있으며, 
+		w의 기울기는 w.grad라는 어트리뷰트에 담겨 있음.
+		
+	2.	pytorch rythm
+		1) 클래스를 사용하여, Variable을 포함한 모델을 디자인함.
+		2) 손실 함수와 최적화 알고리즘을 선택 (파이토치 API)
+		3) 트레이닝 사이클 구현 (forward, backward, update)
+	
+	3.	class를 정의하여, 토치에서 상속받은 뒤 필요한 블록(레이어)들을  어트리뷰트로 정의
+	4.	torch.nn.linear(input_shape, output_shape)
