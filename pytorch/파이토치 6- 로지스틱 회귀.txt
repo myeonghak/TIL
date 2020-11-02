@@ -1,0 +1,20 @@
+파이토치 6: 로지스틱 리그레션
+
+	1.	시그모이드와 로짓 함수는 역함수 관계임
+	
+	2.	이진 분류로 변환하기 위해, 레이어의 마지막을 시그모이드 함수에 통과시켜 주고, 손실함수를 크로스 엔트로피로 바꿈.
+	
+	3.	파이토치에서는 torch.nn.BCELoss(size_average=True)로 구현함. 
+	
+		Q. 여기서 size_average는?
+		size_average (bool, optional) – Deprecated (see reduction). 
+		By default, the losses are averaged over each loss element in the batch. 
+		Note that for some losses, there are multiple elements per sample. 
+		If the field size_average is set to False, the losses are instead summed for each minibatch. 
+		Ignored when reduce is False. Default: True
+		
+		즉, 배치의 손실을 평균낼 것인지, sum할 것인지를 결정하는 인자임.
+		deprecated 됨. 기본적으로 평균을 냄.
+		
+		
+		
