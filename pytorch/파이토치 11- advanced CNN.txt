@@ -1,0 +1,45 @@
+파이토치 11: advanced CNN
+
+	1.	Inception 모듈: 이미지를 처리할 때, n*n의 n을 결정하는 것이 문제임. 
+		이 경우 단순히 여러 필터를 다 적용해서 concat하면 안되나? 라는 아이디어. 먼저 1*1 필터를 적용한 뒤 다양한 n의 컨볼루션 필터를 적용, 그 결과를 concat함.
+		
+	2.	여기서 왜 1*1필터를 적용하는가?
+		56*56*64의 이미지가 있다고 하자. 여기에 1*1*64의 컨볼루션을 적용하면, 64차원의 dot product를 수행하는 것과 같음. 
+		이 결과 값으로 56*56*1사이즈가 나옴. 여기에 여러개 (32개) 필터를 적용하면, 56*56*32의 레이어가 나옴. 즉, 적용하는 필터의 개수에 따라 출력의 depth가 결정됨.
+		
+	3.	이를 통해 연산량을 획기적으로 낮출 수 있음. 
+		가령 기존의 나이브한 방법으로 192*28*28을 32*28*28로 줄이는 것에 비해 
+		16*1*1(필터 16개의 1x1 conv)를 활용해 16*28*28로 줄인 뒤 이를 192*32*32로 늘리는 방법의 연산이 1/10 수준임.
+		
+	4.	계속 깊이 쌓아나가는 것이 항상 모델 성능 개선의 방법이 될 수 있는가?
+						"No!"
+		- vanishing gradient
+		- 따라서 back prop이 잘 작동 못함
+		- degradation problem: 깊이만 쌓은 경우 정확도는 금방 포화(saturated)되어 급격히 떨어짐(degraded)
+		
+	5.	Deep residual learning (ResNet)
+		: 이전 레이어의 출력 값을 이번 레이어의 출력에 + 연산 해줌.
+		- bottleneck으로 연산의 차원이 맞지 않는 문제와 연산 효율성 개선?!
+		
+			보틀넥이란 이전 혹은 이후의 레이어에 비해 적은 뉴런을 포함한 뉴럴넷을 지칭함.
+			이러한 레이어를 활용해 feature representation을 압축하도록 뉴럴넷을 강요함.
+			
+			CNN(구글 inception 네트워크)에서는,
+			보틀넥 레이어는 feature map의 수(즉, 채널)를 줄이기 위해 더해짐. (일반적으로는 각 레이어마다 늘어나는 경향이 있음)
+			1*1 conv를 사용해 더 작은 출력층을 만들어 냄으로써 구현됨.
+			
+			
+			The bottleneck in a neural network is just a layer with less neurons then the layer below or above it. 
+			Having such a layer encourages the network to compress feature representations to best fit in the available space, 
+			in order to get the best loss during training.
+
+			In a CNN (such as Google's Inception network), 
+			bottleneck layers are added to reduce the number of feature maps (aka "channels") in the network, 
+			which otherwise tend to increase in each layer. 
+			This is achieved by using 1x1 convolutions with less output channels than input channels.
+			
+			
+		
+	6.	Densenet: 
+		ResNet을 전체 레이어의 아웃풋에 적용한 버전, 이전의 아웃풋을 더 먼 레이어까지 전달해줌
+	
