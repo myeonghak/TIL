@@ -1,0 +1,98 @@
+[나의 요약]
+- 고차원으로 갈수록 redundant한 공간이 늘어남에 따라 유클리드 거리 척도는 실제 유사한 데이터 포인트가 작은 거리값을 갖게 될 것이라는 보장을 해주지 못함
+- 코사인 유사도를 사용할 수 있지만, 이는 좋은 해결책이 되지 못할 수 있음.
+- 저차원 공간 내로 임베딩 한뒤 문제를 해결해야 좋은 결과를 얻을 수 있음(유클리드 거리를 사용해도)
+
+
+
+
+https://stats.stackexchange.com/questions/99171/why-is-euclidean-distance-not-a-good-metric-in-high-dimensions
+https://stats.stackexchange.com/questions/29627/euclidean-distance-is-usually-not-good-for-sparse-data-and-more-general-case
+
+- sparsity가 문제가 아니라 high dimension이 문제임
+- 유클리드 거리 척도는 고차원 공간에서 좋은 메트릭이 아님.
+	이를 수식적으로 증명하고 있음
+- 정규분포의 예를 들어, 2차원에서는 대부분이 중간에 위치해 있지만 3차원에서는 그보다 더 적은 수의 데이터가 중간에 위치해 있음을 생각해볼 수 있음.
+	이 경우 차원이 올라가면 올라갈수록 고차원 공간 내에서 정규분포를 따르는 데이터가 있다고 할지라도 각각의 샘플 사이의 거리는 굉장히 멀어질 것을 추측할 수 있음
+	
+- 머신러닝의 대부분 상황에서는 probabilistic metric space를 가정하지 Euclidean metric space를 가정하는 경우는 흔치 않음.
+	유클리드 거리는 선형적인 성질을 가지기 때문에 시각화하기도 좋고 직관적이며 선형대수를 적용할 수 있음으로 쉽게 와닿지만 대부분의 ML 상황에서는 확률적이고 정보이론적인 거리를 사용하는 것이 좋음
+	(samthebest 가 말함)
+
+- In short, as the number of dimensions grows, 
+the relative euclidean distance between a point in a set and its closest neighbour, 
+and between that point and its furthest neighbour, 
+changes in some non-obvious ways
+	-> 즉 차원이 증가함에 따라 집합 내 데이터 포인트와 최근접 이웃, 그리고 그 포인트와 가장 먼 이웃간의 거리는 불분명한 방식으로 변함.
+	-> 이것이 결과에 나쁜 영향을 미칠지는 내가 달성하고자 하는 목적과 데이터의 형태에 따라 다름. (samthebrand)
+	
+- It is a matter of signal-to-noise. Euclidean distance, due to the squared terms, 
+is particular sensitive to noise; but even Manhattan distance and "fractional" (non-metric) distances suffer.
+	-> 이것은 시그널과 노이즈의 문제임. 유클리디언 거리는 제곱 항을 사용하기 때문에 노이즈에 특히 민감함.
+	-> 그러나 맨하탄 거리나 "fractional" (비모수적) 거리 역시 이러한 증상을 겪음.
+	
+	-> in fact high-dimensional data can become easier. If you have a lot of (redundant) signal, and the new dimensions add little noise.
+	즉, 고차원이 될수록, 여분의 시그널을 많이 가지고 있을 경우 새로운 차원은 적은 노이즈만을 더한다고 함.
+
+- Some people believe that cosine distance is better than Euclidean on high-dimensional data. 
+I do not think so: cosine distance and Euclidean distance are closely related; 
+so we must expect them to suffer from the same problems. 
+However, textual data where cosine is popular is usually sparse, and cosine is faster on data that is sparse - 
+so for sparse data, there are good reasons to use cosine; 
+and because the data is sparse the intrinsic dimensionality is much much less than the vector space dimension.
+	-> 어떤 사람은 코사인 거리가 고차원 데이터에서 유클리드 거리보다 낫다고 이야기함. 그러나 나는 그렇게 생각 안함. 코사인과 유클리드는 매우 밀접하게 관련되어 있음.
+	하지만 text 데이터에서는, 대부분의 경우 매우 sparse함. 내재적인 차원은 데이터의 벡터 스페이스의 차원보다 훨씬 작기 때문에 잘 작동한다고 봄(?)
+	유클리드보다 cosine이 매우 빠르다는 장점도 있음.
+	
+	
+- So in the end, it still depends on your data. If you have a lot of useless attributes, 
+Euclidean distance will become useless. If you could easily embed your data in a low-dimensional data space, 
+then Euclidean distance should also work in the full dimensional space. In particular for sparse data, such as TF vectors from text, 
+this does appear to be the case that the data is of much lower dimensionality than the vector space model suggests.
+	-> 요약하자면, 데이터 내에 필요없는 특성이 많이 포함되어 있으면, 유클리디언은 의미없어질 것임.
+	-> 저차원 데이터 공간내에 데이터를 임베딩 할 수 있다면, 유클리드 거리는 잘 작동할 것임.
+	-> sparse한 데이터에서는(텍스트의 TF 벡터처럼), 데이터는 실제 데이터의 벡터스페이스에 비해 훨씬 작으므로 저차원 공간에 매핑한 뒤 유클리드를 사용해야 잘 작동할 것임.
+	
+
+
+
+
+
+
+Why is Euclidean distance not a good metric in high dimensions?
+
+Q. 
+I read that 'Euclidean distance is not a good distance in high dimensions'. 
+I guess this statement has something to do with the curse of dimensionality, but what exactly? 
+Besides, what is 'high dimensions'? I have been applying hierarchical clustering using Euclidean distance with 100 features. 
+Up to how many features is it 'safe' to use this metric?
+
+나는 '유클리드 거리는 높은 차원에서 좋은 거리가 아니다'라고 읽었습니다. 
+이 진술은 차원의 저주와 관련이 있다고 생각하지만 정확히 무엇입니까? 
+게다가 '높은 차원'이란 무엇입니까? 
+저는 100 개의 특징을 가진 유클리드 거리를 사용하여 계층 적 클러스터링을 적용했습니다. 
+이 측정 항목을 사용하는 것이 '안전'한 기능은 몇 개입니까?
+
+
+
+[O]ur intuitions, which come from a three-dimensional world, 
+often do not apply in high-dimensional ones. In high dimensions, 
+most of the mass of a multivariate Gaussian distribution is not near the mean,
+but in an increasingly distant “shell” around it; and most of the volume of a high-dimensional orange is in the skin, not the pulp.
+If a constant number of examples is distributed uniformly in a high-dimensional hypercube, 
+beyond some dimensionality most examples are closer to a face of the hypercube than to their nearest neighbor. 
+And if we approximate a hypersphere by inscribing it in a hypercube, 
+in high dimensions almost all the volume of the hypercube is outside the hypersphere. 
+This is bad news for machine learning, where shapes of one type are often approximated by shapes of another.
+
+3 차원 세계에서 온 우리의 직감은
+종종 고차원적인 것에는 적용되지 않습니다. 높은 차원에서
+다변량 가우시안 분포의 질량 대부분은 평균에 가깝지 않습니다.
+그러나 점점 더 멀어지는 "껍질"에서; 고차원 오렌지의 대부분은 과육이 아닌 피부에 있습니다.
+일정한 수의 예제가 고차원 하이퍼 큐브에 균일하게 분포되어 있으면
+일부 차원을 넘어서 대부분의 예는 가장 가까운 이웃보다 하이퍼 큐브의면에 더 가깝습니다.
+그리고 우리가 그것을 하이퍼 큐브에 새겨서 하이퍼 스피어를 근사한다면,
+높은 차원에서 하이퍼 큐브의 거의 모든 볼륨은 하이퍼 스피어 밖에 있습니다.
+이것은 한 유형의 모양이 종종 다른 유형의 모양에 의해 근사되는 머신 러닝에게는 나쁜 소식입니다.
+
+
