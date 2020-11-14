@@ -1,0 +1,13 @@
+[vs code 사용 팁]
+
+1. 콘다 연결하기
+	- 콘다 프롬프트를 직접적으로 연결할 필요 없이, 파이썬 기본 인터프리터를 변경해 주면 됨
+	- ctrl+shift+p로 python: select interpreter로 conda env를 지정
+	- 그 뒤 Terminal: select default shell로, powershell이 아닌 cmd로 변경 해 줌
+	- 재실행 하면 제대로 설정이 된 것을 확인할 수 있음
+
+
+- 새로운 터미널 열기
+: ctrl+shift+5
+
+- 

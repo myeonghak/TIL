@@ -1,0 +1,25 @@
+[torch 메서드]
+
+1) torch.mm(): 
+matrix multiplication을 의미함
+
+2) torch.clamp():
+죔쇠로 고정시켜 놓는다는 의미로, 텐서의 최소 최대값을 설정할 수 있음.
+
+3) torch.randn():
+random number를 원하는 크기로 만들어 냄.
+* requires_grad=True는 가중치 계산을 하겠다는 의미로, 이를 True로 놓으면 업데이트를 하며 그렇지 않으면 상수로써 사용함
+
+4)torch.transpose(x,1,0): transpose해줌.
+
+5) torch.stack(tensors, dim=0, )
+
+Concatenates a sequence of tensors along a new dimension.
+All tensors need to be of the same size.
+
+
+6) model.eval() / model.train()
+몇몇 특정 레이어/파트에 스위치처럼 작용하는 메서드로, 트레이닝과 추론(검증) 단계에서 다르게 작동하도록 유도함.
+예를 들어 드롭아웃, 배치놈 등은 학습시에 필요한 것들인데, 이들은 추론 단계에서 작동하지 말라고 돌려주는 것임.
+https://stackoverflow.com/questions/60018578/what-does-model-eval-do-in-pytorch
+

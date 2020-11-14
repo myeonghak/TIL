@@ -1,0 +1,17 @@
+.파이토치 9: softmax classifier
+
+	1.	다중 클래스 분류를 위해서 소프트맥스 분류 모델을 사용함.
+	
+	2.	이 때, W의 차원은?
+		피처가 2차원일 때, W는 2xn차원이 됨. 이 때 n은 출력 클래스의 개수임.
+		
+	3.	torch에서의 멀티클래스 모델을 구현할 때 주의할 점
+		1) y는 one-hot이 아닌 클래스 값임
+		2) nn.CrossEntropyLoss()에는 softmax를 통과시키지 않은 값을 넣음. 
+		그 이유는 이 메서드에 이미 softmax 연산이 포함되어 있기 때문.
+		
+	4.	cross-entropy vs Negative log loss (torch. NLLLoss)
+	
+	5.	train test split시에는, train DataLoader와 test DataLoader를 구분해서 정의함
+	
+	6.	멀티 레이블 분류에서도 cross entropy를 사용하면 됨.
