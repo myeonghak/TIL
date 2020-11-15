@@ -1,0 +1,32 @@
+[고차원 공간에서의 클러스터링]
+
+https://towardsdatascience.com/how-to-cluster-in-high-dimensions-4ef693bacc6
+
+* 이 글에서는 최적 클러스터의 수를 알지 못하는 상황이기 때문에 사전에 클러스터의 수를 지정해줄 필요가 없는 밀도 기반의 방법을 적용함
+
+
+Euclidean distance breaks in High Dimensions
+-> 유클리드 거리는 고차원에서 잘 작동하지 않음. 
+"Consequently, the mean distance between data points diverges and looses its meaning 
+which in turn leads to the divergence of the Euclidean distance, 
+the most common distance used for clustering."
+
+* 4가지 클러스터링 알고리즘의 종류
+1. Hierarchical clustering
+2. Centroid-based clustering
+3. Graph-based clustering
+4. Density-based clustering
+
+
+
+Hierarchical (agglomerative) clustering is too sensitive to noise in the data. 
+Centroid-based clustering (K-means, Gaussian Mixture Models) can handle only clusters with spherical or ellipsoidal symmetry.
+
+
+
+
+
+https://en.wikipedia.org/wiki/Clustering_high-dimensional_data
+https://www.researchgate.net/post/Which-clustering-technique-is-most-suitable-for-high-dimensional-data-sets
+http://mistis.inrialpes.fr/~girard/Fichiers//paper_COMPSTAT06.pdf
+
