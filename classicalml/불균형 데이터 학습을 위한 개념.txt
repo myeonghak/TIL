@@ -1,0 +1,49 @@
+[Imbalanced data의 ML 학습을 위한 개념 정리]
+
+
+* weighted cross entropy
+	 https://towardsdatascience.com/deep-learning-with-weighted-cross-entropy-loss-on-imbalanced-tabular-data-using-fastai-fe1c009e184c
+	 
+	 - imbalanced classification에서 사용되는 로스펑션
+	 - 특정 class에 weight를 부과해서 학습에 참고하도록 유도할 수 있음.
+	 - 동등한 loss를 적용하면 단순히 majority class를 예측함으로써 loss function을 최소화하는 전략을 취할 것인데, 이를 방지하는 역할을 해줌.
+
+* calibration
+	- Calibration 이란 모형의 출력값이 실제 confidence (또는 이논문에서 calibrated confidence 로 표현) 를 반영하도록 만드는 것입니다. 
+	예를 들어, X 의 Y1 에 대한 모형의 출력이 0.8이 나왔을 때, 80 % 확률로 Y1 일 것라는 의미를 갖도록 만드는 것입니다.
+	- 의사결정 프로세스의 한 구성요소로 사용될 때, calibration이 매우 중요함.
+	
+	- measure 방법
+		1) Reliability Diagram : Reliability diagram 은 expected accuracy 와 observed accuracy 를 각각 x, y 축으로 하여 그린 그래프.
+		2) Expected Calibration Error (ECE) : ECE 는 confidence와 실제 accuracy 의 차이의 기댓값으로 연속형 변수에서 이를 실제로 구할 수 있는 방법은 없습니다. 
+			따라서 "binning" 을 통해 위와 같이 approximation 됩니다.
+		3) Negative log likelihood:
+			Negative log likelihood 는 통계 모형의 quality 를 평가하는데 표준적으로 많이 쓰이는 measure, 크로스 엔트로피임.
+			NLL은 calibration을 의미하는 measure로 보기는 어려우나 calibration도 어느정도 반영하고 있다고 볼 수 있음.
+			
+	- post-processing calibration: 모델의 예측확률로부터 calibrated probability를 구하는 과정, val set이 필수적으로 필요함(training시 사용한 val set과 같아야함)
+		1) Histogram Binning
+		2) Platt scaling
+		3) Temperature scaling
+	출처: https://3months.tistory.com/490 [Deep Play]
+	
+
+* AUPRC
+https://velog.io/@anjoy/ML-%EA%B8%B0%EC%B4%88-%EC%8C%93%EA%B8%B02
+	- AUPRC - PRC(Precision - Recall Curve) AUC(Area Under the Curve)
+	- AUPRC는 x축을 Recall, y축을 Precision으로 설정하여 그린 곡선 아래의 면적 값인 모델 평가 지표
+	- 두 값은 서로 반비례하는 관계를 가지고 있기 때문에 x축 오른쪽으로 갈 수록 하향하는 곡선을 가지게 됨
+	- Precision과 Recall 두 지표다 1에 가까우면 좋은 모델이기 때문에 AUPRC의 값도 1에 가까울 수록 좋은 모델
+	
+* cost-sensitive learning
+https://machinelearningmastery.com/cost-sensitive-learning-for-imbalanced-classification/
+	- Cost-Sensitive Resampling
+	- Cost-Sensitive Algorithms
+	- Cost-Sensitive Ensembles : A second distinct group of methods is techniques designed to filter or combine the predictions 
+		from traditional machine learning models in order to take misclassification costs into account
+		즉, 기존의 모델에서 도출된 예측 결과를 오분류 오차를 감안하는 새로운 메타러닝 모델에 투입하여 앙상블함?
+		
+* F-beta score
+	- The F-beta score is the weighted harmonic mean of precision and recall, reaching its optimal value at 1 and its worst value at 0.
+	- from scikit learn 공식 문서!
+	- F2, F0.5 등 메저를 의미함
