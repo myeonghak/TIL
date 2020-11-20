@@ -1,0 +1,31 @@
+SVD 2 - Steve Brunton
+
+1.	X라는 행렬이 있고, 열벡터 x_1,x_2,...,x_m이 있음. 여기서 열벡터는 예를 들어 한 사람의 magapixel 얼굴 사진을 넣을 수 있음. 
+그래서 m개의 사람 얼굴 사진을 쭉 늘려서 벡터로 넣는 것임. 혹은 물리 시스템 내의 유체 공간(flow field)의 순간적인 스냅샷을 넣을 수 있음. 
+여기서는 n개의 픽셀/원소를 가지고 있다고 하겠음. (n*m matrix)
+
+2.	SVD는 이러한 행렬을 3 부분으로 쪼개어 주는 것임. 
+
+3.	여기서 U, V는 unitary matrix, 혹은 orthogonal matrix라고 부르고 sigma는 대각행렬이라 부름(diagonal matrix). 
+여기서 sigma는 m개의 대각원소만을 갖고 나머지는 0임.
+
+4.	U와 V의 칼럼은 각각 n개의 원소를 가지고 있음. 또한 이 열벡터들은(sigma의 원소도) 물리적이고 직관적인 해석을 가짐. 
+
+5.	우리의 예시에서 X 행렬의 한 열벡터가 얼굴의 사진을 의미한다고 할 때, U의 열벡터들은 X의 열벡터 공간 내의 분산에서 차지하는 중요도의 순서에 따라 내림차순 정리한 형태를 띰. 
+즉 U_1은 U_2보다 더 중요하다는 것임. 이들은 소위 ‘eigenfaces’라고 말할 수 있음
+
+6.	U, V는 unitary matrix라고 했음. 이는 UU^T=U^TU=I(n*n 단위행렬)이라는 말이고, U의 열벡터들은 orthonormal함. 
+즉 모두 orthogonal하며 unit length를 가짐. 이는 우리의 데이터가 놓인 n차원의 vector space를 완전히 표현하는 기저 벡터를 제공함. 
+(provide a complete basis for our n(?) dimensional subspace)
+
+7.	이는 V에도 마찬가지임. VV^T=V^TV=I, 여기서 I는 m*m.
+
+8.	sigma는 대각행렬인데, 원소가 위계적으로 정리되어 있음. 즉 sigma_1은 sigma_2보다 크거나 같고 그 뒤로도 쭉 그러함.
+
+9.	U와 V의 열벡터는 각각 left/right singular vectors로 불리우고, sigma의 원소는 singular values로 불림. 
+모두 중요도 순으로 내림차순 정리되어 있음. 이러한 성질은 중요하지 않은 벡터와 특이값 부분을 잘라내버리고 핵심적인 정보로만 원래 행렬을 복원하는 기법을 적용할 수 있게 함.
+
+10.	U는 eigenface, sigma의 원소는 그들의 중요도 혹은 에너지, V^T의 열벡터는 X의 열벡터를 복원해내기 위한 U의 혼합물을 의미함. 
+flow field 사례에서는 eigen time-series임. 즉 샘플간을 관통하는 성질로 볼 수 있음
+
+11.	이러한 SVD는 존재함이 보장되어 있고, unique함.
