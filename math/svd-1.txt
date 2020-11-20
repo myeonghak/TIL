@@ -1,0 +1,12 @@
+SVD 1 - Steve Brunton
+
+1.	SVD - dimensionality reduction
+2.	SVD는 Fourier transformation의 Data driven generalization이다.
+3.	좌표 체계를 우리에게 주어진 데이터를 기준으로 “tailor”함. 
+	- “tailored” to specific problem
+4.	이를 어떻게 사용할 수 있는지를 보여주려고 함.
+5.	Ax=b라는 선형 시스템이 있을 때, A가 정방형이 아닐 경우, 선형 회귀를 위해 SVD를 사용할 수 있음.
+6.	예를 들어 환자의 위험 정보를 담은 행렬 A가 있을 때, 발병 여부 b에 대해 맵핑할 수 있는 x를 주어진 데이터 A로부터 LSE로 추정할 수 있음. Ax=b
+7.	SVD를 PCA의 기저벡터로 사용할 수 있음. PCA는 고차원 데이터를 dominant한 패턴/상관관계의 관점에서 이해하고자 할 때 자주 사용됨.
+8.	이는 구글 pageRank, 얼굴 인식, 추천 시스템 등에 적용됨
+9.	아주 간단하고 interpretable함. 어떤 matrix가 있어도 understandable하게 만들 수 있음
