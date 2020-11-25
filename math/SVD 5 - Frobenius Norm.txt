@@ -1,0 +1,6 @@
+SVD 5 - Frobenius Norm
+
+1. Ekhard&Young theorem에 의하면 최적의 rank r approximation은 r rank의 truncated SVD임.
+2. 이때 근사행렬과 원행렬의 차이를 측정하는 지표로 Frobenius Norm을 사용함. 
+3. X-X tilde의 Frobenius norm을 최소화하는 X tilde는 truncated SVD라는 것.
+4. 이 Frobenius norm은 행렬의 모든 원소를 하나의 긴 벡터로 늘려서 제곱합을 한 뒤 루트를 취해준 것임
