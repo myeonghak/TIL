@@ -1,0 +1,14 @@
+SVD 6 - method of snapshots
+
+1. method of snapshot은 SVD를 계산하는 방법으로, 
+QR factorization을 수행하기 위해 충분한 메모리가 없을 경우 사용함.
+
+2. 데이터가 너무 클 경우, 앞서 살펴본 상관계수 행렬을 element by element로 구함으로써 느리지만 적은 메모리로 계산할 수 있음. 
+한 열벡터와 한 열벡터의 내적을 계산하여 상관관계 행렬의 원소를 구해 m*m 행렬을 완성함. 이는 그렇게 크지 않기 때문에 메모리에 올릴 수 있을 것임.
+
+3. 이렇게 sigma와 V를 구하면, 
+SVD 3행렬 식을 사용해 U를(마찬가지로 계산하려면 아주 거대한, n*n 행렬을 구해야하는) 
+단순히 X, V, sigma의 식으로 표현할 수 있을 것임.
+
+4. QR factorization이나 randomized technique 들을 쓸 수 있으면 그렇게 쓰는게 좋은데, 
+희귀한 몇 경우에는 이런 방법이 효율적일 수 있다는 것임.
