@@ -1,0 +1,11 @@
+SVD 7 - Matrix Completion and the Netflix prize
+
+1. 추천시스템에서, 사용자와 영화의 관계를 나타내는 행렬은 대부분이 결측임.
+ 이를 행벡터/열벡터 간의 dominant한 관계를 규명함으로써 completion할 수 있을 것임.
+ 
+2. 사용자마다 어떤 취향을 가질 텐데, 이는 일종의 Principal component로 볼수도 있음. 
+장르라던지, 어떤 영화의 dominant한 특징을 eigentaste로 표현할 수 있을 것임.
+
+3. 영화와 유저 행렬을 복원하기 위해서는, low rank SVD가 존재할것이라는 가정 하에 SVD를 수행함
+
+4. RPCA(Robust PCA): missing value가 많은 상황에서도 robust하게 작동하는 PCA기법
