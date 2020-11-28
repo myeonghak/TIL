@@ -1,0 +1,32 @@
+SVD 8 - Unitary Transformation
+
+1. SVD 3행렬의 U,V는 unitary matrix임.
+
+2. Steve의 해석 of Unitary matrix: 그들이 transform하는 벡터 스페이스 내의 모든 두 벡터간의 각도와 벡터들의 길이를 preserve함.
+
+3. 다른 unitary matrix의 예시로는 Fourier transformation이 있음. 
+	이는 한 벡터스페이스를 취해 새로운 representation으로 coordinate transformation해줌. 
+	모든 vector를 취해 더 간단한 형태로 만들어주는 새로운 representation으로 그들을 rotate해주는 것.
+	
+4. 이때 Fourier transformation을 취해줄 때, 
+	그리고 SVD에서 unitary matrices를 통해 rotation을 취해줄 때 원 공간 내의 벡터들 사이의 각(angle)은 그대로 남아 있음. 
+	이는 마치 하늘의 성단이 시간/계절의 흐름에 따라 형태를 유지한 채 이동하는 것과 유사함.
+
+5. <x,y>=<U_x,U_y>(여기서 <>는 내적). 즉 unitary transformation을 양 벡터에 취해주어도 그 내적의 값은 같다.
+
+6. 만약 X가 복소수 행렬일 경우, X^*은 complex conjugate transpose가 됨. 만일 실수 행렬일 경우 그냥 transpose.
+
+7. 얼굴 데이터의 예시를 가져오면, 벡터간의(각 얼굴간의) 각도와 길이를 유지하는 것은 매우 중요함. 
+	얼굴을 구분하고 식별하는 데 그러한 정보를 유지해야하기 때문임. 이 얼굴 벡터들이 기하학적으로 어떻게 연관되어 있는지를 파악해야함. 
+	따라서 이 unitary matrix는 정보를 encode하는 방법이라고 볼 수 있음.
+
+<사진>
+
+8. 만일 m차원 실수공간 내 단위벡터 v의 집합이 구 형태로 있다고 해볼 때, 
+	선형변환 X를 곱해 Xv로 나타낸다면 이 구는 v의 방향으로 sigma의 크기만큼 찌그러진 타원형이 됨. 
+	달리 말해 singular value만큼 principal axis가 stretch됨.
+	
+9. 반대로 n차원 실수공간 내 단위벡터 u가 있으면, uX를 통해 타원을 만들 수 있음.
+
+10. 요컨대 unitary matrix는 coordinate transformation을 rotate하여 새로운 더 단순한 좌표시스템으로 맵핑하는 
+	Fourier transformation의 data driven generalization임.
