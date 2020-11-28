@@ -1,0 +1,34 @@
+SVD 9 - Linear systems of equations, Least squares regression, Pseudoinverse
+
+1. SVD를 응용하는 아주 유용한 방법 중 하나로, 선형방정식을 풀 수 있음. Ax=b의 식을 푸는 것임.
+
+2. 대부분의 선형대수 강의에서는 A가 정방형이고 역행렬이 존재할 때를 가정하여 문제를 해결하는 방법을 보임. 
+	그러나 이보다 더 강력한 일반화를 SVD를 통해 수행할 수 있음.
+
+3. 두가지의 경우를 들 수 있음. underdetermined, overdetermined
+
+4. underdetermined의 경우, n<m인 경우임. 
+	즉 열벡터보다 행벡터가 더 짧아서, 넓적한 직사각형의 모습을 띠는 행렬임. 
+	일반적으로 이는 모든 x를 결정할만큼 충분한 자유도가 없어서 무수히 많은 해를 가지게 됨.
+
+5. overdetermined의 경우, n>m인 경우임. 가늘고 긴 행렬의 형태를 띰. 
+	이 때, 일반적인 b를 가정하면 모든 equation을 만족하는 x는 하나도 없게 됨. 
+
+6. 일반적인 선형시스템의 해를 구하듯이 역행렬을 구할 수 없기 때문에, 역행렬을 근사한 A^+를 구함. 
+	이 는 ‘A dagger’라고 읽음. A=UsigV^T -> A^+
+
+7. Ax=b 식의 A에 위의 SVD식을 대입함. 이 때 SVD의 각 행렬이 unitary 행렬이기 때문에 전개가 매우 간단해짐. 
+	역행렬을 양변에 취해주어
+	x=(SVD)^-1*b
+	-> x=A^+b의 형태로 정리 가능. 여기서 X는 X tilde가 맞음. 
+	이는 우리가 구할 수 있는 best-possible approximation이기 때문임.
+
+8. A^+=U*sig^-1*V^T를 (left) moore-penrose pseudoinverse라고 부름.
+
+9. underdetermined case에서, 
+	A*x-tilde=b를 만족하는 최소의 norm2를 구하는 문제가 됨. (||x-tilde|| s.t. Ax-tilde=b) 
+	이는 A와x를 최소한의 에너지로 곱해서 b를 만드는 해법으로 이해할 수 있음.
+
+10. overdetermined case에서는, 
+	||Ax-tilde-b||_2를 최소화하는 최소제곱해를 구하는 문제가 됨. 
+	
