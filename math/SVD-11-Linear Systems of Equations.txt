@@ -1,0 +1,33 @@
+SVD 11 - Linear Systems of Equations
+
+1. Ax=b의 해는 b가 A의 열공간 내에 있을 때에만 존재함.
+
+2. underdetermined, overdetermined case에서 대개의 경우 앞서 정리한 성질을 따르지만, 반례를 얼마든지 들 수 있음.
+
+3. col(A): 열공간 A는 열벡터의 선형결합으로 표현될 수 있는 모든 벡터의 집합
+
+4. col(A)=col(U hat) 즉 U hat(economy singular vector)열공간은 A의 열공간과 같음 -> range라고 불림.
+
+5. 다음 부분공간(subspace)은 orthogonal complement라고 불리는데, 이는 A의 span내에 있는 것을 제외한 모든 것을 의미함. 
+	이를 kernel(A^T)로 나타낼 것임.
+	
+6. 따라서 벡터 b 중에는 A의 열공간 내에 있는 것도 있고, 
+	벡터 b가 orthogonal complement에 있어 해가 없는, 방향이 수직인 경우도 있음.
+	(there are directions perpendicular where that vector b was in that orthogonal complement, there will be no solution)
+	
+7. 이 두가지가 R^n, 즉 column에 의해 주어진 열공간을 모두 커버함.
+
+8. 마찬가지로 A의 행공간은 V의 열공간과 같음. 즉 row(A)=col(V)
+	또 Kernel(A)는 null space를 의미하는데 이는 선형 시스템의 해가 됨.
+	(set of all vector x, s.t. Ax=0) 매우 중요.
+	
+9. 이제 해의 형태, 즉 유일해/무한해/해없음에 대해 논의할 수 있게 됨.
+10. 정확한 해가 존재하는 경우는 b가 col(A)에 존재하는 경우임.
+11. 반대로 col(A)의 바깥에 b가 존재하는, 
+	즉 몇 component가 A의 열공간 바깥에 존재하는 경우에는 Ax=b를 만족하는 정확한 해가 존재하지 않게 됨.
+	(보통 overdetermined case)
+	
+12. 무한해의 경우는, dim(ker(A))!=0인 경우임. (보통 underdetermined case)
+	x_null이라는 다른 벡터가 있다고 할때, A*x_null도 역시 O가 되므로,
+	A(x+x_null)=b를 만들어 보면 해가 여러개가 나오는 것을 알 수 있음. 그렇기 때문에 무한히 많은 해를 갖게 됨 (8:30~)
+	
