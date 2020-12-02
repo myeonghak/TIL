@@ -1,0 +1,30 @@
+SVD 12 - Linear Regression
+
+1. 이제 데이터로부터 회귀모델을 만들어 볼 것임. 예측모델링을 위해 가진 가장 효율적인 알고리즘 중 하나임. 
+	모델링의 첫번째 스텝으로 선형 회귀를 써볼수 있을 것임.
+	
+2. Ax=b에서 A,b는 알려져있고, 우리는 x 벡터가 알고 싶음. 
+	우리의 예시에서는 overdetermined의 경우를 살펴볼 것인데, 이는 일반적인 데이터 상황에 가장 흔한 경우임.
+	
+3. A의 각 열벡터는 나이, 몸무게, 흡연 여부등의 변수가 들어가고 각 행은 한 환자의 의료 정보라고 생각해보자. 그리고 b는 질병의 발생 확률임. 
+
+4. 우리가 하고싶은 것은 학습데이터에서 x를 잘 추정해서, 
+	나중에 새로운 환자가 들어왔을 때 새롭게 모델을 학습하지 않고도 활용가능한 수준의 예측성능을 나타내는 결과값을 뽑아내어 활용할 수 있게끔 하는것임.
+	
+5. 여기서 x는 완벽하게 찾아낼 수 없음. 그저 우리의 데이터셋에서 최선의 x를 찾아내는 것.
+
+6. factor a를 가지고 b를 예측할 때, 데이터에 최적의 선을 찾아내는 수식은 factor의 수가 변화함에 따라 변하지 않음. 
+	factor가 매우 큰 matrix 형태로 구성되더라도 동일한 수식으로 계산하는 점이 편리함. 이 경우 최적의 plane을 찾아내는 과정이 됨.
+	
+7. a가 1차원일 경우를 생각해보자. b=ax라는 수식의 해를 구하려 함. 여기서 pesudo-inverse를 구하기 위해 a 행렬에 SVD를 수행함. 
+	A^+=V*(sig)^-1*U^T 인데, 여기서 U=a/||a||_2, sig=||a||_2(l2 norm), V=1이 됨.
+	
+8. 만약 outlier가 존재할 경우 우리의 best fit slope의 distribution을 심하게 bias할 것임. 
+	이는 수식이 Sum of Squared Error를 최소화하려 하기 때문임.
+	
+9. 따라서 gaussian 분포를 따르는, noise가 gaussian한 데이터의 경우에는 SVD에 기반한 regularly squares는 
+	white noise를 매우 잘 처리함.
+	
+10. 이러한 문제를 robust statistics, compressed sensing, sparsity에 대한 접근으로 해결하는 방법을 배울 것임.
+
+11. 또한 선형회귀에 robust variants가 존재함. 이 알고리즘들은 l1 norm 제약식(penalty term)을 이용해 robust fit을 찾으려 함.
