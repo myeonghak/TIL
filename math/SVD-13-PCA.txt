@@ -1,0 +1,98 @@
+SVD 13 - PCA
+
+1. 이번 시간에는 PCA 계산을 위해 SVD를 사용하는 방법을 배워보려고 함. 
+	PCA는 확률통계론의 차원축소 기법의 초석임. 
+	통계적인 분포를 갖는 큰 데이터가 있을 때, 이 데이터로부터 모델을 만들기 위해 저차원 패턴을 발견하고자 할 때 활용함.
+
+2. 피어슨의 1901년 논문에서 시작되어 아주 오래되고, 연구가 많이 이루어진 기법임
+
+3. Steve Brunton은 SVD의 통계적 해석으로 분류(pigeonhole)함. 
+
+4. PCA는 데이터셋 내의 통계적 분산을 표현하는 data-driven hierarchical coordinate system을 제공함. 
+	즉, PCA는 데이터셋 내의 방향의 관점에 기반한 좌표계 시스템으로, 이 시스템은 데이터 내의 최대의 분산을 잡아냄.
+
+5. 여기서 데이터 매트릭스 X는 SVD와 약간 다른 notation을 사용할 것임. 
+	SVD에서는 각 열이 각각의 data sample을 의미한 반면 PCA를 설명할때는 각 행이 data sample을 의미하고 열이 feature를 나타냄. 
+	여기서 X가 deterministic하지 않고, 정보 내의 statistical variability를 갖는다고(확률적 분포를 따른다고) 가정할 것임. 
+
+6. 여기서 최대한 많은 정보를 표현해주는 feature들 간의 dominant한 combination을 찾아내려 할 것임. 
+
+7. 과정
+	1) row-wise mean을 구함 (Xbar)
+	2) 앞서 구한 행평균 행렬을 기존의 X에서 빼줌. demean origial matrix. 
+	B=X-Xbar 이는 mean-centered data로 만들어주어 평균이 0에 위치하게끔 유도하는 것임. 
+	이로써 X가 zero-mean gaussian distribution을 따른다고 가정하고 계속해감.
+	3) B의 행을 기준으로 covariance matrix를 계산함. C=B^T*B
+	4) eigenvalue decomposition of C:
+		이 C의 leading eigenvectors를 구할 것임. 이는 X의 singular vector들과 Principal component들과 관련이 있을 것임.
+		V_1^T*B^T*B*V_1은 SVD에서 구했던 방식을 상기하면 됨. 
+		이는 B^T*B의 가장 우세한, 큰 eigenvector를 나타내고 이 이후로 V_2, V_3...를 계속 구해나갈 수 있을 것임. 
+		물론 그에 상응하는 eigenvalue도 구해질 것.
+		
+		정리하면 CV=VD의 형태로 표현됨. V는 고유벡터, D는 고유값 행렬.
+		
+8. 여기서 B를 SVD하여, B=U*sig*V^T라고 표현하겠음.
+
+9. T=BV, 여기서 T는 principal component가 되고 V는 loadings라 표현함.
+
+10. 따라서 X를 (SVD에서 하듯이) maximal variance의 방향으로 decompose하고, 
+	이를 principal component로 불림. 
+	loading은 각각의 data sample이 이러한 principal component를 얼마나 가지고 있는가를 의미하게 됨. 
+	
+11. 8.,9.에서 살핀 식을 정리하면 T=U*sig가 됨.
+
+12. 결과적으로, PC와 loading을 mean-centered X인 B를 SVD함으로써 얻어낼 수 있었음. 
+	이것이 핵심임. 이는 X의 공분산행렬의 eigenvector를 구함으로써 PC를 구했던 기존의 고전적인 방법의 다른 접근임.
+	
+13. CV=VD의 D(eigenvalues)와 B=U*sig*V^T의 sig는 이 PC가, loading이 잡아내 주는 데이터셋의 분산의 양을 나타내줌. 
+	따라서 고차원 데이터를 앞의 2개의 PC 혹은 loading의 2 벡터의 관점에서 표현한다면, 
+	얼마나 많은 분산이 capture되는지를 D 행렬의 첫 2 eigenvalue가 가진 분산을 갖는지를 계산함으로써 구할 수 있는 것임.
+	
+14. lambda=sigma^2인데, 여기서 람다는 PC값이고 sigma는 singular value값임. 
+	이것이 바로 데이터 내의 PC가 갖는 분산의 양임. 이로써 r개 까지의 PC가 표현하는 분산의 양을 fraction으로 구할 수 있음.
+	
+	
+[추가 정리]
+T=BV에서,
+T=principal component이고 B는 mean-centered matrix, V는 loading임.
+
+
+B는 (2,10000)의 shape을 가지고 있고,
+이를 SVD한 U, sig, V는 각각
+U: (2,2)
+sig: (2,)
+V: (10000,2)으로 VT는 (2,10000)임
+
+T=BV로 돌아가보자.
+T라는 principal component는 (2,2)행렬이고,
+B는 (2,10000) 행렬,
+V는 (10000,2) 행렬임.
+
+U,sig,VT는 각각 rotate/stretch/rotate를 의미함. 이 rotate의 대상은 벡터라고 생각하자
+T==BV==Usig에서,
+Usig는 벡터를 rotate->stretch한 것이고
+BV는 U@sig@VT에 V를 곱했으므로 rotate(U)->stretch->rotate(V)한 것을 다시 V반대방향으로 rotate한 것으로 생각할 수 있음
+결과적으로 한 벡터를 rotate하고 stretch한 것이 Principal Component의 의미라고 볼 수 있음
+
+따라서 Principal component가 의미하는바는, 원래 행렬 B가 벡터 공간에 가하는 선형변환에서 V라는 rotation으로 축을 변환한 것임.
+PC에 원래 행렬을 곱하면, PC는 (2,2)이므로 (10000,2)@(2,2)가 되고, 이는 원래 데이터 분포에 (2,2)사이즈의 선형변환을 취해주는 것임.
+이를 통해 피처를 의미하는 열벡터의 선형결합으로 분포가 변형되고, 그 결과 축이 변화함
+
+다르게 해석하면 U@sig는 열벡터의 정보를 함축한 eigen-col(eigentaste, eigenfaces...)에 일정 singular value를 곱해주는 작업..
+
+
+
+
+이처럼 PCA를 variance가 큰 축을 찾아 그 위에 projection하는 과정이라 생각하면,
+demeaned matrix의 SVD를 수행함으로써 variance를 maximal하게 만드는 방향으로 decompose한 뒤 stretch하는 작업을 통해
+PC를 찾는다는 것임. PCA를 위해 SVD를 사용하는 것!
+
+https://stats.stackexchange.com/questions/134282/relationship-between-svd-and-pca-how-to-use-svd-to-perform-pca	
+meaning that right singular vectors V are principal directions and that singular values are related to the eigenvalues of covariance matrix
+공분산행렬을 eigen decomposition한  V@L@VT의 V와 SVD의 V는 같음, 여기서 L의 원소인 lambda는 X의 demean matrix를 SVD한 singular value와 연관이 있음.
+여기서 V는 principal direction으로 분산을 극대화하는 주축이 되는 vector를 가리킴
+
+
+
+
+
