@@ -1,0 +1,28 @@
+SVD 14 - SVD and optimal truncation
+
+1. truncated SVD에서 truncate할 랭크 r을 선택하는 것은 중요한 문제임.
+
+2. singular value 값에 로그를 취해 y축에 두고 그래프를 그리면 long tail의 형태를 띨 것임. 
+	우리는 여기서 elbow의 형태를 찾아서 적절하게 잘라낼 수 있는 부분을 찾고싶음. 상위 부분은 정보가 많이 들어있는 rank가 될 것이고, 꼬리부분은 noise로 볼 수 있을 것.
+	
+3. Gavish-Donoho의 2014년 논문에 이런 최적점을 찾는 방법이 소개됨. 
+
+4. 정확도와 효율성의 trade off에서 가장 최적의 지점을 찾는 것이 목표임.
+
+5. 이들은 X 행렬을 2개로 쪼갬. 
+	X=X_true+(gamma)*X_noise
+	여기서 X_noise는 (0,1) 정규분포를 따르는 노이즈 매트릭스.
+	
+6. 노이즈 매트릭스의 SVD는(singular value를 순서대로 정렬하여 시각화한 그래프를 그림, x축은 j / y축은 log(sigma_j)) 전체 행렬의 SVD 그래프에 포개어지게 그릴 수 있음
+
+7. 여기서 noise floor, 즉 노이즈 중 가장 큰 값log(sigma_1)보다 큰 singular value는 signal로 볼 수 있고 그 이하는 noise로 간주할 수 있음. 
+	따라서 noise부분을 truncate하기 위해 log(sigma_1)에 해당하는 rank r을 찾으면 이 지점에서 optimal하게 truncate할 수 있음.
+	
+8. 저자들은 데이터 내에 low-rank structure가 존재하고 gaussian noise matrix가 더해져 있을 경우 
+	noise matrix의 가장 큰 Singular value보다 큰 최초의 X의 singular value를 찾으면 그 지점이 optimal truncation point라는 것을 증명함.
+	
+9. X가 square하고, gamma가 알려진 least likely case에서는 truncate할 singular value의 지점 tau를 공식으로 유도할 수 있음.
+
+10. X가 rectangular하고, gamma가 알려져있지 않은 매우 흔한 경우. sigma의 median값과  aspect ratio Beta(n/m 혹은 m/n, 
+	이 값들은 X의 차원을 나타내는 값들)를 사용해 sigma_median이 noise distribution 내에 포함되어있다는 가정 하에 noise dist를 추정함. 
+	이는 데이터가 충분히 많을 경우 타당한 가정임. 이 추정한 noise dist를 근거로 tau를 계산해 냄. 이 공식에는 correction factor Omega가 포함되어 있음. 
