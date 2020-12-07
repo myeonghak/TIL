@@ -1,0 +1,69 @@
+SVM 1 - margin, hard margin SVM by 김성범
+
+1. SVM(support vector machine)은 고차원 데이터의 분류문제에서 좋은 일반화 성능을 가지며, 
+	학습 과정은 이차 방정식 문제(quadratic programming problem)를 해결하는 형태로 수식화될 수 있음.
+
+2. 일반적으로 머신러닝 알고리즘은 training loss를 줄여가는 과정에서 학습하고 따라서 일반화 성능은 training 성능과 trade-off 관계가 있는데, SVM의 경우에는 최적화 과정에서 일반화 성능이 극대화됨
+
+3. 또한 SVM은 통계적인 학습 이론에 기반함으로 이론적 배경이 매우 단단하고, 많은 관련 연구가 진행되어 있음.
+
+4. seperation hyperplane: 고차원 분류 문제에서, w^T*x+b=0를 충족시키는 w(normal vector of hyperplane)와 b(bias term)을 찾아내는 것이 목적임.
+
+5. two-class classification 문제: 두 클래스를 나누는 hyper plane은 무한히 많음. 이 중, 어떤 hyperplane이 좋은 hyperplane인가?
+
+6. training set에서의 margin을 극대화 = 일반화 오차를 최소화 = 좋은 예측 성능
+	여기서 margin이란?
+	
+7. margin: 각 클래스에서 가장 가까운 데이터 포인트 사이의 거리. 이 margin은 기울기 w로 표현 가능. 
+
+8. class를 1/-1로 나누어 표현하고, 위의 플레인을 plus plane, 아래의 것을 minus plane으로 부름. 이들은 서로 람다만큼 평행이동한 것으로 표현할 수 있음. 이 플레인은 각각 클래스의 마지막 점을 지나게 됨.
+
+9. x+는 plus plane위의 점, x-는 minus plane위의 점을 의미함. w^Tx+ + b=1, w^Tx- + b=-1임. x+=x- + lambda*w가 됨. 이를 정리하면 lambda=2/(w^Tw)임.
+
+10. vector norm: p-norm은 vector의 원소에 ‘절대값’을 취한 뒤 p제곱을 취하여 summation해준 값을, 1/p 제곱을 취해준 결과임. 위에서 구한 w^Tw는 l2-norm의 제곱을 의미함. 
+
+11. 이를 활용해 margin(x+와 x-사이의 거리)를 재정리하면 lambda*||w||_2가 되고, 이를 앞서 구한 람다의 관계식으로 다시 정리하면 2/||w||_2로 정리 가능
+
+12. 이 때 margin을 극대화해주고 싶으므로, 2/||w||_2를 max하면 되고, 이를 달리 표현해 역수를 취해주면 min 1/2*||w||_2를 구하면 됨. 이 때 계산상의 편의를 위해 l2-norm에 제곱을 취해 사용함
+
+13. convex optimization problem
+	- decision variable은 w와 b
+	- objective function은 seperatimg hyperplane으로부터 정의된 margin의 역수. 
+	- 제약식 (y_i(w^Tx_i+b)>=1)은 training data를 완벽하게 분리하는 조건식, “margin을 최소한 1보단 더 크게 하자”
+	- 목적함수는 quadratic, 제약식은 linear하므로 이를 quadratic programming(2차 계획법) 문제로 볼 수 있고, 이는 convex optimization 문제임. 
+	따라서 globally optimal한 solution이 존재
+	- training data가 linearly separable한 경우에만 해가 존재
+	
+14. Lagrangian Formulation
+	- 라그랑지 승수 alpha를 사용해 Lagrangian primal 문제로 변환
+	- w, b 그리고 alpha에 관한 primal식을 최소화하기 위해, w,b에 대해 각각 편미분함. 
+	- 이렇게 구한 관계식을 활용해 앞서 정의한 primal의 두 항에 대해 x,y,alpha의 관계식으로 정리함.
+	
+15. Lagrangian Dual
+	- 이렇게 정리함으로써 라그랑지 듀얼의 형태로 문제가 바뀜. 이는 alpha만 구하면 되는 형태임
+	- 이는 기존의 primal function보다 풀기 쉬운 형태임
+	- 목표함수 quadratic/제약함수 선형-> 2차계획법->오목함수 최적화->전역해존재
+	- optimization 문제가 x들의 내적만으로 표현되는데 이는 non-linear case로 확장하기 매우 좋은 성질임
+	- Lagrangian dual의 decision variable은 alpha이며 quadratic programming으로 해를 구할 수 있음
+	
+16. KKT(Karush-Kuhn-Tucker) 조건
+	- (w,b,alpha)가 Lagrangian dual의 최적해가 될 조건을 의미함
+	1) stationarity: w,b에 대한 편미분이 0
+	2) primal feasibility: margin이 1보다 크다는 제약식
+	3) dual feasibility: alpha_i>=0, 여기서 i는 1,2,...,n
+	4) complementary slackness: alpha와 margin제약식의 곱이 0이어야함
+	
+17. Characteristics of the solutions
+	- KKT 조건의 4) complementary slackness가 충족되는 경우들
+	1) alpha_i>0 and margin-1=0
+		: x_i가 plus plane/minus plane 위에 있음, 즉 x_i가 support vector임. 여기서 해당 alpha_i>0
+	2) alpha_i=0 and margin-1!=0
+		: x_i가 plus plane/minus plane위에 있지 않음, 해당 alpha_i=0
+		hyperplane을 구축하는 데 영향을 미치지 않음. 이 것이 SVM이 outlier에 강건한 이유임
+		
+18. 즉 x가 support vector인 경우에만 alpha_i>=0이므로 ( 3) dual feasibility에 의해) 이 x들만 가지고 optimal hyperplane, 즉 decision boundary를 구할 수 있음.
+	이를 sparse representation이라고 함.
+	
+19. 이제 임의의 support vector 값을 사용해 b를 구함. 이로써 w,b를 구해 SVM 모델링을 마치게 됨.
+
+20. 여기까지 선형으로 분리할 수 있는 경우를 살펴 보았음. 다음에는 비선형 SVM을 살펴 봄
