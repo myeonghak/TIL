@@ -53,3 +53,16 @@ A collection of what I learned day by day, what I found interesting today, what 
 <!-- ### Python -->
 
 <!-- - [-](ack/ack-bar.md) -->
+
+
+
+[최적 모델 선정 로직 변경]
+-> 에러 발생으로 인해 최적 모델 선정이 이루어지지 않는 현상을 방지하기 위해 설정한 예외 처리 구문 수정
+
+
+[기타 유종 예측 모델 에러 처리]
+
+Found unknown categories [53] in column 3 during transform
+-> one-hot encoding 시 encoder의 학습에 발견되지 않은 공휴일 정보가 예측용 test 데이터에 포함될 경우 발생하는 오류
+-> 학습에 사용된 공휴일 피처만 모델 예측에 활용할 수 있도록, one-hot encoder의 parameter로 "handle_unknown='ignore'"을 추가
+
