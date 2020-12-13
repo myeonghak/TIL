@@ -1,0 +1,22 @@
+Autoencoder
+
+
+
+Linear Autoencoder는 Activation func이 없는 오코인코더를 말함. 이 때 Squared Error로 학습시키면 PCA와 같은 Subspace를 학습하게 된다(단, PCA와 정확히 같은 기저는 아님. 단지 같은 subspace를 span할 뿐이다)
+	
+
+1.처음에 AE는 뉴럴넷의 초기값을 셋팅하는 pretrain 기법으로 사용됐다 (stacking autoencoder)
+	
+
+2.DAE(Denoising AE)
+	x’(노이즈섞인 인풋 x)가 들어가서,
+	x가 나오게 학습
+	-> 매니폴드를 잘 학습시키기 위해서, 매니폴드 공간에서는 똑같지만 입력 데이터 형태에서는 다른 조건을 형성한 것이다! 라고 썰을 풂.
+	
+
+3.CAE(Contractive AE):
+	DAE와 유사한 철학을 가짐, 어떻게하면 노이즈가 섞인 뒤에도 비슷한 매니폴드 공간을 학습할 수 있을까를 다른 텀을 사용해서 설계
+	
+
+4.AE의 용례
+	AE로 매니폴드를 학습하고, 이를 tsne로 시각화! (tsne와 같은 전통 차원축소 기법은 선형적인 매니폴드(?)를 잘 학습함, 따라서 매니폴드 내에 가까우면 비슷한 곳에 잘 정리됨. 그래서 한번 AE로 압축시키고 나면 전통적 기법을 다시 적용하곤 함)
