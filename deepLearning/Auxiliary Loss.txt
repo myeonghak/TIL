@@ -1,0 +1,8 @@
+Auxiliary Loss
+
+요컨대, 망을 너무 많이 쌓아 깊어질 경우 가중치 소실 문제를 해결하기 위해 각 모듈의 아웃풋을 전체 모델의 아웃풋과 비교한 로스를 계산해 학습에 반영하는 방법. 
+전체 모델의 손실을 대신하기 때문에 대체 손실, 임시 손실이라고 부름.
+
+https://stats.stackexchange.com/questions/304699/what-is-auxiliary-loss-as-mentioned-in-pspnet-paper
+
+아래에서 주황색 부분이 AL을 계산하는 부분임
