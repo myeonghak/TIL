@@ -1,0 +1,29 @@
+bayesian deep learning / deep bayesian learning
+
+
+
+https://youtu.be/9saauSBgmcQ
+
+1.모델은 2 파트로 구성됨. agent와 environment. 
+	observation은 x, env는 theta로 표기함
+
+2.여기서 prior는 agent가 문제 해결을위해 도입하는 사전지식, 그리고 agent가 데이터를 보기 전에 세계에 대해 내리는 가정을 말함.
+	prior p(theta): marginal sistribution over theta
+	likelihood p(x|theta) : 관측된 데이터가 theta가 주어졌을 때의 세계의 상태에서 생성되는 과정을 묘사함
+	posterior p(theta|x): 데이터 관측 후 전체 세계에 대한 agent의 지식. 
+	세계의 모든 state에 대해, 사전분포와 데이터와 일관성있는 state를 묘사하는 분포로 생각할 수 있음. 이는 하나의 state가 아니라 여러개의 state임. 이 점이 바로 bayesian learning과 MLE방식의 핵심적인 차이임. MLE는 단지 데이터를 설명하는 세계의 하나의 state만을 찾아냄. 이로써 agent가 세상에 대해서 모르는 불확실성을 잡아냄. bayesian model은 미래의 데이터에 대해 효용을 극대화할 것으로 기대되는 액션을 취함.
+
+3.베이지안 모델의 장점
+	- 완벽한 모델의 특성, 방향에 대해 보여줌. 컴퓨테이션 자원이 충분할 경우, 완벽한 모델을 계산해 낼 수 있다고 함. 자원이 충분치 않아도 방향을 제시해 줌
+	- 모델 내의 inductive bias, prior knowledge에 대해 explicit하게 표현함.
+	- 불확실성에 대해 통합된 처리를 취함
+	- 통계학, 기타 응용 과학의 common language
+
+4.rigidity issue
+	- 모델이 틀릴 경우 학습 역시 틀릴 수 있음
+	- 모든 사전 지식이 joint distribution으로 encode될 수 없음
+	- 조건부 분포에 대한 단순한 분석 형태(?)
+
+5.정의
+	bayesian deep learning: 딥러닝에 bayesian 방법을 적용
+	deep bayesian learning: 베이지안 러닝에 딥러닝 방법을 적용
