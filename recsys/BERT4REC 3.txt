@@ -1,0 +1,21 @@
+BERT4REC-3
+
+1. masked token을 예측하면서, sequential한 representation을 학습함. 이는 w2v (cbow, skip-gram)방식이 아이템을 임베딩하는 것과는 차이가 있음.
+	
+
+2.test에서는 원래 bert의 fine-tuning처럼, 마지막 아이템에만 masking함으로써 학습을 마무리해줌. 
+	
+	여기서 ground-truth가 score 기준 첫번째로 나오도록 유도해 줌. 물론 다른 상품이, 다른 유저의 sequence에서 등장했던 바에 근거하여 (일종의) 추천되어 score가 최고로 계산될 수는 있음. 그러나 test set에서의 fine-tuning like 학습을 통해 ground truth가 1위로 나오도록 조정.
+	
+
+3.skip-gram & CBOW와의 차이
+	-> 이들은 BERT4Rec의 간단한 모델로 볼 수 있음.
+	1) one self-attention layer로, attention weight가 uniform함(?)
+	2) item embedding이 공유되지 않음 (아이템간에)
+	3) positional encoding 없음, mask는 seq 중 1개에만
+
+4.original BERT와의 차이점
+	1) pretrain model인 BERT와는 달리 도메인마다 데이터가 상이해 end-to-end로 구성
+	2) next sentence loss와 segment embedding이 사용되지 않음
+	3) 유저의 모든 seq을 하나로 뭉쳐서 봄
+	-> 개선의 여지가 많음
