@@ -1,0 +1,32 @@
+Bias and Variance
+
+
+
+1. 데이터 셋을 두개로 나눔. 트레인과 테스트
+
+2. 이 중 트레인 셋에 어느정도 맞는 선형 모델과, 완벽히 일치하는 구불선을 그려보자
+
+3. 선형모델은 우리가 가진 현재의 데이터를 맞추지 못하므로, high bias
+	구불선은 우리가 가진 현재의 데이터를 다 맞추므로, low bias
+
+4. 미래의 데이터를 맞춰봤을 때, 선형모델의 결과간에 분산이 적음, low variance
+	구불선의 결과간의 분산은 큼, high variance
+
+5. 결과적으로는, 현재 데이터에 잘 맞냐가 bias, 미래 데이터간에 격차가(컨디션 많이 타냐) 크냐가 variance
+
+6. 이를 보완해서 중간에 있는 최적 모델을 찾기 위한 방법으로는(오버피팅을 방지하기 위한 방법으로는) 정규화, 배깅, 부스팅을 사용
+
+7. bias는 data의 true model에서 얼마나 먼지를 나타내는 정도. training set에서 주로 계산, 다른 정의로는 학습 알고리즘의 잘못된 가정에서 발생하는 오류를 의미.high bias는 underfitting을 야기.
+	: The bias error is an error from erroneous assumptions in the learning algorithm. High bias can cause an algorithm to miss the relevant relations between features and target outputs (underfitting). (wikipedia-bias_variance_tradeoff)
+	
+	
+
+8. variance는 data set별로(train/val/test) prediction 간에 얼마나 격차가 발생하는 지를 나타냄. 다른 정의는 train set의 작은 fluctuation에 얼마나 민감하게 반응하는지가 variance를 의미, high variance는 overfitting을 일으킴
+	: The variance is an error from sensitivity to small fluctuations in the training set. High variance can cause an algorithm to model the random noise in the training data, rather than the intended outputs (overfitting).
+
+
+19.12.19
+
+
+
+20.08.10에 수정
