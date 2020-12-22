@@ -1,0 +1,33 @@
+Building Recsys using Factorization Machine
+
+https://youtu.be/9lifSPf1Y5o
+
+1.추천시스템의 optimization은 세가지의 특성으로 평가됨
+	1) general recommender
+	2) speed&scalability
+	3) sparse data set
+
+2.다른 알고리즘에 비해, 위처럼 FM은 sparse한 상황을 위해 설계되었고 빠른 속도가 강점임
+
+3.여기서 too accurate은 무조건 맞추는 것으로 멈추지 않고, general한 추천을 제공하여 유저에게 소비를 유도하는 측면에서 지나치게 메트릭상의 성능만 높다는 것
+
+4.FM의 수식
+
+5.FM의 한계
+	1) 모델링시 피처를 잘 이해해야함
+	2) dense feature vector를 갖는 binary 문제에서는 좋지 않은 성능
+	3) 상대적으로 새로운 알고리즘(2016년 당시), 그러나 대부분의 언어에서 지원
+	4) general model이므로 예측 역시 general함
+
+6.getting the data right
+	- 시스템에서 발생하는 데이터는 모델링 수행 전에 조사되고 구조화되어야  함.
+	- 여기에는 정보의 3가지 그룹, 유저/컨텐츠/컨텍스트를 고려함.
+	- 여기서 고려해야할 중요한 정보가 있고, 그렇지 않은 정보가 있음.
+	- 일반적으로 한 집단의 유저/컨텐츠가 대부분의 활동을 만들어냄(롱테일)
+
+7.turi
+	: 머신러닝 모델을 low-latency RESTful하게 호스팅/매니징 해주는 프레임워크
+
+8.sFrame
+	: FM에 적합한 형태로 데이터프레임을 취급해줌. 메모리 사이즈보다 큰 데이터를 다룰 수 있게 해줌.
+	spark RDD와 유사함.
