@@ -1,0 +1,14 @@
+Catboost
+
+
+
+적은 데이터에서도 잘 작동함. 특히, 해시태그같은 다종의 범주형변수에 특히 잘 작동함
+
+1.cat_features 인자를 넣어주지 않으면, 모든 변수를 numeric으로 취급. 넣어주면 해당 변수가 string타입이어도 저절로 분류해주나봄
+
+
+2.https://towardsdatascience.com/catboost-vs-light-gbm-vs-xgboost-5f93620723db
+
+
+
+19.12
