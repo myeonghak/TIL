@@ -43,7 +43,7 @@ A collection of what I learned day by day, what I found interesting today, what 
 -	[Vim](/vim)
 -	[VS Code](/vscode)
 -	[Google Colab](/colab)
--	[Jupyter](/jupyter)
+-	[Jupyter Notebook](/jupyter)
 -	[markdown](/markdown)
 -	[LaTex](/latex)
 -	[Algorithms](/algorithms)
