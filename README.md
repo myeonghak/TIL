@@ -50,6 +50,8 @@ A collection of what I learned day by day, what I found interesting today, what 
 -	[Computer Science](/cs)
 -	[Database](/db)
 -	[Web](/web)
+-	[Environment Setting](/Environment Setting)
+
 <!-- ### Python -->
 
 <!-- - [-](ack/ack-bar.md) -->
