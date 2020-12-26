@@ -14,40 +14,38 @@ A collection of what I learned day by day, what I found interesting today, what 
 ##### Main Languages
 
 -	[Python](/Python_Tips)
--	[R](/R)
+-	[R](/R_programming)
 -	[SQL](/sql)
 
 ##### Machine Learning
 
 -	[Statistics](/statistics)
--	[Mathematics](/math)
--	[Classical Machine Learning](/classicalml)
--	[Hyperparameter Optimization](/hptuning)
--	[Recommender Systems](/Recsys)
--	[NLP (Natural Language Preprocessing)](/NLP)
--	[MAB (Multi Armed Bandits)](/MAB)
--	[Image processing](/imageprocessing)
--	[Graph Neural Network](/graphnetworks)
--	[Data preprocessing](/preprocessing)
--	[Anormaly detection](/anormaly)
+-	[Linear Algebra](/Linear_Algebra)
+-	[Classical Machine Learning](/Classical_Machine_Learning)
+-	[Hyperparameter Optimization](/Hyperparameters_Tuning)
+-	[Recommender Systems](/Recommender_Systems)
+-	[NLP (Natural Language Preprocessing)](/Natural_Language_Processing)
+-	[MAB (Multi Armed Bandits)](/Multi-Armed_Bandits)
+-	[Image processing](/Image_Processing)
+-	[Graph Neural Network](/Graph_Neural_Networks)
+-	[Anormaly detection](/Anormaly_Detection)
 
 ##### Other tools for ML
 
--	[Visualization](/Visualization)
--	[XAI (eXplainable AI)](/XAI)
+-	[Visualization](/visualization)
+-	[XAI (eXplainable AI)](/eXplainable_AI)
 
 ##### Miscellaneous
 
 -	[Git](/git)
 -	[Linux](/linux)
 -	[Vim](/vim)
--	[VS Code](/vscode)
--	[Google Colab](/colab)
--	[Jupyter Notebook](/jupyter)
+-	[VS Code](/Visual_Studio_code)
+-	[Google Colab](/Google_Colab)
 -	[markdown](/markdown)
 -	[LaTex](/latex)
 -	[Algorithms](/algorithms)
--	[Computer Science](/cs)
+-	[Computer Science](/Computer_Science)
 -	[Database](/db)
 -	[Web](/web)
 -	[Environment Setting](/Environment_Setting)
