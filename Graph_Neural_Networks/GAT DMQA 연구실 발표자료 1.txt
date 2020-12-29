@@ -1,0 +1,55 @@
+Graph Attention Network DMQA 연구실 발표자료 - 1
+
+
+
+https://youtu.be/NSjpECvEf0Y
+
+
+
+1.어텐션이란, 모델이 집중해서 학습해야하는 곳 까지도 모델이 학습하게 만들자! 라는 매우 딥러닝스러운 철학으로 시작된 접근법임. 기존의 매우 깊고 복잡한 구조의 end to end leanrning과는 달리 조금 더 스마트한 접근으로 볼 수 있음. 
+	- 해석 가능성과 모델 성능을 동시에 얻음
+
+2.Graph Attention Network는 그래프 데이터에 이러한 중요 노드에 가중치를 취하는 어텐션 접근을 적용하자는 아이디어임.
+
+3.attention의 이해를 위해 이것이 처음 적용된 자연어 문제를 설명함. 텍스트 데이터는 순서가 존재하고(sequential), co-occurence를 고려해야함.
+
+4.seq2seq: 초기 기계번역에서 사용되던 방법으로, 입력 시퀀스를 RNN 인코더로 입력받아 고정된 길이의 context vector를 만들고, 이를 decoder로 복원함.
+	그런데 인풋/아웃풋 데이터가 길어지면 문제가 발생함.
+	- long-term dependency
+	- exploding/vanishing gradient 문제
+
+5.초기 seq2seq 논문 발췌: Relieve the encoder from the burden of having to encode all information into fixed length vector.
+	seq2seq에서 다음 토큰을 예측함에 있어 주목해야할 것을 기억하는 것이 아이디어
+
+6.key query value
+	: 컴공에서의 dictionary 자료구조에 이 개념을 적용.
+	1) key가 있고, 그에 상응하는 value가 있음. 즉, 유재석(key)이 있고 그 부캐의 이름인 지미유(value)가 있음.
+	2) 내가 유재석의 부캐 이름이 궁금할 경우, “유재석”이라는 query를 날리고 dictionary 내의 key값들과 “유재석(queery)”과의 유사도를 계산함.
+	3) 이제 유사도점수를 계산함. key별로 유사도 값과 그에 상응하는 value값을 곱해줌.
+	4) 그 결과로 나온 result 리스트(len(result)==len(dictionary)) 를 모두 sum해줌. 이로써 유사도 점수가 높은 key의 value값은 최종 값에 많이 반영되고, 그렇지 않은 요소들은 적은 기여도를 가질 것임
+
+7.key query value in attention
+	1) attention: query와 key의 유사도를 계산한 후 value의 가중합을 계산하는 과정
+	2) attention score: query와 key의 유사도, 즉 value에 곱해지는 가중치
+	3) considerations
+	 - key, query, value: 벡터 형태(행렬, 텐서 가능)
+	 - similarity function
+
+8.attention in seq2seq 기계번역
+	- attention: query와 key의 유사도를 구한 뒤 value의 가중합을 구하는 과정
+	- key, value: hidden state of encoder in h_i
+	- query: (현재 문제는 2번째 자리의 예측하려고 하는 상황) s_2의 decoder의 hidden state 값
+	- feature: context vector at time step2
+	- alpha_i2: i번째 hidden state와 query의 유사도를 구한 attention score. 
+	softmax(f(h_i,s_2))
+	여기서 softmax는 확률값을 구하는 과정
+	- feature: sum(alpha_i2*h_i)를 구하면 가중합 값이 나옴. 이 값이 바로 feature임
+
+9.이 과정을 s_3에 대해 수행하면 당연히 다른 context vector 값이 나옴을 알 수 있음
+
+10.Attention in RNN based document classification
+	- attention: query와 key의 유사도를 구한 뒤 value의 가중합을 계산하는 과정
+	- feature: document vector
+	- key, value: hidden state of RNN h_i
+	- query: learnable parameter vector c (context vector)
+
