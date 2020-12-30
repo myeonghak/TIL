@@ -1,0 +1,46 @@
+Graph Attention Network DMQA 연구실 발표자료 - 2
+
+
+
+1. 유사도 함수(==alignment model)
+	- 벡터간 유사도를 구하는 다양한 방법을 similarity function으로 활용 가능
+	- Bahdanau Attention: additive and concat 방법. GAT에서도 사용됨.
+	- Luong: 다양한 유사도 함수를 제시함
+	- Transformer: Scaled-dot product
+
+2.feature representation by RNN based Networks
+	- Bi-RNN with attention
+	- Hierarchical Attention Networks: word encoder/word attention/sentence encoder/sentence attention의 구조로 위계적 계층 구조에 어텐션을 적용함
+
+3.feature representation by CNN based Networks
+	- text CNN
+	- Character level CNN
+
+4.Attention to self-attention
+	- 앞서 살펴본 RNN, CNN 기반 방법은 다음 문제를 가짐
+	- RNN: 
+	sequential한 처리로 인해 병렬화 불가, 연산 시간과 복잡도높음
+	기울기 폭발/소실
+	- CNN:
+	long path length between long-range dependencies: window 사이즈 내의 hidden만 활용 가능
+
+5.Self-attention
+	: RNN, CNN 쓰지 말고 attention만으로 feature representation을 만들어보자
+	- query/key/value: hidden state of word embedding vector
+	- scaled dot-product attention
+	- multi-head attention
+
+6.Transformer
+	: scaled dot-product self attention
+	- key/query/value: hidden state of word embedding vector
+	- 유사도 함수: dot product
+	- A(q,K,V)=sum(softmax(f(K,q))*V)
+	- f(K,Q)=Q*K^T, 
+	(K=X*W^K, Q=X*W^Q, V=X*W^V)
+	- 여기서 X는 word embedding vector의 hidden state, W^K/Q/V는 각각 key/query/value를 위한 (가중치가 공유되지 않는) weight matrix임.
+	- 이 weight matrix로 같은 word embedding matrix인 X를 선형변환(linear transformation)했다는 것. 같은 X지만 다양한 방식으로 표현했다는 것임. (나는 여기서 transform이 이름의 유래가 아닐까 함)
+	- 이 이후 key의 차원의 root 값으로 scale 해줌.
+
+7.multi-head attention
+	- head를 쪼개어, 같은 X를 더 다양하게 바라보겠다는 접근으로 이해할 수 있음.
+	- 임베딩을 쪼개어주는건가?
