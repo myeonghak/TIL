@@ -1,0 +1,63 @@
+GAN 발표
+
+
+
+1. 어텐션은 주목할 부분도 알아서 학습하자라는 철학을 가짐.
+
+2.GAN은 노드,엣지로 이루어진 Graph 데이터의 중요 노드에 가중치를 부여하는 Attention 메커니즘을 사용해 학습하는 Network 모델.
+
+3.어텐션이란?
+	1) RNN은 시계열 데이터 학습에 용이함. 하나의 시퀀스에 대해 히든 스테이트를 생성하는 모델.
+	2) seq2seq은 RNN 인코더와 디코더를 사용해, 인코더의 아웃풋으로 하나의 고정된 컨텍스트벡터로 표현하고, 디코더에서는 이 컨텍스트벡터를 받아 하나씩 순차적으로 토큰을 예측함.
+	3) 인풋 시퀀스가 길어지면, 롱텀 디펜던시 문제와 가중치 소실/폭발 (가중치를 중복해 곱하기때문에 도중에 지나치게 크거나 작은 값이 나오면 기울기가 터지거나 소실)
+	4) 모든 정보를 하나의 고정된 길이의 벡터로 인코딩 해야하는 부담으로부터 인코더를 구제해주자! 라는 아이디어로 등장한 것이 어텐션임. 
+	5) 어텐션 개념 이해를 위해 dictionary 자료구조를 이용함. query, key, value가 등장함. query와 key의 유사도를 구하고(유사도 함수를 사용) 그에 해당하는 value를 반환하게 되는 구조를 연상. 기존의 자료구조에서는 query와 key가 같으면 유사도가 1, 다르면 0으로만 출력되지만, 어텐션에서는 주목해야할 정도에 따라 달라지며 이 정도를 주어진 태스크 해결을 위해 조정해 나가는 것을 생각할 수 있음. 이렇게 구한 유사도 벡터를 value 벡터와 곱해주면 유사도가 높은 value의 영향을 많이 받은 벡터값이 출력됨. 이 결과값을 총합하여 최종 결과로 사용
+	6) 요약하자면, 어텐션은
+	1. key,value의 유사도 측정
+	2. 유사도와 value를 곱한다.
+	3. 2. 값의 총합을 리턴한다
+	이 과정을 따른다.
+	-> sum(sim(query, key)*value)
+	이를 어텐션스러운 수식으로 바꾸면,
+	-> A(q,K,V)=sum(softmax(f(K,q))*V)
+	즉, q와 K의 유사도를 구한 후 V와의 가중합을 구함.
+	7) attention score: q,K와위 유사도를 구한 후 Value에 곱해지는 가중치
+	8) 여기서 q,K,V는 벡터/매트릭스/텐서가 될 수 있음. 또한 다양한 유사도 함수를 사용 가능.
+
+4.seq2seq 기계번역에서의 어텐션 활용
+	q: decoder의 t+1기 hidden state 
+	K,V: encoder의 t기(까지 각 시점마다의) hidden state
+	feature: sum(softmax(sim(q,K))*V)
+	
+	이처럼 각 시점마다의 context vector가 생성됨.
+
+5.RNN문서 분류에서의 어텐션 활용
+	q: 학습가능한 파라미터 벡터(context vector) 
+	K,V: RNN의 hidden state h_i
+	feature: document vector
+
+6.유사도 함수
+	1) addictive/concat (GAN)
+	2)dot product
+	3) scaled-dot product
+
+7.다양한 RNN 네트워크
+	1) biRNN
+	2) hierarchical Attention Network
+
+8.CNN 구조의 적용
+	1) textCNN
+	2) character level CNN
+
+9.RNN/CNN의 한계
+	1) ￼￼￼RNN은 병렬 컴퓨팅 불가, 연산 시간 및 복잡도가 높음, 
+	기울기 소실, 롱텀디펜던시 문제(이 두 문제는 어텐션 적용해도 존재) 등을 겪음
+	2) CNN은 long path length between long-range dependency 문제. 윈도우 사이즈를 넘어서는 간격으로 중요한 토큰들이 배치되어 있다면, 이 두 토큰의 정보를 학습하기 위해서는 깊은 Conv layer를 쌓아야함
+
+10.Attention  to self-attention
+	(Attention is all you need, Transformer)
+	: RNN/CNN을 사용하지 않고, Attention만 가지고 feature representation 해보자!
+	1) K,Q,V 모두 hidden state of word embedding vector X와 각각(k,q,v)에 대한 weight matrix W의 곱으로 표현 됨
+	K=XW^k, 
+	2) scaled dot-product를 유사도 함수로 사용
+	3) Multi-head attention
