@@ -1,0 +1,114 @@
+GAN
+
+
+
+Transformer
+	1) dot product를 사용한 이유:
+	계산효율적이고,행렬 연산에 최적화된 방식이기 때문. 텐서 연산으로 쉽게 계산 가능
+	2) scale
+	: key의 차원에 루트를 취해준 값으로 scaling 해줌. k가 너무 커짐에 따라 softmax 값이 지나치게 작은 기울기를 갖게끔 되는 것을 막기 위함.
+	3) multi-head attention
+	: k,q,v에 대한 weight matrix W를 head의 개수만큼 쪼개어 셀프 어텐션 계산을 해준 뒤 마지막에 concat한 뒤 Wo를 곱해 선형변환을 취해 줌.
+	4) 성과
+	계산 효율성 증대, 병렬화 가능, long range dependency 학습 가능, 해석 가능성 증가
+
+1.Graph Neural Network
+	1) Node(vertex)와 edge로 구성된 자료구조. node는 시스템 내의 원소를, edge는 node간의 상호작용 혹은 상관관계를 나타냄
+	2) 유클리드 공간에 표현할 수 없음. (e.g. 3D mesh, social network, molecular structure)
+
+2.matrix representation of 
+	1) node feature matrix
+	각 행은 그래프의 노드를 의미하고, 각 열은 노드의 특징(feature)를 의미함.
+	
+	2) adjacency matrix
+	각 행과 열은 노드를 의미하고, 그 안의 값은 연결 상태를 나타냄. 노드의 수가 n개 일때, 전체 매트릭스의 크기는 n*n이 됨.
+	
+
+3.matrix representation of edges
+	
+	1) undirected matrix
+	방향이 없고, 연결 상태만을 함축함. 
+	대칭적인 형태를 가짐.
+	
+	2) directed matrix
+	비대칭적인 형태를 가짐. 상행선은 있고 하행선은 없는 경우 등을 생각할 수 있음.
+	3) identity matrix를 더하면 자기자신과의 연결성을 표현할 수 있음.
+	4) weighted matrix
+	관계의 무게를 표현할 수 있음. 고속도로의 톨비를 생각하면 됨.
+
+4.GNN tasks
+	1) node level
+	노드 분류, 노드 회귀
+	2) edge level
+	엣지 분류
+	3) graph level
+	그래프 분류(텍스트 분류 등)
+	4) 각 노드가 이미지, 텍스트인 경우도 있음. 이미지 안의 개체간의 관계의 그래프, 텍스트 안의 토큰들의 관계에 대한 그래프를 생각할 수 있음.
+
+5.GNN learning process
+	1) 그래프는 sequential data와 다름
+	- 정해진 순서가 없음
+	- 여러개의 노드가 연결될 수 있음
+	- 다양한 그래프 구조를 가질 수 있음
+	2) 그래프 인코딩시 고려할 점
+	- 시간 순서가 없으므로 동시에 넣어야함
+	- 엣지를 따라서 정보가 이동함
+	- 타겟노드는 여러 노드에 영향을 받음
+
+6.GNN 학습 절차(그래프 구조를 반영한 노드 피처 업데이트)
+	- 그래프 정보가 입력으로 들어가서 출력으로 나옴
+	1) Aggregate/message passing
+	- message passing은 때때로 aggregate와 combine을 합친 절차로 표현되기도 함
+	2) Combine/update
+	3) Readout
+	
+
+7.GNN notation
+	1) graph=G(A,X)
+	2) h^(k)_v : k번째 그래프 레이어의 히든 임베딩 노드 v
+	3) v = target node
+	4) N(v) = neighbor node of v
+	5) u = N(v)의 원소 중 하나
+
+8.k-1번째 그래프 레이어와 k번째 그래프 레이어를 예시로 들어 학습 과정 설명
+	1) aggregate
+	: 이웃 노드들의 히든 임베딩을 aggregate해 요약된 형태로 만든다.
+	2) combine
+	: k-1기의 target node의 hidden state(임베딩 값)와 앞서 요약한 aggregated 정보를 결합한다. 이로써 k기의 target node hidden state로 업데이트함
+	3) readout
+	k 시점의 모든 node들의 hidden state들을 결합하여 하나의 요약된 정보로 만드는 과정
+	-> graph level의 task를 수행할때만 필요, 그 외에는 할 필요 없는 절차임
+
+9.Stacking CNN layer
+	1) 일반적으로 딥러닝 모델은 여러 layer를 쌓아 심층적인 구조를 가짐. 이를 통해 여러 이점을 취할 수 있음
+	2) CNN: 인지영역(receptive field)을 넓힐 수 있음. 더 넓은 영역의 정보를 얻을 수 있음
+	3) GNN: 그래프의 hop(노드간의 정보 이동)을 늘릴 수 있음. 여러 다리 건너서의 노드간의 정보 교환을 표현할 수 있게 됨
+
+10.GNN variants
+	1) aggregate, combine을 어떻게 정의하냐에 따라 다양한 방식의 모델을 사용 가능
+	2) aggregate, combine 함수는 모두 미분 가능해야함.
+
+11.GNN
+	1) Aggregation: 단순한 summation으로만 정보를 요약함
+	2) Combine단계에서는, aggregate한 정보를 W_neigh로 선형변환하고, 자기 자신의 hidden state 정보를 W_self로 선형변환한 뒤 더해주는 연산으로 처리, 그 뒤 Relu activation
+
+12.GNN(self-loop)
+	1) aggregation 과정에서, 자기 자신의 정보를 요약하는 것이 필요함. 
+	2) W_neigh=W_self=W
+	3) agg와 comb과정의 경계가 모호해짐. agg할 때 자기 자신의 정보도 함께 결합하도록 처리해줌. 
+
+13.GCN(Graph Convolution Network)
+	1) 그래프가 너무 커지면, 노드의 차수가 커짐에 따라 학습이 불안정해지고 민감해짐.
+	-> 차수(degree): 노드에 연결된 노드의 개수.
+	2) normalized aggregation
+	: 노드의 차수를 반영해서 normalize해줘야 한다! 
+
+14.GGN(Gated Graph Neural Network)
+	: 너무 깊은 레이어를 쌓으면 오버피팅과 기울기 소실 문제를 야기할 수 있음-> gated cell을 사용해서 해결
+	1) agg: 단순 합으로 처리
+	2) combine: GRU 셀을 사용, activation 대신 GRU가 추가되었다고 생각할 수 있음. 
+	
+	
+	
+	
+	
