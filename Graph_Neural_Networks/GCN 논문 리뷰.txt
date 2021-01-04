@@ -1,0 +1,25 @@
+GCN 논문 리뷰
+
+https://youtu.be/uqBsvoOY8jM
+
+
+1.라플라스 행렬(Laplacian matrix):Adj mat: A, Degree mat: D일때,  D-A로 정의됨. 
+
+2.그래프 라플라시안(graph Laplacian): 그래프가 얼마나 smooth한지를 나타내는 지표. 
+
+3.컨볼루션을 적용할 때, 기존의 컨볼루션은 spatial domain에서 이루어지지만 그래프는 spatial domain이 아님. 
+
+4.컨볼루션 정리(convolution theorem): 신호처리에서 사용되는 정리.
+	f*g(x)=F^-1(F(f)*F(g))
+	-> f*g(x)는 g라는 필터를 f라는 데이터에 컨볼루션 할 때, 푸리에 변환을 통해 frequency domain으로 바꿔준 뒤 곱을 하고, 이를 inverse하면 컨볼루션과 같다!
+	-> spatial domain에서 처리할 수 없기 때문에 푸리에 도메인으로 바꿔서 뉴럴 네트워크처럼 formulation해보자!
+
+5.spectral graph processing
+	: f ->(graph Fourier transform)->X^T*f->필터 g를 곱해줌->g(lambda)X^T*f->Inverse graph Fourier transform-> X*g(lambda)X^T*f-> g(L)*f
+
+6.앞서 정의한 라플라시안 행렬은 (symmetric 하므로?) eigendecomposition이 가능함. 
+	: L=U(lambda)U^T
+
+7.이 라플라시안 행렬은 그래프의 smoothness를 나타낸다고 했는데, 이 것이 빈도와 유사한 개념이라고 생각했다고 함.
+	: F(X)=U^T*X, F^-1(X)=UX.
+	orthonormal한 공간일 때, U^T=U^-1임. Fourier역시 orthonormal한 basis를 사용함. 
