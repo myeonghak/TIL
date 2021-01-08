@@ -1,0 +1,56 @@
+rank, 영공간, 열공간
+
+
+
+1. 만약 역행렬이 없는 경우에도 해는 존재할 수 있다.
+
+
+2. rank란 선형변환 이후 나오는 차원의 수를 의미함. 만약 rank가 full rank가 아니라면, 즉 차원의 수보다 랭크의 수가 작다면 선형 변환 후에는 차원이 줄어들게 된다. (transformation A has a rank of n)
+
+
+
+3. 이 경우에는 해가 없는 것은 아니지만, 선형 변환 후의 선/면 등의 위에 있는 벡터만 해가 될 수 있다.
+
+( you have to be lucky enough that the vector v lives somewhere on that line)
+
+
+
+4. full rank라는 말은 기저벡터가 공간의 모든 2차원을 생성해 낸다는 의미.
+
+(It means that basis vectors continue to span the full 2 dimensions of space, and the determinant is nonzero)
+
+
+
+5. column space: set of all possible outputs Av (선형 변환의 결과로 나올 수 있는 모든 벡터들의 집합)
+
+6. 2*2 행렬의 경우, 왼쪽의 두 수로 이루어진 열벡터는 i-hat이 도달하는 지점을 (where i-hat lands), 오른쪽의 열벡터는 j-hat이 도달하는 지점을 의미한다. 그리고 이 기저벡터에 선형변환한 결과들로 만들어진 span은 모든 가능한 결과물을 제공함.(the span of those transformed basis vectors gives you all possible outputs)
+
+
+
+7.다른 말로 하면, 열공간(column space)은 너의 행렬(선형변환)의 span을 의미함.
+
+
+
+8.따라서 좀 더 엄밀한 rank의 정의는, 열공간의 차원이라고 할 수 있음.
+
+
+
+9. 영공간(null space)
+ 0 벡터는 언제나 열공간에 포함되어 있음. full rank의 경우 0벡터에는 오직 0벡터만 land함. 만일 full rank가 아니면 (때때로 무한히?) 많이 앉음.
+
+
+10.이렇듯 원점에 도달하는 벡터들을 커널이라고 하고, 영공간이라고도 함. 선형 방정식 체계에서 보면, Ax=v에서 v가 0벡터일 경우 영공간은 모든 가능한 해를 제공함.
+
+
+
+
+
+[내 생각]
+
+만일 2차 연립 방정식에서 rank가 1일 경우.
+
+이 경우 이 선형변환의 결과물은 1차원이 되어버림. 즉 직선 위에 있는 무수히 많은 벡터가 영공간이 되고, 따라서 해는 무한히 많게 됨.
+
+rank가 2일 경우, 선형변환의 결과물은 하나의 평면이 되고, 커널은 선형변환을 단순히 되돌리는 것으로 찾을 수 있음. 이 경우의 결과물은 1개 뿐일 것임.
+
+30.
