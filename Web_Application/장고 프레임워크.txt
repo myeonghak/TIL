@@ -2,6 +2,8 @@
 
 
 
-URL(uniform resource locator): 네트워크에 살고 있는 자료의 위치
+1. URL(uniform resource locator): 네트워크에 살고 있는 자료의 위치
 
-1.URL Routing: 유저가 전달한 url 내부의 자료에 대한 정보를 장고 웹프레임워크에 전달하고, 이 정보(/book/1) 담당이 누군지를 URL Router(mapper, dispatcher)에게 물어봄. MVC에서는 controller라고 함. 이 URL Router는 이 요청을 urls.py 맵핑 정보를 뒤져 “book”담당 뷰에게 전달하고, 찾은 결과가 나오지 않으면 404 error가 발생함.
+2. URL Routing: 유저가 전달한 url 내부의 자료에 대한 정보를 장고 웹프레임워크에 전달하고, 이 정보(/book/1) 담당이 누군지를 
+URL Router(mapper, dispatcher)에게 물어봄. MVC에서는 controller라고 함. 
+이 URL Router는 이 요청을 urls.py 맵핑 정보를 뒤져 “book”담당 뷰에게 전달하고, 찾은 결과가 나오지 않으면 404 error가 발생함.
