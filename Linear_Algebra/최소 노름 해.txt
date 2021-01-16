@@ -1,5 +1,7 @@
 최소 노름 해
 
+(steve brunton 강의 중)
+
 (underdetermined, n<m)
 
 1.여기서 A는 n*m 행렬이다. 
