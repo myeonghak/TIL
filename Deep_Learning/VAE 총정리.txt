@@ -1,0 +1,39 @@
+VAE 총정리
+
+
+
+1. 우선 모델의 목표 자체가 AE와 다르다. training DB의 샘플 x를 ‘생성’해내는 모델을 만드는 것이 목표. AE는 반대로 매니폴드 공간 내로 축소하는 차원축소가 목표였음.
+
+2. 이 샘플 x를 잘 생성해내도록, p(x)를 극대화하는 것이 목표임. 
+
+3. 그런데 이 이미지를 랜덤하게 만들어내기보다는 latent space의 feature를 리모콘으로 조종하듯이 통제하고 싶다.
+
+4. 이를 위해(결과값의 통제를 가능하게 하기 위해) latent variable z를 prior distribution에서 sampling해서 사용한다. 
+
+5. 그리고 이 z를 g(-)라는 deterministic function(세타라는 파라미터를 갖는)에 넣어, x값을 잘 복원해내도록 하려고 함.
+
+6. 이때 z를 잘 컨트롤하기 위해서 다루기 쉬운 분포를 사용함. 주로 gaussian or uniform dist. 
+
+7. 그런데 이게 좀 직관에 반하는 점이 있음. 매니폴드 공간의 데이터 분포가 굉장히 복잡할거같은데 단순한 정규분포를 사용한다고 해서 잘 될까 싶은 것임.
+
+8. 그러나 딥뉴럴넷이기때문에 한두개의 레이어가 복잡한 매니폴드를 잡아내는 역할을 해낼 수 있다고 함.
+
+9. 이로써 우리는 prior(z의 분포, 우리가 선택한 간단한 분포)알고, conditional prob.도 정하고 가기 때문에 다 안다. 그렇다면 몬테카를로 방식을 적용해서 단순히 summation한다면 probability density estimation 할 수 있지 않나? 하고 접근이 가능함.
+
+10. 그러나 이게 안됨. 왜냐면, 2라는 이미지를 2를 살짝 쪼갠거랑, 살짝 옆으로 옮긴 것을 생각해보자. 이 중 후자가 더 원래 의미에 가까움. 그런데 MSE를 구해보면 전자가 더 가깝게 나옴. 그 말은 Maximum likelihood 방식으로 계산해서 p(x)를 구해보면, 전자가 더 크게 나온다는 말임. 그러나 우리가 원하는 것은 후자의 p(x)가 더 잘나오길 바람. 
+
+11. 결국 그냥 prior distribution에서 샘플링해서 학습하면 제대로 학습이 안된다. 이 말은 나와야할 x들이 안나오고 엉뚱한 x들이 나오는 것.
+
+12. 따라서 x 라는 (given) evidence를 줬을 때 g(-)를 통과했을 때 x를 잘 만들어내는 z값을 샘플링해낼 수 있는 이상적인 분포, true posterior를(p(z|x)) 추정해 내자(q_phi(z|x)로) 접근을 취해보자. 
+
+13. 이 추정 방법을 variational inference라고 한다. 이 방법은, 우리가 다루기 쉬운 확률분포로 구성된 approximation class (예를들어 가우시안)에서 한 분포를 선택하여, 이 분포의 parameter를 잘 바꾸어 가면서 최대한 미지의 이상적인 true posterior에 접근할 수 있도록 학습해보자. 그 분포에서 샘플링한 z는 x를 잘 복원해 내겠지! 라는 접근임. 
+
+
+14. 이제 variational inference한 q_phi(z|x)와 p(z|x)를 optimize하는 phi값을 찾고, g_theta에 앞의 q_phi에서 샘플링한 z를 넣었을 때 x가 나올 확률(g_theta(x|z))을 maximize할 수 있도록 하는 theta를 찾도록 Maximum Likelihood 방식으로 학습을 수행함. 이 두개의 최적화 목표가 ELBO(Evidence LowerBOund)에 포함되어 있어, ELBO를 maximize하면 됨(이 수식 안에 Variational inference를 위한 KL term minization이 포함되어 있음)
+
+15. 요약
+	왼쪽 텀은 x를 넣었을 때 x가 나오느냐? 하는 reconstruction error 관점이 되고, 오른쪽 텀은 VI를 최적화하는 관점이 됨.
+
+
+16. reconstruction error를 계산해야하는데, 이 때 샘플링 프로세스가 포함되어 백프롭이 안됨. 
+	이는 reparameterization trick으로 극복. tf API 내부적으로 저절로 사용하도록 설계되어 있음
