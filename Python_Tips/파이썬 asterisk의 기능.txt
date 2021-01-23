@@ -1,0 +1,11 @@
+파이썬에서 *의 기능
+
+1. 변수 안의 객체를 반복해줌
+
+2. 함수 정의시 *를 쓰면 여러 인자를 넣을 수 있음
+
+3. **를 쓰면, 입력값이 딕셔너리 형태로 입력됨
+
+4. *를 함수의 첫번째 인자로 설정해 놓으면, 반드시 인자의 이름을 특정지어야지만 함수사용 가능
+
+https://www.datacamp.com/community/tutorials/usage-asterisks-python?utm_source=adwords_ppc&utm_campaignid=10267161064&utm_adgroupid=102842301792&utm_device=m&utm_keyword=&utm_matchtype=b&utm_network=g&utm_adpostion=&utm_creative=278443377092&utm_targetid=aud-299261629574:dsa-429603003980&utm_loc_interest_ms=&utm_loc_physical_ms=1009871&gclid=CjwKCAjwi_b3BRAGEiwAemPNU1NL6Xmvtw9M8rM5_XluufL7HyRdPCt3Q7xT4CvHirUUnPbyn-6GRxoC32gQAvD_BwE

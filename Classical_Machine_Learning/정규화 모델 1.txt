@@ -1,0 +1,98 @@
+정규화 모델 1
+
+
+
+1. 좋은 모델(Good model)
+	좋은 모델이란, 
+	1) 현재 데이터(training data)를 잘 설명하는 모델
+	2) 미래 데이터(testing data)에 대한 예측 성능이 좋은 모델
+
+2. Good Explanatory model
+	- 현재 데이터를 잘 설명하는 모델 = training error를 minimize하는 모델
+	(ex. MSE=(y-y_hat)^2를 최소화)
+	- Expected MSE(MSE의 기댓값)식을 전개하면, Irreducible Error(어쩔 수 없는 에러)+Bias^2+Variance가 나옴.
+	- 여기서 Bias와 Variance를 모델로 줄일 수 있음.
+	- bias: 예측이 실제 값을 기준으로 편향된 정도
+	- variance: 예측 사이의 분산, 예측이 얼마나 균일하게 이루어 지는지를 나타내는 정도
+	- low bias, low variance를 이루는 것이 목표. 
+	- 그러나 low variance high bias/ high variance low bias 둘 중 어떤 것이 좋다는 것은 없고 상황, 모델의 목표에 따라 다름
+
+3. Good Predictive Model
+	- 미래 데이터(testing data)에 대한 예측 성능이 좋은 모델 = 미래 데이터에 대한 expected error가 낮은 모델
+	- Expected MSE 역시 전개하면 Irreducible Error+Bias^2+Variance
+	- 이 역시 bias, variance를 둘다 낮추는 것이 목표고, 둘 중 하나라도 작으면 좋음.
+	- bias가 증가하더라도 variance 감소 폭디 더 크다면 Expected MSE는 감소(예측 성능 증가)
+
+4. Ordinary Linear Regression Model
+	- Least squares method(최소 제곱법): 평균제곱오차(MSE)를 최소화하는 회귀계수 beta=(beta_1,beta_2,...,beta_p) 계산
+	- B^hat LS =MSE를 최소화하는 회귀계수 beta=(X^T@X)^-1@X^T@y
+	- 위 식의 맨 우변은, B^hat LS에 대한 식이 convex하므로 미분으로 0을 만들고 연립방정식을 푼 결과식임.
+	- 이는 회귀계수의 최소제곱법으로부터 나오는 점 추정량을 의미함. 
+	- 알려지지 않은 파라미터 (ex.beta)는 데이터에 대한 점추정량이 됨.
+	- 이렇게 구한 회귀계수 beta는 BLUE라는 좋은 성질을 가짐.
+	- BLUE는 Best Linear Unbiased Estimator로, biased 되지 않은 추정량들 중에 variance가 가장 낮은(best) 성질을 띤다는 것임.
+	- 이는 Gauss-Markov theorem에 의해 증명됨.
+
+5. 그러나 위의 BLUE는 bias는 확실히 챙겼지만, variance에서는 최선이 아님. 이 때 bias를 조금 포기하더라도, variance에서 좀 효과를 볼 수는 없을까? 하는 질문이 제기됨.
+
+6. How to reduce variance?
+	- subset selection method: 전체 p개의 설명변수 X중 일부 k개만을 사용하여 회귀계수 beta를 추정하는 방법. 전체 변수 중 일부만을 선택함에 따라 beta가 증가할 수 있지만 variance가 감소함
+	- best subset selection
+	- Forward stepwise selection
+	- Backward stepwise selection
+	- least angle regression
+	- orthogonal matching pursuit 등의 방법론이 있음.
+
+7. Regularization Concept
+	- 같은 데이터에 1차식, 2차식, 4차식을 각각 적합했을 때, 어떤 모델이 가장 좋은가?
+	- x축은 다항식의 차수(degree of polynomial), y축은 error라 했을 때 일반적으로 training error는 계속해서 감소하지만 testing error는 감소하다가 어느 순간 증가하게 됨.
+	- 즉 bias는 계속 줄어들지만, variance는 줄어들다가 늘어남.
+	- 결국은 training data와 testing data 둘 다에 좋은 모델을 만들기 위해, 변수의 차수를 줄여야함. 이를 위해 다양한 방법이 고안되어 있음.
+	- 오차제곱식에 정규화 텀을 달아서, 최소화 과정에 제약을 가함으로써 변수를 제한함
+	- 정규화라는 이름은 제약을 가함으로써 변수를 제한해 정돈해 주었다는 의미로 생각할 수 있음.
+
+8. 제약식
+	- L(beta)=Training Accuracy + Generalization Accuracy
+	- Generalization Accuracy 텀에는 lambda라는 하이퍼파라미터가 붙음. 이를 조절함으로써 정규화의 강도를 조절할 수 있음
+	- lambda가 너무 크면, beta가 모두 0이 될것임.
+	- lambda가 너무 작으면, beta가 모두 살아나 기존의 회귀식처럼 오버피팅 될것임. variance가 매우 커져 예측 성능이 현저히 감소함.
+
+9. 정규화 방법론(regularization method)
+	- 회귀계수 beta가 가질 수 있는 값에 제약조건을 부여하는 방법
+	- 제약 조건에 의해 bias가 증가할 수 있지만  variance가 감소함
+	- LSE 방법: bias를 먼저 잡고, variance를 포기하겠다
+	- 정규화 방법: bias를 조금 포기하더라도 variance를 잡겠다!
+
+10. Ridge Regression (L2-norm, 제곱)
+	: 제곱 오차를 최소화하면서 회귀계수 beta의 L2-norm을 제한
+
+11. MSE contour(윤곽, 등고선, ‘자취’)
+	- MSE 식을 전개해서 보면, 원뿔의 단면을 나타내는 2차식처럼 전개가 됨(conic equation)
+	- conic equation의 판별식(discriminant): B^2-4AC
+	- 판별식=0 -> 포물선(parabola)
+	- 판별식>0 -> 쌍곡선(hyperbola)
+	- 판별식<0 -> 타원(ellipse) *바로 이 꼴이 됨.
+	- B=0 and A=C -> 원(circle, 이는 타원의 특수한 형태로 볼 수 있음)
+	- 결과적으로 MSE의 자취의 방정식은 타원의 형태를 띰.
+
+12. Ridge Regression
+	- beta1, beta2를 x,y 축으로 각각 갖는 좌표 상에서, 제약조건 beta1^2+beta2^2<=t는 작은 원의 형태로 원점 주변에 표현됨. 이 안에 존재하는 beta1, beta2의 조합만이 제약조건을 만족하는 회귀계수가 됨
+	- Least Squares Estimator로 보았을 때 최소의 MSE를 갖는 점은 이 제약조건의 바깥에 있을 것임. 
+	- 같은 MSE 값을 갖는 beta1,beta2의 조합은 타원의 형태로 자취를 남길 것임. LSE점은 제약조건을 충족하지 않으므로 그보다 큰 MSE를 허용하는(bias를 조금 더 희생해서) 회귀계수 조합을 타원의 형태로 구하게 됨.
+	- 이 타원이 제약조건을 만족하게끔 만들어 주기 위해 조금씩 키워나가다 보면, 타원과 제약조건이 맞닿는 지점이 나타날 것임. 이 점에 해당하는 beta1, beta2가 Ridge Estimators가 됨.
+	- 결과적으로 beta의 값들은 shrink하게 되기 때문에 shrinkage method라고 함.
+
+13. Ridge Solution path
+	 - solution path: tuning parameter (t) 값에 따른 beta hat(ridge) 즉 ridge estimator의 변화
+	- t 값이 매우 크면 LSE를 포함하게 될것임. 따라서 아무런 제약도 가하지 않는 식으로 될 것.
+	- t 값이 작아짐에 따라 제약이 강해짐. 결과적으로 베타 값은 작아지게 될 것임.
+	- t는 앞에서 살펴 본 람다와 같은 역할을 하는 것
+
+14. Ridge penalty function
+	- penalty(beta)=beta^2
+	- 즉, 회귀계수가 k만큼 증가하면 페널티의 강도는 k^2가 되는 것
+
+15. Ridge Solutions
+	- Ridge는 행렬연산을 통해 closed form solution을 구할 수 있음
+	- Least squares 식과 매우 유사함. 수식의 역행렬 부분에 lambda*단위행렬이 더해진 형태임
+	- 이렇게 구한 estimator는 biased estimator임. 그러나 분산 상의 이점이 있음.

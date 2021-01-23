@@ -1,0 +1,17 @@
+XGB 수식
+
+
+
+1. 먼저 output value를 계산해 업데이트 하는 방식으로 학습이 이루어짐.
+
+2. 이 Output Value는 Loss Func와 Regularization Term으로 구성됨
+
+3. Gradient Boosting에서, 회귀 문제에서는 단순 미분으로 Loss Func 최저점 찾는 것이 가능함. 그래서 회귀는 미분으로, 분류는 테일러 근사를 이용함. 분류에서는 Loss Func의 최저점을 찾는 것이 어렵기때문에 테일러 전개를 사용해서 근사.
+
+4. XGB에서는 분류와 회귀 둘 다 2계 테일러 근사를 사용해서 Loss Func의 최저점을 근사함
+
+5. 테일러근사는 원함수+1계 도함수+2계 도함수를 사용, 1계 도함수는 g로 표현하고 gradient를 의미, 2계 도함수는 h로 표현하고 이는 hessian을 의미함
+
+6. 이를 모두 정리하면, (Sum of Residuals) / (Num of Residuals + lambda)로 축약 가능.
+
+7. 이는 우리가 기존에 알고리즘을 설명할 때 그냥 넘어갔던 Output Value를 나타냄. (회귀에서의 Similarity Score와 같음)

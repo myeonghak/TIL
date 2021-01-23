@@ -1,0 +1,50 @@
+Logistic Regression
+
+
+
+1. R-squared와 유사한 개념:
+	10개가 넘는 방법이 존재, 따라서 나의 필드에 맞게 사용할 것. 흔하게 사용되는 방법은 McFadden’s pseudo R-squared
+
+2.이 방법은 0-1의 값을 가짐
+
+3.Log likelihood fit을 기준으로, 최악의 모델과 최선의 모델을 맞추어 값을 구함
+
+4.p-value:
+	2(LogLikelihood(fit)-LL(overall))=Chi-squared value , Residual deviance
+	즉, 2(-) 값을 자유도 n-1인 카이제곱분포에 넣은 값이 변수의 p-value가 됨
+
+5.saturated model(포화모형), Deviance statistics(편차 통계량) -> 모델의 적합도에 관한 문제: 
+	generalized linear model의 일부로, 다양하고 일반적인 상황에서 사용되기 위해 고안됨
+	여기서 deviance는 R-제곱의 p값 계산을 위해 사용됨
+	
+
+6.null model: 파라미터가 1개인, LL이 가장 작은 형태의 모델.(최악의 시나리오)
+	proposed model: 파라미터가 여러개인 형태. 위 아래의 모델을 가지고, R-제곱을 구한다. 
+	saturated model: 파라미터가 데이터포인트의 갯수만큼 있는 경우. (최상의 시나리오)
+
+7.Deviance:
+	R-제곱의 p값 계산을 위해 사용됨 
+	
+	residual deviance:
+	2*(LL(saturated)-LL(proposed))
+	->여기서 2는 위 값이 카이제곱분포를 따르도록 만들어줌. 의미는 ( 포화모형의 파라미터 수 - 제안 모형의 파라미터 수 )곱하기 2.
+	이 값을 LL(sat)-LL(pro) 만큼의 자유도를 따르는 카이제곱분포에 넣어 구한 값이 p값이 되고, 이 값이 0.02와 같으면 포화모형은 제안 모델과 유의미하게 다르다는 것을 의미
+	
+	null deviance:
+	2*(LL(saturated)-LL(null))
+	
+	둘을 빼주면, 자유도:(제안모델 파라수-영모델파라수)의 카이제곱값이 됨.
+	
+	이 값은 R-제곱의 p-value가 됨! 이 값이 유의미하게 작으면 R2이 의미가 있다, 즉 설명력있다는 것과 동시에 이 값이 우연히 나온 것은 아니라는 것을 알 수 있음
+	
+	LL(saturated)은, 포화모델의 경우 모든 라인이 각 개별 데이터 포인트에fit된 형태인데, 이를 로그우도로 계산해서 모두 더하면 0이 나옴. 따라서 0으로 간주해버리고, LL(null)-LL(prop)으로 계산 해 이를 2를 곱해주어 카이제곱에 넣으면 p값계산 가능
+	
+
+8.Residual deviance
+	-> 잔차제곱합과 같은 기능을 하는 값 
+	각 데이터 포인트에서, LL(sat)-LL(pro)를 계산해 2를 곱하고 루트를 쓰워줌. 이는 각 데이터포인트가 전체 Residual Deviance에 기여하는 정도를 나타냄.
+	이들을 모두 각각 제곱을 해주고 더하면 그게 바로 Resi Devi가 됨.
+	모델에 가까우면 작은 값이, 멀면 큰 값이 계산되므로 모델의 fitness 측정 가능!
+
+
+2019.12.

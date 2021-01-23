@@ -1,0 +1,44 @@
+RBM(Restricted Bolzman Machine)
+
+
+https://youtu.be/puux7KZQfsE
+	
+
+1. 제프 힌튼이 개발한 알고리즘
+
+2. input을 encode한 뒤 다시 backward translation하는 방식으로 학습
+
+3. 같은 layer의 뉴런은 서로 어떤 connection도 공유하지 않기 때문에 restriced라는 이름이 붙음
+
+4. KL Divergence를 loss function으로 사용
+
+5. encode하고 다시 translation하는 과정을 반복함으로써 학습을 진행. 원래 input과 가능한 한 유사해지도록 학습됨
+	
+
+6. 표현을 학습해내는 기능이 있음(pattern recognition) 
+
+7. vanishing gradient에 효율적(Deep belief net?!)
+	
+
+8. 오토인코더라고도 불리움(?!)
+	
+
+https://khanrc.tistory.com/entry/Autoencoder-vs-RBM-vs-CNN
+
+RBM vs AE
+
+
+
+9. 요약:
+	AE와 RBM 둘 다 인풋을 아웃풋으로 두고 인풋을 reconstruction하는 과정에서 hidden units을 찾아낸다. 
+	이 hidden units은 데이터로부터 뽑아낸 feature라고 할 수 있으며, 이 과정을 data-specific kernel이라고 할 수 있다함.
+
+10. AE는 discriminant하게 단순히 feature를 축소하는 방식으로 학습하지만, 
+
+11. RBM은 generative 모델이다. 
+
+12. RBM은 에너지 모델을 차용하는데, 그 에너지 모델은 볼츠만 분포에 기반한다. 
+
+13. 확률 분포에 기반하여 visible한 변수(input)들과 hidden 변수들 간에 어떤 상관관계가 있고 어떻게 상호작용하는지를 파악함. 
+
+14. 즉, 입력 변수와 hidden 변수의 joint probability dist.를 학습하고자 하는 것.
