@@ -1,0 +1,94 @@
+How Uber uses GNN to recommend you food
+
+
+
+https://youtu.be/9O9osybNvyY
+
+
+1. Agenda
+	1) graph representation learning
+	2) dish recommendation on Uber Eats
+	3) Graph learning on Uber Eats
+
+2. Graph Neural Network
+	- 그래프 형식의 데이터는 어딜 가나 있음. 소셜 네트워크, linked open data, biomedical graph, Information network, Internet as a graph, 뇌 신경망 등.
+
+3. Tasks on graphs
+	- node classification: 주어진 노드의 타입을 예측함
+	- link prediction: 두 노드가 연결되었을지 그렇지 않을지 예측함. 추천의 문제가 이 태스크와 관련이 있을 것임
+	- community detection: 노드들 간에 밀집된 형태로 연결된 클러스터를 찾아냄
+	- network similarity: 두 (서브)네트워크가 얼마나 유사한지를 밝힘
+
+4. Learning framework
+	- 모든 기계학습 문제는 학습 프레임워크에 데이터를 맵핑하는 과정으로 이루어짐
+	- 노드로부터 임베딩으로 맵핑하는 인코더를 정의함
+	- 네트워크 스트럭쳐에 기반한 노드 유사도 함수를 정의함
+	- similarity(u,v)~(여기서 물결은 근사기호)z_v^T*z_u가 되도록 인코더의 파라미터를 최적화 함. 즉 두 벡터간의 유사도와 두 벡터간의 내적 값이 유사해 지도록 유도하는 것(유사도 함수를 코사인 유사도로 사용한다면.)
+	- 따라서 노드를 임베딩 공간 내의 벡터 representation으로 맵핑해 인코딩하는 함수를 학습하고자 하는 것
+	- 인코더 함수를 정의하고, 이 함수의 파라미터를 최적화할 때, 우리가 원하는 것은 (어떤 것을 유사하다고 했던지 간에) 그래프 공간 상에서 유사한 노드들이 임베딩 공간 상에서도 유사한 메져를 갖는 것임
+	- 요약하자면, 다음 프레임워크를 따름
+	1) 유사함의 기준을 정의
+	2) 유사도 함수 정의
+	3) 인코딩 함수 정의 후 최적화
+
+5. Shallow encoding
+	- 가장 간단한 형태의 인코딩 접근법: 인코더는 단순히 embedding-lookup으로 작동 됨. 이러한 예로 matrix factorization, Node2vec, Deepwalk 등이 있음.
+	- 단순한 자연어처리에서의 임베딩레이어와 같다고 생각할 수 있음. 임베딩 메트릭스가 있고 그 한 행은 하나의 노드에 대응됨. 벡터의 사이즈는 사전에 정의한 embedding size가 됨
+	- 너무 많은 노드가 들어가면 몹시 거대해 질 것임
+
+6. Shallow encoding의 한계
+	- O(|V|*dim)의 수를 갖는 파라미터를 계산해야 할 것임. 여기서 V는 꼭지점 수, dim은 임베딩 차원
+	- MF 접근법을 취하는 대부분 알고리즘의 문제는 학습과정에서 등장하지 않는 노드의 임베딩을 만들어낼 수 없다는 것임.(불가능하거나, 매우 오랜 시간이 필요)
+	- 새로운 샘플의 임베딩을 얻기 위해서는 전체를 재학습하거나(이는 매우 unfeasible) 몇 SGD 에폭 간의 Ad hoc(즉석의) 트레이닝을 통해 adaptation을 수행할 수 있음. 그러나 이는 불가능할수도 있고 매우 시간소모가 큼. 항상 새로운 노드가 등장하기 마련인 동적인 실세계에서는 굉장히 불리한 접근임을 알 수 있음. 요약하자면 비효율성때문에 shallow encoding이 불리하다는 것임
+	- 또한 노드의 피처를 사용할 수 없다는 점에서 큰 단점을 가짐.
+	- 이러한 한계는 우리가 새로운 방법론을 강구하도록 촉발(prompt)함.
+
+7. GNN
+	- 많은 GNN의 variants 중 spectral/spatial 두 가지가 있음. 이 중 spatial한 녀석을 들여다 볼 건데 그 이유는 이게 spectral(정확히는 GCN)한 녀석보다 더 확장하기(scale) 쉽기 때문임.
+	- 핵심 아이디어: 노드 representation을 얻기 위해, 이웃으로부터 제한된 BFS(breadth-first search)를 통해 재귀적으로 정보를 통합할 때 뉴럴 네트워크를 사용함.
+	- A라는 노드의 representation을 얻기 위해, A주변에 있는 노드들을 참고하고, 그 과정에서 자기 스스로의 정보도 참고하게 됨.
+
+8. Neighborhood Aggregation
+	- 여러 레이어를 가지게 되는데, 각 레이어는 BFS 상 깊이(depth)의 한 레벨을 의미함.
+	- 이 때 노드들은 각 레이어마다 임베딩을 가짐. 즉, 레이어 1의 노드 b의 임베딩과 레이어 2의 노드 b의 임베딩은 다름. 그러나 레이어 1에서 노드 a로 유입되는 노드 b의 임베딩 웨이트는 레이어 1에서 노드 c로 유입되는 노드 b의 임베딩 웨이트와 같음.
+	-> 이로 인해 scalability를 얻을 수 있음. 학습은 내가 그래프 내에 얼마나 많은 노드를 가졌는지에 구애받지 않음. 그보다는 뉴럴넷 내의 뉴런의 수가 얼마나 되는지에 영향을 받음. 모든 뉴럴넷 파라미터가 전체 노드에서 공유되기 때문임.
+	- 노드 v의 레이어 0 임베딩값은 그 자체의 입력 피처 x를 의미함.
+	- 입력값 자체를 학습가능한 임베딩을 썼는가? No! 학습은 기본적으로 레이어 층에서 이루어짐. (어떻게 피처를 전달할까에 대한 규칙만 업데이트하는것으로 생각됨) 발표자는 그 접근이 옳다 생각하지 않음
+
+9. Inductive capability
+	- 실세계의 응용에서는 새로운 노드가 종종 그래프에 추가되는 경우가 있음
+	- 이 새로 추가된 노드에 대해서 재학습 없이 임베딩을 부여할 필요가 있음
+	- 이는 swallow method로는 어려운 문제임
+	- 이를 해결하는 방법은, snapshot으로 학습하여 새로운 노드가 도착할 경우 이에 대한 새로운 임베딩을 생성하는 것임. swallow 방법에서와 같이 개별 노드 임베딩을 학습하는 것이 아니라 네트워크의 parameter를 학습하기 때문에 가능함. simple FCL을 생각해보면 뉴럴넷의 웨이트를 학습만 해 놓으면 어떤 테스트 데이터를 넣는다 할지라도 그에 상응하는 예측값을 출력해 주는 것과 같이 생각하면 됨.
+
+10. Uber Eats graph for Recommendation
+	- 유저, 레스토랑, 음식 메뉴라는 세 종류의 노드가 존재하고, 과거 내역에 따라 이 노드간에 연결이 이루어짐
+
+11. Bipartite graph for dish recommendation
+	- 유저가 최근 M일간에 특정 음식을 주문 했다면 그 음식과 연결됨.
+	- weight는 음식 주문의 빈도임.
+	- 그래프의 property
+	1) Graph is dynamic: 새로운 유저와 음식이 매일 추가됨
+	2) 각 노드는 음식 이름의 word2vec 값과 같은 피처 값을 가짐
+
+12. Max margin loss
+	유사도 점수보다는 “ranking”에 신경을 씀. 
+	max margin loss:
+	L=sigma(max(0, -z_u^T*z_v+z_u^T*z_n+delta)
+	여기서 u,v,n은 노드집합 E의 원소이고, v는 유저 u에게 positive한 노드, n은 그렇지 않은 노드를 의미함
+	- 이는 SVM과 비슷한 방식의 loss function임
+	- transZ(?)의 방식으로 볼 수 있음
+
+13. New loss with Low rank positives
+	- low rank positives는, 주문한 이력이 없는 negative sample과는 달리 주문한 이력은 있지만 positive sample만큼은 아닌 샘플들을 의미함. 즉 5번 주문한 상품이 positive일 때 1번 주문한 상품은 low rank positive.
+	- 이 low rank positive들과 positive를 비교하는 max margin loss 텀을 하나 더 추가함으로써 성능 향상
+	- 1번 텀(neg vs pos)에서의 margin인 delta n에 비해서 2번 텀(pos vs low rank pos)의 margin인 delta l이 더 ‘작음’
+
+14. Weighted pool aggregation
+	- 엣지의 가중치에 기반해 이웃의 임베딩을 총합하는 방식
+	- 특정 노드의 임베딩을 앞서 말한대로 swallow방식이 아닌 웨이트 파라미터의 계산 결과로써 획득한 뒤, 주변의 임베딩 결과값을 결합한 것으로 보임
+
+15. Offline evaluation
+	- downstream personalized ranking을 그래프 노드 임베딩을 사용해 학습함
+	- 기존 production model 대비 12%의 AUC 성능 향상
+	- 임베딩을 활용해 XGboost와 같은 모델을 붙여 downstream task를 수행하는데, 그 feature importance 중 가장 높은 것은 Graph learning cosine similarity였음.
