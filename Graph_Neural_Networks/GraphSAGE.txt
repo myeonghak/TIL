@@ -1,0 +1,27 @@
+GNN 3
+
+
+
+1. GraphSAGE
+	1) 노드마다 중요도와 순서가 있으므로 이를 고려해야한다. 노드 샘플링과 inductive/transductive에 대해 구분도 필요함
+	2) agg
+	: 크게 3가지, mean agg(이웃 정보 결합 과정에서, 차수로 나누어 주어 normalize), LSTM agg(순서가 없으므로 random permutation 적용) pooling agg(pooling weight를 이웃 노드의 hidden과 곱해줌. 여기에는 mean pooling, max pooling(이게 더 나음) 두가지가 있음)
+	3) combine
+	: 타겟 노드의 히든값과 agg 정보를 concat한 뒤에 Weight matrix를 곱해 준 뒤 target node를 업데이트함.
+	4) 층을 깊이 쌓으면 학습이 잘 되지 않는 현상을 보완하기 위해,  residual connection과 skip connection을 사용
+
+2. GAN(Graph Attention Network)
+	1) agg 함수
+	: attention 함수로, t-1기의 타겟 노드를 포함한 이웃 노드들의 히든 임베딩을 대상으로 attention 수행
+	이 때, K,Q,V는 모두 같고, t-1기의 이웃 노드들의 히든 임베딩과 같음
+	- similarity function
+	트랜스포머의 scaled dot-product를 사용하지는 않았고, 바흐다나호가 Machine translation에서 사용한 1 layer feed forward NN을 사용
+	- t-1기의 target node의 hidden embedding을 KQV로 공유하기 때문에, 같은 웨이트를 공유?
+	target node가 1번, neighbor node 2,4번이 있을 때 1번(여기서는 query 역할) hidden embedding과 2번(여기서는 key 역할)의 hidden embedding을 concat하여 1 layer FFN에 넣고 leakyRelu 통과시킨 값을 유사도로 사용
+	4번 노드에 대해서도 유사도 계산 똑같은 방식으로 적용
+	이렇게 구한 유사도 값을 node size**2의 matrix로 표현함. 직접적인 연결이 없는 노드들은 빈 칸으로 남음. 이는 정보를 얼마나 전달할 것인가에 대한 attention score를 구했다고 할 수 있음. 즉 e_12를 1번 노드를 업데이트 할 때 2번에서 얼마나 정보를 가져올지를 나타냄.
+	그러나 빈 칸을 반영해서 attention을 구하는 코드 구현이 어려우므로, 일단 전체 matrix를 구한 뒤 node 연결이 없는 경우를 아주 작은 숫자로 replace 해줌. 이 값이 softmax를 통과하면 0에 근사한 값이 나올 것. 이 방식은 transformer decoder의 masked self-attention을 계산하는 방식과 매우 유사함
+	2) combine
+	이제 구해낸 attention score와 각 이웃 노드의 hidden embedding 값(즉, V) weight sum 해주어서, t기의 target node embedding을 업데이트 함.
+	3) multi-head attention
+	concat 혹은 average로 통합해줌.
