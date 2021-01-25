@@ -1,0 +1,54 @@
+SHAP
+
+
+
+https://youtu.be/0yXtdkIL3Xk
+
+
+1. local feature importance
+	: 각각의 인스턴스에 대해 변수 중요도를 측정하기 때문에 local
+
+2. additive
+	: 모든 기여도(contribution)를 더하면 f(x)가 나옴.
+
+3. Shapley value
+	: 게임의 결과가 있을 때 기여도에 따라 어떻게 나누느냐? 그 나눈 값의 총합은 게임의 결과와 같고, 더 많은 영향을 미치면 더 많은 보수를 받도록.
+
+4. 일관성
+	: 결과는 언제나 하나로만 나오게 됨. (additivity & fairness가 지켜지는 유일한 해가 있다)
+
+5. 시나리오
+	: 게임 F, 플레이어 전체 M, 플레이어의 부분집합 S. S를 골라서, 플레이어 i를 넣고/빼고서 게임의 결과를 관찰한 다음 변화하는 정도(이를 marginal contribution이라 함)의 평균을 내면 이 값이 섀플리 값.
+
+6. kernel explainer
+	: 모델에 대해 어떠한 가정도 하지 않는, model agnostic한 알고리즘으로 shap value의 근사치를 제공함. 근사치인 이유는, feature들의 모든 subset을 탐색하는 것이 아니라 sampling하기 때문.
+
+7. 결측치 처리
+	: 어떻게 값을 없는 셈 치는가? 결측치를 다루어 모델링하는 알고리즘은 거의 없는데?
+	-> 우리가 설정한 임의의 background data를 사용하여 replace한다
+
+8. LIME과의 접점
+	: kernel explainer
+	LIME이란, local FI 방식의 하나로 큰 모델의 일부 영역에 대해서만 선형 모델을 학습하는 방식을 취함.
+	이 때 locality를 describe하기 위해 kernel explainer를 사용함. 이 때 SHAP저자는 자신의 특정한 kernel을 사용하면, LIME은 사실상 shapley value를 계산하는 것임을 증명했음.
+
+9. tree explainer
+	: 다항 시간 내에 정확한 shapley value를 계산해 낼 수 있음.
+	1) 결측치 처리: 결측치가 분지에서 등장하더라도 yes/no를 모두 시도해보고 그 결과 값을 평균을 내어 근사값을 구할 수 있음
+	2) 다항 시간: 중간 과정의 값을 기억하기 때문에, 다항 시간내로 모든 연산을 수행할 수 있음
+
+10. deep learning model에서의 SHAP
+	: deep lift(네트워트의 지역적인 부분의 shapley를 계산하는 방식)라는 알고리즘과의 connection을 사용함.
+	가령 한 인풋의 선형 결합 혹은 비선형 함수의 지역적인 shap 값의 지식을 역전파하여 인풋의 shap 계산
+
+11. 변수간의 상관관계가 있을 경우
+	: 기대치 못한 결과 발생.
+	만약 완전히 동일한 변수가 2개 들어가 있다면, 
+	모델이 둘 중의 하나만 사용하면 1개에 몰빵하고 나머지 한 변수의 shap 값은 0이 될 수 있음.
+	만일 둘 중 하나를 쓰기도 하고 다른 하나를 쓰기도 할 수 있는 모델이라면, 이 값은 둘로 쪼개어 져 계산될 수 있다. 
+	shap 값은 additive하기 때문임.
+	“결과적으로 shap 값이 낮다고 해서 무조건 안 중요한 변수라는 의미가 아니다”
+
+12. 실용적 활용
+	: 1) 한 예측을 investigate 할 수 있음.
+	2) 전체적인 shap 값을 구해 aggregate하면 global하게 모델을 조망해볼 수 있음
