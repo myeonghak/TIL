@@ -1,0 +1,29 @@
+Predictive uncertainty of DNN
+
+1.open set problem: 처음보는 놈은 처음 본다고 말하게하는 것
+
+- 비모수적 베이지안에서는 change latent(?) process?? 새로 잠재변수를 던져서 할당하고 할당하고 하는 식으로 극복할 수 있음.
+- 모든 softmax 모델의 한계라고 볼 수 있음
+
+
+2. detecting out of distribution problem: 이미 학습한 분류 모델만을 가지고 테스트 샘플이 out-of-distribution인지를 판별하는 문제
+
+3. 해결 방법 
+1) threshold based detector: 예측 최대값이 어느 정도의 기준 이하 값을 가진다면, out of dist로 간주하는 방법
+
+2) baysian NN:
+	위에서 설명한 방법과 유사, 추론에 자원이 많이 듦
+
+3) Ensemble: 학습과 추론에 오래 걸림
+
+
+
+4. 저자의 해결 방법
+	- confidence loss+GAN으로 outofdist sample 생성+이 샘플과 joint training
+
+5. 우리의 in-distribution에서 가까운 out of dist 놈들을 학습시키니까 over confident한 문제를 통제할 수 있더라. 그래서 GAN으로 생성
+
+
+6. Hierarchical Novelty Classifier:
+앙골라고양이를 첨 봐도 고양이임을 뱉어야하지만, 위계에 대한 정보가 있어야함(대분류, 중분류, 소분류..)
+
