@@ -1,0 +1,75 @@
+[TIL] Recsys 2016: paper session2-Field Aware Factorization Machine for CTR prediction
+
+
+
+CTR(click through rate) prediction
+	- 널리 사용되는 방식은 logistic regression임.
+	- 로지스틱 함수의 지수부에 들어가는 -s의 s를 확률값으로 변환해 주는 것임.
+	- 이 s를 계산하기 위한 4가지 방법을 소개하려 함.
+	1) Linear: Linear model
+	2) Poly2: Degree2 polynomial mapping (Chang et al.2012)
+	3) FM: Factorization Machine
+	4) FFM: Field Aware Factorization Machine
+
+1.예시
+	publisher는 ESPN, Advertiser는 Nike인 impression이 있다고 해보자.
+
+2.Linear model
+	- 피처가 모두 binary라고 가정
+	- 각각의 피처에 대해 가중치를 구함. 
+	s=w_ESPN+w_NIKE
+	- “NIKE가 ESPN에 특히 높은 CTR을 갖는다”라는 효과를 학습할 수 없음. 이는 선형 모델이 특정 피처의 일종의 평균적인 행동을 학습하기 때문이며, feature conjunction을 학습하지 못함.
+	- 간단하고 효과적인 모델임
+	- 그러나 너무 간단한 것이 모델의 한계
+
+3.Poly2
+	- feature conjunction을 반영하기 위한 모델
+	- 아이디어는 간단함: feature의 가중치 뿐만 아니라 feature pair에 대해 가중치를 학습함.
+	- s=w_ESPN+w_NIKE+w_ESPN&NIKE
+	- Poly2모델의 한계는 데이터가 sparse할 때 드러남.
+	1) overfitting: unreliable prediction on 샘플이 하나뿐인 케이스 
+	- 즉 하나의 샘플만으로 한 pair의 가중치를 추론하므로 오버피팅되기 마련임.
+	2) unseen data: trivial prediction on unseen data pair
+	- 즉 본 적이 없는 feature pair에 대해서는 예측을 내리기 어려움
+
+4.Factorization Machine
+	- 각 feature pair에 대해 ‘explicit’한 가중치를 학습하지 말고, 잠재공간 내의 feature들을 학습하자.
+	- 각 feature에 대해 latent vector를 가지게 됨.
+	- 유저가 설정한 k차원의 latent vector를 각각의 feature별로 할당하고, 이 vector의 dot product로 피처간의 상관관계를 나타냄
+	- v_vogue와 v_nike는 약 1000개의 data point에서 학습되며, 이로써 한 번도 발생하지 않은 CTR(vogue, nike)에 대한 prediction은 더욱 reliable해 질 것임.
+	- Field란?
+	Pubilsher(P): ESPN, Advertiser(A): NIKE, Gender(G): male
+	이와 같은 샘플에서, P/A/G가 피처의 필드임.
+	- 각 field는 여러개의 feature를 포함하고 있음.
+	- FM 모델이 s=v_ESPN*v_NIKE(P*A)+v_ESPN*v_Male(P*G)+...와 같이 이루어져 있다면, v_ESPN은 P*A, P*G 두 경우에 모두 사용됨. (수식에서 *은 내적)
+	- 따라서, FM 모델은 P*A와 P*G의 latent factor를 뒤섞어버림!
+	- 개념적으로 생각해보면 Publisher의 latent feature는 Advertiser에 대해 다를 것이고 Gender에 대해 다를 것이라고 기대할 수 있음. 그러나 우리의 FM모델은 같은 latent vector를 두 다른 latent space에서 사용해 버리는 것이 문제임.
+
+5.Field-aware Factorization Machine
+	- 이 문제를 해결하기 위해, 한 피처당 여러개의 latent vector를 사용하자는 것이 핵심 아이디어임.
+	- s=v_ESPN,A*v_NIKE_P+v_ESPN,G*v_Male,P+....
+	- 여기서 v_ESPN,A는 A(Advertiser)라는 필드에 대한 ESPN의 latent vector를 의미함.
+	- 이로써 ESPN이라는 각 피처에 대해 latent factor를 쪼개었음.
+
+6.FM vs FFM
+	- FM은 같은 latent vector를 공유
+	- FFM은 필드별로 latent vector를 쪼개어 사용
+
+7.2014년 Criteo CTR prediction
+	- FFM 모델로 Feature engineering과 ensemble을 통해 최고의 성능을 달성함.
+
+8.2014 Avazu CTR prediction
+	- 앞선 대회와 같은 방식으로 우승.
+	- 최상위 5개 팀이 모두 FFM을 솔루션으로 포함하고 있음
+
+9.모델 비교
+	- 4개의 모델을 사용해 Criteo, Avazu dataset에 대한 성능을 비교
+	- FFM이 가장 낮은 log loss를 갖는 것을 알 수 있음
+	- FFM을 앙상블 함으로써 최고의 성능을 도달함
+
+10.Assigning Fields
+	- FFM을 사용하기 위해서는 각 피처에 대해 Field를 할당해야 함
+	- 카테고리형 변수에 대해서는 간단함.
+	- 그러나 수치형 변수에 대해서는 까다로움.
+	1) dummy variable
+	2) discretization
