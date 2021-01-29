@@ -1,0 +1,101 @@
+정규화 모델 2
+
+
+
+1. LASSO(Least Absolute Shrinkage and Selection Operator): 변수를 선택할 수 있는 L1-norm regularization. 회귀 계수 beta”의” L1-norm을 제한함
+	- sigma |beta_i| < t의 제약식을 가짐
+	- t를 줄인다는 것은 제약을 크게 두는 것이고, 값을 키운다는 것은 제약을 약하게 한다는 것임
+
+2. Lasso Solution path
+	- beta1, beta2가 각각 x,y축인 좌표평면에서 제약조건 |beta1|+|beta2|<=t의 영역은 마름모 꼴으로 나타남.
+	- 이 때 LSE는 역시, t가 충분히 작다면 마름모의 바깥에 위치해 있을 것임.
+	- 일정 MSE를 갖는 회귀계수의 조합이 그리는 타원형의 자취를 점점 확장해 나가면 마름모의 제약 영역에 닿는 곳이 나올 것임.
+	- 이 닿는 지점은 마름모의 꼭지점이 되고, 이는 beta1=0이 나옴. 예측에 중요한 변수는 계수를 갖고, 그렇지 않은 변수는 회귀계수가 0이 되는 것임.
+	- 이 방식으로 변수 선택에 사용됨
+
+3. Lasso penalty function
+	beta가 k만큼 증가하면 |k|만큼의 패널티가 모형에 가해짐. V자 형태.
+
+4. Lasso solutions
+	- closed form의 solution을 찾을 수 없음. (L1-norm 미분 불가능)
+	- Numerical optimization methods:
+	1) Quadratic programming techniques
+	2) LARS algorithm
+	3) Coordinate descent algorithm
+
+5. Lasso parameter
+	- lambda=0 : same as ordinary least square 즉 최소 제곱법의 추정치와 같음
+	- lambda=무한: constant y-hat
+	- lambda 값을 어떻게 설정할 것인가? 이는 사용할 변수의 갯수를 몇개로 할 것인가의 문제와 같음.
+	- lambda 값이 클 경우: 적은 변수, 간단한 모델, 해석이 쉬움, 높은 학습 오차(underfitting 위험 증가)
+	- lambda 값이 작을 경우: 많은 변수, 복잡한 모델, 해석 어려움. 낮은 학습 오차(overfitting 위험 증가)
+
+6. Robustness of model
+	- 데이터가 달라질 때마다 변수선택이 달라지지는 않을까? training, test 데이터에 따라 변수 선택의 결과가 달라질 수 있음. 얼마나 달라질까?
+	- 달라지지 않고 일정한 성질을 robustness라고 함.
+	- 데이터셋을 여러개로 쪼개어 beta를 여러번 추정하여, 이 베타값들의 계수를 boxplot으로 나타냄.
+	- 그 결과, 일정한 형태로 계수값이 나타나는 것을 확인할 수 있음. 즉 라쏘는 꽤 robust한 모델이다!
+
+7. Solution paths Ridge and Lasso
+	- Ridge와 Lasso 모두 t가 작아짐에 따라 모든 계수의 크기가 감소
+	- Lasso: 예측에 중요하지 않은 변수가 더 빠르게 감소, t가 작아짐에 따라 예측에 중요하지 않은 변수의 계수가 0이 됨.
+	- 원과 마름모로 나타낸 제약조건의 그래프에서, solution의 path를 확인해보면 라쏘에서는 특정 변수의 계수가 0이 되는 지점이 등장함을 알 수 있음
+
+8. Ridge와 Lasso의 비교
+	1) Ridge
+	- 변수 선택 불가능
+	- closed form solution 존재(미분 가능)
+	- 변수간 상관관계가 높은 상황(collinearity)에서 좋은 예측 성능
+	- 크기가 큰 변수를 우선적으로 줄이는 경향
+	2) Lasso
+	- 변수 선택 가능
+	- closed form solution이 존재하지 않음. numerical optimization 이용
+	- 변수 간 상관관계가 높은 상황에서 Ridge에 비해 상대적으로 예측 성능이 떨어짐
+
+9. Lasso limitation
+	- 변수들 간 상관관계가 큰 경우, 예측 성능 저하, 변수 선택 성능 저하 등의 문제가 있음. - 따라서 변수 간 상관관계를 반영할 수 있는 방법이 필요
+	- 변수간 상관관계가 높을 경우 앞서 살펴본 데이터별 beta값의 분산이 커짐.
+	- 여기서 엘라스틱 넷이 나옴
+
+10. Elastic net
+	- Elastic net=Ridge + Lasso (L1+L2 regularization)
+	- Elastic net은 상관관계가 큰 변수를 동시에 선택/배제하는 특성을 가짐
+	- grouping effect: 상관관계가 큰 변수들은 같은 패턴으로 취급하겠다! 상관관계가 크면 계수를 비슷하게 추정하겠다.
+	- 하이퍼파라미터 lambda1,2를 결정해야함. 이 때 grid search를 사용할 수 있음.
+	- elastic net의 penalty function의 자취의 방정식은 마름모와 원의 중간 형태를 띰.
+	- elastic net penalty function 역시 포물선과 V의 사이의 함수 그래프 형태를 가짐
+
+11. Regularization with prior knowledge
+	- Elastic net: 상관관계가 높은 변수들을 동시에 선택
+	- Fused Lasso: 인접한 변수들을 동시에 선택
+	- Group Lasso: 사용자가 정의한 그룹 단위로 변수 선택
+	- Grace: 사용자가 정의한 그래프의 연결 관계에 따라 변수 선택
+
+12. Fused lasso
+	- spectral/profile/Signal 데이터에 적합함. 
+	- 중요한 변수들이 peak를 중심으로 연속적으로 나타남. 인접한 변수들을 동시에 고려할 필요가 있을 때 유용함
+	- 라쏘에 두번째 패널티 텀을 둠. 인접한 변수의 beta값을 비슷하게 추정하도록 유도하는 식임
+	- 나열된 순서가 중요할듯? (나)
+
+13. Group lasso
+	- 사용자가 미리 정의한 그룹 단위로 변수를 선택함.
+	- 그룹 l에 들어있는 총 변수들에 대해 제약을 가함
+	- 그룹에 들어있으면 중요하면 동시에 중요하도록, 그렇지 않으면 동시에 덜 중요하도록 유도함
+	
+
+14. Sparse group lasso
+	- group lasso에서 파생됨. 그룹 안에 있다면 중요하지 않아도 뽑히는 현상을 보정하기 위해 고안됨.
+	- 그룹 내에서 한번 더 중요한 변수를 걸러내자는 취지의 알고리즘.
+
+15. Nonconvex penalty
+	- 정규화 모델은 모두 penalty function이 convex였음.
+	- convex: a,b가 있을 때 이 둘의 평균의 함숫값이 각각의 함숫값의 평균보다 작은 값이 있을 경우를 convex라 함
+	- ridge는 convex함
+	- beta 값에 따른 penalty값의 변화: convex하면 급격히 변화함
+
+16. 이외에도 많은 nonconvex penalty로 모델링의 이점을 취하고자하는 접근이 있음
+	- SCAD
+	- MCP
+	- SELO
+	- Truncated Lasso
+	- L0 penalty
