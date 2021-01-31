@@ -1,0 +1,34 @@
+워드 벡터
+
+1. 어휘사전: 상위어와 유의어를 모두 조사
+	한계: 새로운 단어를 처리 못함, 유사도 구할 수 없음
+	
+
+2. 원핫: 해당 단어의 인덱스를 1로 두는 벡터로 표현
+	한계: 단어가 커질수록 스파스해짐, 유사도 계산 불가
+
+3. 분포가설: 동일한 문맥에서 등장하는 단어는 비슷한 의미를 가지는 단어라는 가설
+	-> 단어를 그들의 context로 representation할 수 있음
+
+4. Count Based Model
+	:SVD(singular value decomposition)
+	M=U*시그마*V^T
+	Co-occurance Matrix(문장을 BoW로 정리해, 단어 빈도에 따라 행렬로 변환)를 만들어 SVD 실행(특정 기준 만족하는 k를 구해 k차원으로 축소-> |V|*k 의 사이즈를 가지는 행렬으로 축소됨, U가 도출됨)
+
+5. SVD의 문제점과 보완책
+	문제점:
+	- 새 단어 출현시 행렬의 차원이 바뀌므로, 새로 SVD를 계산해 주어야함
+	- 대부분의 단어가 동시출현하지 않아 매우 Sparse, 매우 높은 차원, 계산 복잡도 O(mn^2)
+	보완책:
+	- 불용어 제거, ramp window, pearson corr. 혹은 negative count 활용
+	
+
+6. NN model- Word2Vec
+	두가지가 존재: skip-gram, CBoW(continuous BoW)
+	CBoW: 주변 context단어들로부터 하나의 단어를 예측하는 모델, 단어의 순서를 고려하지 않기 때문에 BoW라는 이름을 가짐
+	
+	skip-gram: 하나의 단어로부터 주변의 context 단어를 예측하는 모델
+
+
+
+20.01.19
