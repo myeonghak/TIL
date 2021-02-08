@@ -1,0 +1,40 @@
+SVD-16-Randomized SVD
+
+
+
+최근 randomized linear algebra라는 분야가 각광받고 있음. 이는 연산 효율을 위해 무작위적 방식을 적용하는 것임
+
+1.기술 발전으로 인해 이미지의 해상도는 증가함. 이는 이미지 데이터의 차원이 매우 빠른 속도로 증가하고 있음을 의미함. 그러나, 우리가 알고자하는 저차원 공간에서의 함축된 형태의 이미지는 해상도가 아무리 늘어나도 크게 바뀌지는 않을 것임.
+
+2.X의 column space에서 randomly하게 sampling하면, SVD에서 U의 dominant한 column에 의해 span될 수 있는 subspace를 찾을 확률이 높을 것임. 이 아이디어는 compressed sensing, 고차원 sparse vectors, 고차원 기하학 등에 적용됨. 
+
+3.이번 시간에는 X내에 실제로 low rank structure가 있는 경우 효율적인 SVD를 수행하는 방법에 대해 살펴봄.
+
+4.배경:
+	1) 증가하는 measurement dimension
+	2) low intrinsic rank(r)가 존재
+
+5.과정 1
+	1) P€R^(m*r)인 random projection P를 구하고자 함. 여기서 r은 우리가 찾고싶은 low intrinsic rank임. 우리는 이 r을 사용해 X 행렬을 U_r@sig_r@V_r^T로 근사하고 싶은 것.
+
+6.여기서 Z=X@P를 통해 X의 열공간을 대폭 축소함. 이렇게 구한 Z에, 원래는 원행렬 X에 했던 QR factorization을 수행. 
+	Z=QR
+	여기서 Q는 Z의 orthonormal basis를 제공함. 뿐만 아니라, P가 진짜로 X의 열공간에서 random하게 뽑혔다면 X에서의 dominant한 column space와 Z에서의 dominant columns space가 동일할 확률이 높을 것임. 따라서 QR factorization의 Q에서 orthonormal한 representation을 찾을 수 있으리라 기대할 수 있음.
+
+7.요약하자면, XP=Z=QR의 식으로 X의 정보를 요약한 작은 Z를 사용해 대부분의 같은 정보를 보존하면서도 효율을 증대시킴.
+
+8.과정2
+	이렇게 구한 subspace Q에 원래의 X를 project함. (Q차원 공간으로 사영)
+	Y=Q^T@X
+	이 Y에 SVD를 수행함.
+	Y=U_Y@sig@V^T
+	여기서 sig@V^T는 X의 그것과 동일할 것임. 그 이유는 U_Y가 X의 열공간을 span하는 orthonormal basis이기 때문.
+	마지막으로 U_X를 Q를 U_Y에 사영함으로 얻어냄. U_X=Q@U_Y 이는 일종의 원래차원으로의 stretching임
+
+9.￼
+
+10.요약하자면, Q^T@X=Y=U_Y@sig@V^T로 원행렬을 저차원으로 줄인 뒤 다시 U_Y에 Q를 proj함으로써 고차원으로 복원하는 것. 이 때 randomized 된 방법으로 인해 dominant한 information이 보존될 것이므로 잘 작동할 것.
+
+11.이 모든 연산은 생짜로 SVD를 수행하는 것보다 저렴함.
+
+12.이는 vanila randomized SVD로, power iteration이나 oversampling과 같은 더 혀과적인 방법론이 있음. 여기서 oversampling은 축소할 차원인 r에 5-10을 더해 정확도를 크게 올리는 방식임
