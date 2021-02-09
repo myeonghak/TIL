@@ -1,0 +1,30 @@
+추천 시스템의 역사
+
+
+
+https://youtu.be/y_TzOOCJqxI
+
+
+1. matrix factorization(netflix challenge)
+
+2. Restricted Boltzmann Machine(뉴럴넷의 일종): 단일 모델로써 강력한 성능을 보임
+
+3. factorization machine: MF알고리즘의 일반화로써 등장
+
+4. Deep Content based (music) recommendation: feature extractor로써 딥러닝 모델을 사용, 각자 학습됨
+
+5. Wide and Deep(by google): 얕은 선형 모델과 깊은 딥러닝 모델의 장점을 결합함, 선형 모델의 피처를 위해 feature selection이 필요, 두 레이어가 동시에 학습됨
+
+6. DeepFM: Wide and Deep 모델의 선형 파트에 FM알고리즘을 적용, interaction feature를 수동으로 처리해 주는 일을 자동화하는 것을 목적으로 함. 모델의 두 부분은 모두 동시에 학습되며 같은 웨이트 레이어를 공유함.
+
+7. Content2Vec: 이미지/텍스트의 pretrained model을 사용해 transfer learning을 처음 적용한 접근법, pair-wise item similarity metric을 loss로 사용함.
+
+8. Session-based recommendation: 고객의 interaction sequence를 자연어나 시계열에서의 sequence처럼 취급함. 고객의 세션을 기반으로, 다음 아이템을 예측하는 방식으로 학습. negative sampling이 중요한 접근이 됨. BPR, Top1 loss등을 사용
+
+9. contextual session-based recommendations: session-based approach에 시간, 최종 구매 시간, 이벤트 타입 등의 컨텍스트 정보를 인풋/아웃풋 레이어, 그리고 RNN 레이어에 주입함. 기존의 RNN 기반 접근보다 3-6% recall@10 성능을 얻음
+
+10. Challenges: 
+	- 데이터의 사이즈가 매우 거대하고, sparsity가 심각함. 
+	- 특화된 상황(specialized settings)이 매우 다양
+	- content, context, session, preference data를 결합해야함
+	- 서빙이 어려움: 연산 비용이 비쌈
