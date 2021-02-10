@@ -1,0 +1,13 @@
+SVD-17-Power iteration and Oversampling
+
+
+
+1. oversampling: 축소할 타겟 rank인 r에 5-10을 더해 상대적으로 저렴한 비용으로 더욱 높은 정확도를 얻는 방법. 여기서 5-10은 rules of thumb에서 도출됨.
+
+2. power iteration은 우리의 data가 우리가 원한만큼의 low한 rank를 갖지 않을 경우 특히 효율적임.
+
+3. singular value의 distribution이 elbow point를 가져 특정 low rank포인트에서 급격히 줄어든다면 일반적인 randomized SVD가 잘 작동할것임. 그러나 그 분포가 급격한 하락을 보이지 않고 완만한 형태를 띤다면, 그 sigma를 제곱하여 elbow point를 갖는 형태로 변형해줄 수 있을것임.
+
+4. X^q=(X@X^T)^qX로 이를 성취함. 이 연산은 매우 비용이 큼. 따라서 적절한 q를 선택해야하는데, 이에 대한 공식이 존재
+
+5. q=2의 power iteration으로도 충분히 강력한 성능 향상을 이룰 수 있음.
