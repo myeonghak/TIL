@@ -1,0 +1,58 @@
+SVD(Singular Value Decomposition)
+: m*m 정방행렬에만 사용 가능한 고유값 분해와 유사한 방식으로,m*n 행렬을 분해해 대각화하는 방법.
+
+1. A를 인풋 m*n 행렬,
+
+2. U를 m*r 행렬,
+
+3. 시그마를 특이값들(singular values)로 이루어진 대각행렬,
+
+4. V를 n*r 행렬이라고 한다. 
+
+5. 여기서 r은 행렬 A의 랭크값을 의미한다.
+
+6. 이 각각의 U,시그마,V 행렬은 고유하다.(하나만 존재)
+
+7. 시그마의 값은 1번 행부터 r번 행까지 내림차순이고, 이는 각 컨셉(잠재변수와 유사한 개념으로 이해)의 강도를 뜻한다.
+
+8. U는 유저와 컨셉의 유사도(similarity)행렬
+
+9. V는 콘텐츠와 컨셉의 유사도행렬을 의미한다.
+
+
+
+[스트랑]
+
+1. M이라는 선형변환은(어떤 형태의 매트릭스가 표현하는 선형변환이든)
+
+2. rotate-stretch-rotate로 표현해낼 수 있다!
+
+3. 이 과정에서 rotate는 직교행렬, stretch는 대각행렬에 의해 발생함.
+
+4. 대각 행렬에는 어떤 값이 가장 중요한지(singular value)가 들어감.
+
+5. U와 V의 각 열벡터는 singular vector라고 함.
+ -> “that’s the statement of factorization”?
+
+https://m.blog.naver.com/PostView.nhn?blogId=sw4r&logNo=221495616715&categoryNo=198&proxyReferer=https:%2F%2Fwww.google.com%2F
+
+6. positive definite: 
+대칭구조를 갖는 행렬(symmetric matrix) n*n인 M이 있다고 할 때,
+n 길이의 실수벡터 x에 대해
+x^TMx > 0 (0초과) 일 경우.
+
+7. positive semidefinite:
+0 이상일 경우.
+
+[공돌이 SVD]
+
+1. 직교하는 벡터 집합(u1,u2)에 대하여, 선형 변환 후에 그 크기는 변하지만 여전히 직교할 수 있게 만드는 그 직교 벡터집합은 무엇인가, 또 변형 후의 결과(v1,v2)무엇인가?
+	-> AU=V€
+	-> A=V€U^T
+	
+
+2. SVD-> 위의 설명에 해당하는 u,v가 UsigV에서 각 u,v 벡터(각각은 열벡터)가 됨
+
+3. 여기서 U,V는 orthogonal matrix(직교 행렬)이므로 U^T=U^-1임. 즉 전치행렬이 역행렬임
+
+4. 시그마의 요소값은 scaling factor
