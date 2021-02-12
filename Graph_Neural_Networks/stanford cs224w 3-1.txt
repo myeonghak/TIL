@@ -1,0 +1,65 @@
+Stanford cs224w - 3. motifs and Structural roles in networks 1
+
+
+
+subnetworks(subgraphs): 네트워크의 구성 블록과 같음. 네트워크를 특성짓고 구분할 수 있는 능력이 있음(power to characterize and discriminate networks)
+
+1.isomorphic: 한 그래프의 노드를 다른 그래프에 맵핑했을 때, 엣지와 그 방향이 동일할 경우 isomorphic하다고 함.
+
+2.subgraph의 예시
+	- 노드 3짜리 가능한 모든 (non-isomorphic) 유방향 서브그래프를 생각해보자. 
+
+3.각 서브 그래프에 대해, 서브 그래프의 중요성(significance)을 분류할 수 있는 척도가 있다고 해보자. 
+	- 음수 값은 under-representation을,
+	- 양수 값은 over-representation을 의미함
+
+4.이를 토대로 네트워크 중요성 프로필을 만든다. 모든 서브그래프 타입에 대한 피처 벡터 값을 나타냄.
+
+5.그 뒤, 여러 네트워크의 프로필을 비교함. 3개 노드의 서브그래프 중 특정 그래프는 소셜에서는 over-represented이지만 유전 그래프에서는 그렇지 않는 등의 현상을 관찰할 수 있음.
+
+6.이번 강의 계획
+	1) 서브그래프:
+	- motifs와 graphlet에 대한 정의
+	- motif와 graphlet 찾기
+	2) 네트워크 내에서의 구조적 역할
+	- RolX: 구조적 역할을 찾아내는 방법론
+	3) 구조적 역할 찾기와 그 응용
+	- 구조적 유사성
+	- 역할 생성과 전이 학습(transfer learning)
+	- making sense of roles
+
+7.network motif: 상호작용(interaction)의 재귀하는, 유의미한 패턴
+	- 패턴: 작은 유도된(induced) 서브그래프. 여기서 induced는 한 집합의 노드가 있을 때 그 노드들 사이의 모든 엣지를 취한 것.(if you have a set of nodes, then you take all the edges between that set of nodes) 즉, A패턴을 포괄하는 B패턴이 있다고 해도, A와 완전히 동일하지 않으면 A로 간주하지 않는다는 말! (14:21)
+	- 재귀하는(recurring): 자주 등장, frequent
+	- 유의미한(significant): 기대된 것보다 더 빈번하게 등장하는, 즉 무작위로 생성된 그래프에서보다 더 자주 등장하는.(erdos-renyi 랜덤그래프, scale-free 네트워크)
+
+8.motif가 필요한 이유
+	- 네트워크가 작동하는 방식에 대해 이해할 수 있도록 도움.
+	- 주어진 상황에서 네트워크의 반응과 작동을 예측할 수 있도록 함
+	- 예시
+	1) feed-forward loop: 생물학적 신호를 중성화하는 작용. 뉴런에서 관찰됨. resnet과 같은 구조(skip-connection)
+	2) parallel loop: 먹이사슬에서 발견됨. 계층적으로 나타남
+	3) single input module: 유전자 통제 네트워크에서 발견됨. 한 입력이 여러 출력으로 이어질 수 있음.
+	
+
+9.motif의 recurrence
+	- occurence를 계산할때는 motif끼리 겹쳐지는 것을 허용함. 즉 포괄하는 큰 패턴이 있을 때 그 안의 작은 모티프를 모두 세어준다는 것.
+
+10.motif의 significance
+	- 랜덤 네트워크 내에서보다 실제 그래프에서 훨씬 빈번히 등장하는 서브그래프는 기능적인 유의성(significance)를 갖는다
+	- 즉 랜덤 네트워크의 경우에 비해 overrepresented되었다고 볼 수 있음
+	- Z_i 모티프 i의 통계적 유의성을 표현함. (N^real-N^rand-bar)/std(N^rand))
+	- Network significance profile(SP): normalized된 z score의 벡터임. 이는 서브그래프의 상대적인 유의성을 강조함. 크기가 다른 네트워크들 간의 (아마 유의성) 비교에서 중요함. 크기가 큰 네트워크는 z-score가 큰 경향이 있기 때문임.
+
+11.configuration model
+	: 앞에서 significance를 구할 때 랜덤 네트워크가 조금 더 실제 그래프의 특성(노드, 엣지, 차수 분포 등) 잘 표현할 수 있도록, 주어진 degree seq를 사용해 랜덤 그래프를 생성해냄. 이 랜덤 그래프를 configuration model이라 함.
+
+12.spoke(바퀴살)의 대체물: switching
+	그래프 G에서 시작, 스위칭 작업을 Q*|E|회 만큼 반복
+	- 스위칭 작업: 두 엣지 쌍을 선택하여, 노드의 끝을 서로 교체해버림. 
+	- 그 결과, 같은 노드 차수를 갖지만 무작위로 연결된 그래프가 만들어짐.
+	- Q는 수렴에 도달할 수 있을 만큼 충분히 큰(100처럼) 수로 선택.
+
+13.recap: detection motifs
+	- 랜덤 그래프(컨피겨레이션 그래프)와 리얼 그래프 내의 subgraph를 분석해 z-score가 충분히 크게 나온다면 이를 motif로 간주
+	
