@@ -1,0 +1,40 @@
+[TIL] BERT로 NER tagger 만들기-윤주성님 모두연
+
+
+
+1. 이제는 BERT가 basic tool이 되어가고 있음. pretrain model을 사용해 fine-tuning으로 down stream task를 수행하는 것이 용이해짐.
+
+2. BERT를 써봐야겠다! 라는 취지에서 시작
+
+3. task정의-데이터탐색-결과물형태-contribution-evaluation(중요!)의 순서로 진행함
+
+4. task: task는 뻔한 분류나 버트에 적합치 않은 생성을 제외하고 이전에 시도했던 NER으로 선택
+
+5. data: 데이터셋을 찾아다녔는데, 우연히 지인의 깃헙 스타 리스트에서 발견
+
+6. 결과물: 깃헙 레포로, 주피터노트북 형식으로 정리해서 모르는 사람이 써도 활용할 수 있게끔 만들자.
+
+7. contribution: modeling vs 전처리부터 모델링, 추론, 시각화까지
+	- 모델링은 구현체가 많아서 contribution할 수 있는게 별로 없다고 판단함
+	- 모델링으로 기여하면 더 좋지만 training~inference까지의 과정을 다른 사람도 쉽게 할 수 있게끔 하는것을 contribution 삼기로 함
+
+8. NER 라벨은 시작인덱스,끝인덱스,태그
+
+9. 자신만의 vocab, tokenizer를 준비해서 wrapper형태로 만들어 놓으면 좋음
+
+10. NLP 프로젝트의 구조도 템플릿화 해놓으면 좋음. “structuring your first NLP project” - 김보섭님 모두연 자료 참고
+
+11. 기존의 CNN+BiLSTM NER 모델은 기다 feature(품사 등)를 넣어주어야 잘 작동했으나, BERT는 임베딩이 우수해 이러한 feature없이도 활용 가능
+	- 그러나 단점은 feature를 추가하고 싶어도 쉽지 않다는 점. 아웃풋 단에서 추가해 주어야 함. (출력 이후에 후처리로 피처를 반영해야한다는 것 같음.)
+
+12. 버트 임베딩 이후에 CRF와 같은 레이어를 하나 더 붙여 최종 학습 및 추론 수행
+
+13. Experiment 안에 다양한 실험의 결과 및 configuration을 저장하기
+
+14. Huggingface의 implementation을 보면 배울 점이 매우 많음.
+
+15. Evaluation은 confusion matrix를 사용. 이 역시 탬플릿화 하여 관리하는 것이 좋을 것임
+
+16. CRF 하나만을 붙인 구조가 가장 성능이 좋다고 함.
+
+17. Attention score 시각화
