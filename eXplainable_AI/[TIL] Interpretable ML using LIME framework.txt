@@ -1,0 +1,23 @@
+[TIL] Interpretable ML using LIME framework
+
+
+
+1. 라임이 작동하는 방식
+
+2. https://youtu.be/CY3t11vuuOM
+
+3. 
+
+4. permute data*: 각 observation에 대해, 피처 값을 permute하여 새로운 fake dataset을 만듦.
+
+5. calculate distance between permutation and original observation*: 위에서 생성한 fake data와 original data의 distance(즉, similarity score)를 계산하여, 원래 데이터와 새로 만든 데이터가 얼마나 다른가를 측정
+
+6. make prediction on new data using complex model: 블랙박스 모델을 사용해 생성한 데이터의 라벨을 예측함.
+
+7. pick m features best describing the complex model outcome from the permuted data*: 블랙박스 모델의 결과로 나온 클래스의 likelihood를 maximize하는, 최소한의 피처 m개를 찾아 냄. 이 과정은 매우 중요한데, 수백개의 피처를 사용해 예측을 수행할 경우에도 몇개의 중요한 피처만을 남겨낼 수 있기 때문임. 이 몇 피처들은 예측을 도출해내기 위해 필요한 정보가 가장 많은(informative) 피처라고 생각할 수 있음.
+
+8. Fit a simple model to the permuted data with m features and similarity scores as weights*: m개의 피처들을 뽑아서, 생성한 데이터에 설명 가능한 linear model과 같은 알고리즘으로 학습, 가중치와 기울기를 구함. 2에서 구한 유사도를 weight로 사용하여 모델을 fitting함(로스에 반영할 때 덜 준다는 말인가?)
+
+9. Feature weights from the simple model make explanation for the complex models local behavior: 여기서 구한 기울기(coef)는 local scale에서 해당 observation에 대한 설명이 됨.
+
+10. *가 표시된 1,2,4,5는 사용자가 customize해서 optimal한 explanation을 얻을 수 있는 부분임. 얼마나 permute할지, 어떤 유사도 측도를 쓸지, m의 수를 몇개로 할지,
