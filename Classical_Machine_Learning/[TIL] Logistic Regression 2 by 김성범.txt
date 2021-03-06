@@ -1,0 +1,46 @@
+[TIL] Logistic Regression 2 by 김성범
+
+
+
+1. 로지스틱 회귀모델의 파라미터 추정
+	- 최대 우도 추정법(Maximum Likelihood Estimation)
+	f_i(y_i)=phi(x_i)^y_i * (1-phi(x_i))^1-y_i
+	-> 여기서 P(y_i=1) = phi, P(y_i=0)=1-phi
+	L=(product 1-n) f_i(y_i)-> log를 취해 summation형태로 변형
+
+2. 로그-우도 함수(log-likelihood function)
+	- lnL=sigma(y_i(beta_0+beta_1*X_1+...+beta_p*X_p))+sigma(ln(1+e^(beta_0+beta_1*X_1+...+beta_p*X_p)))
+	- 위의 로그-우도 함수가 최대가 되는 파라미터 beta 결정
+	- 로그-우도 함수는 파라미터 beta에 대해 비선형이므로 선형 회귀 모델과 같이 closed form solution이 exist하지 않음
+	- 수치 최적화 알고리즘(Iterative reweight least squares, Conjugate gradient, Newton’s method 등)을 사용하여 해를 구함
+
+3. 크로스 엔트로피(cross entropy)
+	- 두 확률 분포의 차이를 나타내는 방법. 로그 우도함수 최적화는 이 크로스 엔트로피를 최소화시키는 파라미터 beta를 찾는 과정도 됨.
+	- cross entropy: 음의 log likelihood 함수의 기댓값
+	- log likelihood function을 최대: 입력분포 p(x)와 파라미터가 주어졌을 때, 출력분포 q(x)의 확률을 최대화
+	- cross entropy를 최소화: 입력분포 p(x)와 출력분포 q(x)를 최소화
+	- log likelihood를 최대=cross entropy를 최소
+	- 결국 어떻게 포메이션해도 최적화 값은 같게 나옴
+
+4. 결과
+	- S자의 커브를 얻게 됨
+	- threshold: 일반적으로 0.5를 사용
+	- 성공의 비중이 낮은 경우(이상탐지, 희귀환자 예측, 불량예측 등), 보수적으로 예측해야 할때 낮은 threshold를 사용 (recall이 핵심 지표)
+	- 성공의 비중이 큰 경우 높은 threshold 사용
+
+5. 모델의 해석
+	- 선형회귀모델: 입력변수가 1단위 증가할 때 출력변수의 변화량
+	- 로지스틱회귀모델: 입력변수가 1단위 증가할때 로그아드의 변화량
+
+6. 승산 비율(odds ratio)
+	- 나머지 입력변수는 그대로 두고, 한 변수의 값만 1만큼 증가시켰을 때 변화하는 odds의 비율
+	- odds((x_1+1)+x_2+...+x_n)/odds(x_1+x_2+...+x_n)=e^beta_1
+	- x가 1만큼 증가할 때, 성공에 대한 승산비율이 e^beta_1만큼 증가함
+	- 회귀계수가 양수-> 성공확률 증가 (성공확률>=1)
+	- 회귀계수가 음수-> 성공확률 감소 (0<=성공확률<1)
+
+7. 추정 파라미터
+	- Std. error: 회귀계수는 점추정의 결과이지만, 회귀계수의 구간추정을 위해 파라미터의 표준편차를 구해주어야 함. 이를 사용해 신뢰구간을 구할 수 있음
+	- p-value: 해당 변수가 통계적으로 유의미한지 여부를 알려주는 지표. 해당 파라미터 값이 0이라고 가정했을 때의 확률값을 나타냄 (파라미터에 대한 귀무가설이 옳다고 했을 때 해당 파라미터 추정치가 구해질 확률)
+	- odds(odds ratio): 나머지 입력변수는 고정시킨 상태에서 특정 입력변수의 값을 1만큼 증가시켰을 때 변화하는 odds(성공확률)의 비율. 
+	1) Experience의 odd ratio가 1.028->경험이 1년 많으면 대출 확률이 1.028배 증가 2) credit card의 odds ratio가 0.38-> 대출 확률이 0.38이 된다는 말이므로 그만큼 감소하게 됨 (음수는 없고 0-1 사이의 값일 때 감소하는 것)
