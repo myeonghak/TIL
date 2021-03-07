@@ -1,0 +1,44 @@
+https://untitledtblog.tistory.com/164
+
+
+
+* metric learning
+
+1. -> 데이터에 적합한 거리함수를 머신러닝 알고리즘으로 학습하는 방법론
+
+2. -> 다시 머신러닝의 관점에서 말해보면, 데이터에 적합한 거리함수는 데이터의 각 목표값에 대해 데이터를 구분하기 쉽게 만들어주는 거리 함수를 의미함
+
+3. -> 기존의 feature로는 분류가 쉽지 않던 데이터에 대해 데이터를 class label별로 잘 구분할 수 있게 만드는 metric을 학습함
+
+4. -> 따라서 새로운 함수를 통해 나온 임베딩 이후의 스페이스에서 euclidean 거리가 쉽게 구분되도록 하는 임베딩 함수를 구하는 문제가 됨
+
+
+* contrasive embedding
+
+1. -> 이진 분류에 사용될 수 있는 metric learning
+
+2. -> metric learning을 통해 contrasive loss를 최소화 함으로써 데이터를 잘 구분하는 새로운 embedding을 만
+
+3. -> 이 임베딩을 위해 새로운 파라미터를 학습함
+
+ 
+
+* triplet embedding
+
+1. -> 멀티 클래스 분류에서 사용할 수 있는 metric learning
+
+2. -> 목표가 되는 클래스를 갖는 anchor, 같은 class를 갖는 positive sample, 다른 class label을 갖는 negative sample로 정의됨
+
+3. -> positive와는 가까워지도록, negative와는 멀어지도록 파라미터를 학습하여 임베딩을 조작함.
+
+4. -> 랜덤샘플링 기반으로 추출되지만, 임베딩 성능을 향상시키기 위한 여러 샘플링 기법이 고안됨
+
+ 
+
+* log-ratio embedding
+
+1. -> 위의 두 방법론은 분류 문제를 위해 고안됨
+
+2. -> log-ratio embedding은 회귀문제를 위해 고안됨.
+
+3. -> log-ratio loss를 최소화함으로써 임베딩 공간상에서의 데이터간의 거리 비율과 목표변수간의 거리 비율이 일치하도록 임베딩 함수 f의 model parameter를 최적화함
