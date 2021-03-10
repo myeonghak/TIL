@@ -1,0 +1,27 @@
+[TIL] SBERT(Sentence BERT)
+
+
+
+1. BERT: MLM과 NSP를 목적함수로 학습
+	- Cross Encoder: pair-wise 입력이 트랜스포머 인코더 네트워크에 통과되고, 타겟 값이 분류 레이어에 의해 예측됨.
+
+2. 단점: 
+	- [CLS] 토큰이 semantic 관점에서 무의미함
+	- 여러 용례에 대해, poly-encoder는 너무 큰 overhead를 가짐.
+	- score function이 symmetric하지 않음(A B와 B A의 손실이 다름?)
+
+3. SBERT architecture overview
+	1) BERT/RoBERTa
+	- 두 버트 네트워크는 서로 고정된(tied) 가중치를 가짐 (샴 네트워크)
+	- 고정된 크기의 문장 임베딩이 도출됨.
+	2) Pooling strategy
+	- [CLS] token
+	- mean pooling
+	- max pooling
+	3) Concatenation
+	- BERT와 pooling에 의해 도출된 u, v을 concatenate함.
+	- concat(u,v), 차, 곱 등의 방법이 있음
+	4) Objective function
+	- Classification Obj function
+	- Regression Obj function (문장간 코사인 유사도를 예측)
+	- Triplet Obj function: anchor sentence가 있을 때 positive, negative sentence가 나오는데 이들의 구별을 잘 하도록 유도(같은 클래스면 최대한 가깝고, 다른 클래스면 최대한 멀게)
