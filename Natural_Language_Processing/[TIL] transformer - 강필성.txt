@@ -1,0 +1,127 @@
+[TIL] transformer - 강필성
+
+
+
+# 왜 ffn에서 2048됐다가 512로되지? 어떻게 컨볼루션으로 이해할 수 있는거지?
+
+
+1. 속도 향상을 위해 어텐션을 사용한 모델로, 모델 학습과 병렬화에 유용함.
+
+2. 내부 구조
+	인코더 구조와 디코더 구조, 그리고 그 둘을 연결하는 부분으로 구성되어 있음
+	1) 인코더 파트
+	- 인코딩 블록 6개가 쌓여 (stack) 구성되어 있음.
+	- 그러나 꼭 6개일 필요는 없고, 논문에서 초기에 제안된 값이 6임.
+	2)  디코더 파트
+	- 디코딩 블록 6개가 쌓여 구성되어 있음.
+
+
+3. 인코딩과 디코딩 블록의 차이: unmasked vs masked
+	- 예측 과정에서 정답을 참고할 수 없도록 디코더 블록에는 마스킹을 취해줌
+	- 만일 4번 토큰을 예측하는 순서였다면 3번 이후의 토큰은 마스킹 처리됨
+	- 인코더 부분은 self-attention -> FFN이라는 2단계 구성
+	- 디코더 부분은 masked self-attention -> encoder-decoder attention -> FFN 이 3단계 구성임
+	- 디코더에 해당 시점까지 입력된 토큰까지만(masked) 놓고 그 토큰들 중에서 self-attention을 취해 줌. 즉 “나는 너를 사랑하는데” 까지가 디코더에 들어갔다면, 사랑하는데와 나는에 어텐션을 취하는 식으로.
+
+4. Encoder
+	- 모든 인코더는 동일한 스트럭처를 가짐. 이들은 모두 두개의 sub-layer로 구성됨. self-attention, FFN이 바로 그것임.
+	- 같은 구조를 갖고있다는 말이 같은 가중치를 공유한다는 의미는 아님.
+	- self-attention layer: 인코더의 입력값이 통과되면, 특정 단어를 인코딩할 때 입력 시퀀스 내의 다른 단어를 참고할 수 있도록 유도함.
+
+5. Decoder
+	- 디코더는 self-attention -> Encoder-Decoder attention -> FFN이라는 구조를 가짐.
+	- 여기서 Encoder-Decoder attention은 인코더의 출력과 유관한 부분에 주목하도록 돕는 기능을 수행함.
+
+6. 임베딩
+	- bottom-most encoder에서만 이루어짐. 단어에 해당하는 일정한 길이(512차원)의 벡터를 추출함
+	- 모든 인코더 블록은 512차원의 벡터로 이루어진 리스트를 전달받게 됨.
+	- 이 벡터 리스트는 bottom-most encoder에서는 워드임베딩이 되고, 그 이후 인코더에서는 바로 직전 인코더의 출력이 됨.
+	- 이 리스트의 크기는 하이퍼파라미터인데, 보통 입력 데이터셋의 가장 긴 센텐스의 길이가 됨.
+	- 입력 임베딩은 from scratch로 할수도 있지만, word2vec이나 glove같은 프리트레인 모델을 씀
+
+7. Positional Encoding
+	- 512차원의 input embedding 벡터와 512차원의 positional encoding 벡터를 더해줌(addition)
+	- Input sequence의 단어들의 순서에 대한 정보를 전달해주기 위함.
+	- Embedding+Positional Encoding=Embedding with time signal
+	- good positional encoding scheme이 갖추어야 할 두가지 특성
+	1) 인코딩 벡터의 놈이 모든 포지션에 대해 동일해야 함
+	2) 두 위치가 멀수록, 그 사이의 거리가 더 길어져야 함.
+	- transformer에서 사용한 수식
+	PE(pos,2i)=sin(pos/10000^2i/d_model)
+	PE(pos,2i+1)=cos(pos/10000^2i/d_model)
+	- 위 메트릭으로 표현할 경우, 대각 행렬의 값은 스스로와의 거리이므로 0이되고 그 외에는 거리가 멀어질수록 벡터간의 거리가 커짐.
+	- 실험: d=512, 길이가 100인 시퀀스를 구해 100개 각각의 토큰에서 PE 벡터를 구한 뒤 그 벡터들의 l2-norm을 계산하면, mean=256.25, std=1.35으로 나옴. 즉 평균에 비해 표준편차가 매우 작은 형태. 표준편차는 0이어야 가장 좋지만, 이 정도도 평균에 몰려 있으므로 앞서 언급한 기준을 충분히 잘 만족하고 있음을 알 수 있음
+	- 듬성듬성 더 먼 곳이 더 값이 작은 등 값이 역전되는 현상도 살펴볼 수 있기는 함. 그러나 전반적인 경향성은 조건을 만족함.
+
+8. Self-Attention
+	- self-attention layer내에서는 단어벡터간(path간의) 의존성(dependency)이 존재함.
+	- 그러나 그 이후의 FFN에서는 의존성이 부재, 이로써 병렬화가 가능해 짐. FFN 레이어 내부의 구성요소들 간의 구조는 동일하지만 가중치는 다르게 학습됨
+
+9. Self-Attention 개요
+	- the animal didn’t cross the street cuz it’s too tired라는 문장이 있을 때, it에 해당하는 것을 알아서 찾게 만들어보자
+	- 특정 단어의 더 나은 인코딩을 만들기 위해 주변의 단어를 참고할 수 있도록 유도함
+	- 셀프어텐션이란 한 단어를 인코딩할 때 주변 유관 단어에 대한 이해를 활용하도록 돕는 도구임
+
+10. Self-Attention step 1: 인코더의 각 입력 벡터로부터 3개의 벡터를 생성함
+	- Query: 쿼리란 다른 단어에 대한 (유사도) 점수를 (그들의 key를 사용해) scoring할 때 사용할 현재 단어의 representation임. 이 때, 현재 처리할 토큰에 대해서만 신경씀.
+	- Key: 키 벡터란 세그멘트 내의 모든 단어에 대한 레이블과 같음. 이들은 유관 단어에 대해 탐색하는 과정에서 매칭되는 대상임.
+	- Value: 벨류 벡터는 실제 word representation으로, 각 단어가 얼마나 유관한지를 score한 뒤에, 이 벨류 벡터들이 현재 단어를 표현하기 위해 더해주는 실제 값들임
+	- 입력 단어 X_1의 차원이 1*4일때, q,k,v의 차원이 1*3이라면 W_Q,W_K,W_V는 모두 4*3차원 매트릭스가 됨. (1*4 4*3 = 1*3)
+	- 이 W들이 우리가 학습을 통해 찾아야 할 미지수들임
+	- 일반적으로 Q,K,V의 차원(e.g. 64)은 임베딩 차원의 수(e.g. 512)보다는 작게 만드는데, 이는 멀티헤드어텐션 이후의 차원 값을 일정하게 유지함으로써 전체적인 구조를 일관성있게 만들기 위함. (concatenation 이후 512를 복원해낼 수 있도록 유도)
+
+11. Self-Attention step 2: 각각의 스코어를 계산함
+	- 특정 위치 내 한 단어를 인코딩할 때 다른 부분에 얼마나 많은 관심을 기울일지에 대한 스코어를 계산
+	- 쿼리 벡터를 각 키 벡터에 내적(혹은 그 외 유사도 함수)을 취한 뒤 소프트맥스를 취해줌으로써 유사도 점수를 뽑아줌.
+
+12. Self-Attention step 3: 해당 유사도 점수 스코어를 sqrt(d_k)로 나누어 줌.
+	- 이는 gradient를 stable하게 해주는 데 도움이 됨
+
+13. Self-Attention step 4: softmax operation에 통과
+	- 이 softmax값은 해당 위치에서 각 단어가 얼마나 많이 표현될지를 결정함
+
+14. Self-Attention step 5: 각각의 value 벡터들을 softmax score vector와 element-wise 곱함
+	- 이는 우리가 주목하고자 하는 단어들에 대해서는 최대한 그 값을 고스란히 지키기 위함. 반대로 관심 없는 값은 거의 남지 않게 됨
+	
+
+15. Self-Attention step 6: weighted value vector를 sum up함으로써 해당 포지션의 self-attention layer의 출력값을 구함
+
+16. Multi-headed attention
+	- 다른 위치들에 대해 집중할 수 있는 능력을 줌
+	- 8개의 멀티헤드 어텐션에서 각각 어텐션 스코어를 계산함
+	- 어텐션 헤드는 concat되어 추가적인 가중치 매트릭스로 곱해져 FFN의 입력값으로 활용 가능
+	- 다음의 과정을 거침
+	1) 모든 어텐션 헤드를 concat함
+	2) 모델과 결합되어 학습되는 W^0 매트릭스와 곱해짐
+	3) 결과물은 모든 어텐션 헤드에서의 정보를 잡아내는 Z 매트릭스가 됨. 이 값을 FFN에 입력으로 전달할 수 있음
+
+17. MHA 재정리
+	1) input sentence 입력
+	2) 각 단어를 임베딩함(0번째 레이어에만 해당)
+	3) 이전 층의 입력값(혹은 임베딩값)을 W_Q/W_K/W_V에 해당하는 가중치 매트릭스에 곱해줌
+	4) Q/K/V를 사용해 어텐션 스코어를 계산, Z 매트릭스를 각 어텐션 헤드별로 출력
+	5) 모든 Z_0,Z_1,...,Z_k 매트릭스 값을 concat, W^0 가중치 매트릭스를 곱해 최종 Z를 계산
+
+18. Self-Attention의 residul block
+	- resnet에 도입된 개념으로, f(x)+x을 전달함. 미분을 하면 f’(x)+1이 되는데, 이 1이라는 작은 값을 전달함으로써 학습에 유리한 작용을 함.
+	- self-attention layer에서는 residual connection이후 layer normalization을 취해 줌
+	- 이 residual connection(add)+layer norm은 각 인코딩/디코딩 블록마다 반복되는 default structure임
+
+19. Point-wise Feed forward network
+	- Fully connected feed-forward network
+	- 각 포지션에 대해 seperately and identically 적용됨
+	- FFN(x)=max(0,xW_1+b_1)W_2+b_2
+	- 선형 변환은 모든 다른 포지션에 걸쳐 동일함
+	- 레이어마다 다른 파라미터를 사용함
+	- 같은 블록 내에서는(z1,z2에 대해서 동일) 같은 파라미터를 공유하고, 다른 블록끼리는 각각 다른 파라미터를 사용한다는 것임.
+	- 이를 묘사하는 또 다른 방법은, 커널 사이즈가 1인 두 컨볼루션으로 묘사하는 것임.
+
+20. Masked Multi-head Attention
+	- 디코더 파트에서의 self-attention은 아웃풋 시퀀스에서 이미 등장한 값에 대해서만 어텐션을 취할 수 있어야 함.
+	- 이는 self-attention에서 소프트맥스 단계 통과 전에 아직 안 본 토큰에 대해 -inf를 씌워줌으로써 어텐션의 대상에서 배제함으로 이룰 수 있음. (이러면 이미 어텐션 다 하고 나서 남은 것들에 배정되니까 엄밀하게는 다른게 될수 있지 않나..?)
+	- 이 마스킹 과정은 순차적으로 할 필요가 없기 때문에, 매트릭스로 계산함. 마스킹함으로써 대각원소 위의 원소들은 마스킹된 형태의 매트릭스를 얻을 수 있음
+	- 그 뒤 softmax를 취해줌(softmax along the row)
+
+21. Final layer and Softmax layer
+	- Linear layer: 단순한 Fully connected neural net으로 디코더 스택에서 출력된 벡터를 로짓 벡터라는 훨씬 큰 벡터로 project하는 역할
+	- softmax layer: 그러한 점수(로짓)들을 확률값으로 변환해줌. 가장 높은 확률값을 가진 셀을 선택하여, 이 셀에 상응하는 단어를 해당 타임스텝의 출력으로 만들어짐
