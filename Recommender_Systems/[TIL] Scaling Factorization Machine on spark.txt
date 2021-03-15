@@ -1,0 +1,20 @@
+[TIL] Scaling Factorization Machine on spark
+
+
+
+https://youtu.be/91JLflBHvGs
+
+ 
+
+1. FM은 카테고리 변수가 많을 때, 그리고 이 카테고리 피처간의 상관관계가 중요할 때 좋은 성능을 보임
+
+2. Linear 모델을 쓸 경우, 충분히 expressive하지 않음. 
+가중치와 바이어스텀을 얻게 되는데 이는 각 유저와 아이템에 대한 평균적인 평점을 부여하는 것이 됨. 
+따라서 유저와 아이템의 interaction term을 얻지 못함.
+
+3. polynomial regression을 하면, 유저와 아이템의 조합에 대한 피처를 추가하게 됨. 
+그러나 이는 scalable하지 않음. 유저와 아이템이 수백만에 이르는 상황에서 실제로 응용하기 어려움. 
+또한 unseen feature에 대해 쉽게 generalize할 수 없음.
+
+4. FM 모델은 linear 모델의 일반화 성능과 polynomial의 상호작용 학습을 결합하기 위한 시도로, MF 모델의 성공에 뒤따라 등장함. 
+일종의 feature interaction term으로 명시적인 factorization을 만들기보다는 , factorized interaction term을 만듦.

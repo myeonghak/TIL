@@ -1,0 +1,28 @@
+[TIL] xDeepFM short review
+
+https://youtu.be/3bsGsq3-VfM
+
+1. 오늘날 사용자는 정보에 overload됨. information filtering을 위해 추천시스템이 유용함이 증명되었음.
+
+2. 일반적으로 data-feature-model-output의 파이프라인을 거침
+
+3. 여기서 feature engineering이 모델의 예측 성능에 핵심적인 역할을 함.
+
+4. 피처 엔지니어링을 수행하는 한가지 방법은 combinatorial feature를 만드는 것임. 이 피처는 여러 raw feature들간의 상호작용을 측정함.
+
+5. 이러한 cross feature를 수동으로 작업하면 3가지의 단점이 있음.
+	1) task specific: 데이터에 적합한 데이터 패턴을 찾아내기 위해 아주 많은 시간을 투자해야함.
+	2) web-scale data: 웹 시스템 상에서, high dimension, large volumn 데이터임. 너무 많은 수의 raw feature들로 인해 모든 cross feature를 수동으로 만들어 내는 것이 feasible하지 않음.
+	3) unseen patterns: 학습 데이터셋에서 발견되지 않은 unseen pattern으로 일반화되지 않음.
+
+6. 이러한 이유로 인해 임베딩 방법론을 사용해 feature interaction을 자동적으로 학습하도록 유도함. 
+
+7. feature interaction은 각각의 featuer에 상응하는 latent vector의 product로 측정됨. 뉴럴 네트워크를 사용함으로써 효율적으로 higher-order interaction을 학습함.
+	I(x_i,x_j)=<v_i,v_j>x_i*x_j
+
+8. xDeepFM: feature interaction을 자동적으로 학습하기 위해 매우 깊은 factorization machine을 제안함. 이는 두개의 큰 부분으로 구성됨.
+
+9. CIN component: explicit feature interaction을 학습함.
+	DNN: implicit feature interaction을 학습함.
+
+10. CIN(Compressed Interaction Network): 이는 히든 레이어가 입력 레이어의 마지막 레이어에 의존한다는 점에서 RNN과 유사함. 히든 레이어를 위한 계산 단계(computational step)는 여러개의 feature map을 생성한다는 점에서 컨볼루션 뉴럴넷과 유사함. 
