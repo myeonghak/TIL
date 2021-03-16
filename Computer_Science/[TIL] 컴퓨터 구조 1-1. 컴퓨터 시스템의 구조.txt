@@ -1,0 +1,16 @@
+[TIL] 컴퓨터 구조 1-1. 컴퓨터 시스템의 구조
+
+
+
+1. 컴퓨터는 크게 5개의 부분으로 구성됨.
+	1) CPU(Central Processing Unit)
+	2) Main memory (RAM으로도 불림): 주기억장치, ROM(read-only memory)은 보통 포함되지 않음
+	3) SSD(Secondary Storage Device): 보조 기억 장치. I/O의 일부로 간주하기도 함. 주기억장치와 같이 데이터를 저장하지만 그 기능은 다름
+	4) I/O(Input/Output device): 입출력 장치
+	5) System Bus: 위의 네 장치를 연결하는 역할을 맡음
+
+2. CPU의 구조
+	1) ALU(Arithmetic and Logic unit): 산술 논리 장치, 실제적인 논리적인 연산을 수행
+	2) Register Set: 메모리에서 가져온, ALU에 전달될 데이터들이 임시 저장되고, ALU에서 연산을 마친 데이터를 임시 보관하는 장치를 Register라고 함. 이 Register가 모인 Set. 일반적으로 수백개가 존재
+	3) Control Unit: RAM에게 CPU로 데이터를 보내달라고 요청하는 제어 신호를 관리하는 부품
+	4) internal bus: 위의 서브블록 사이에 오가는 경로 역할을 수행. system bus와는 다른 기능을 수행하며, 연결되어 있지도 않음.
