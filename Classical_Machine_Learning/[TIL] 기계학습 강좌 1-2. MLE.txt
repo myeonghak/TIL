@@ -1,0 +1,55 @@
+[TIL] 기계학습 강좌 1-2. MLE
+
+
+
+1. thumbtack problem: 압정을 던지는 상황에서, 어떻게 배팅을 해야 최적일까?
+	-> 5번을 던져봐서 확인해 본다.
+	-> 3/5의 경우 윗면이 나오고, 2/5의 경우 아랫면이 나옴. 이에 따라 각각 배팅해야한다고 말함.
+	-> 그 이유는?
+	-> 이를 명쾌하게 설명하기 위해, 몇가지 알아야하는 개념들이 있음.
+
+2. binomial/Bernoulli distribution (이항분포)
+	
+	- discrete probability distribution(이산 확률 분포)의 하나로, 
+	각 시행이 theta의 성공 확률과 (1-theta)의 실패확률을 가질 때 n개의 독립된 시행을 통해 성공한 횟수가 따르는 분포
+	
+	- 각 시행은 iid임 
+	1) independent한 시행: 이전의 압정 던지기가 다음에 영향을 미치지않음
+	2) 베르누이 분포에 따라 identically distributed: 압정의 손상이 없어서 위와 아래가 일정한 확률로 출현함
+	
+	- head가 나올 경우를 승으로 간주하고, 그 확률이 theta라고 할 때, D(즉 data)=HHTHT라는 결과가 나왔다고 하자. 
+	theta^3*(1-theta)^2가 됨. P(D|theta)=theta^head수*(1-theta)^tail수로 나타낼 수 있을 것임.
+	
+	- 이런 상황에서, 어떻게하면 head는 3/5이고 tail은 2/5라는 결론으로 도달할 수 있을까?
+
+3. Maximum Likelihood Estimation
+	- 데이터: 관측한 시퀀스 데이터 D, a_H와 a_T로 이루어져 있음
+	- 우리의 hypothesis: 압정 던지기의 결과는 theta의 이항분포를 따른다
+	- 우리의 가설을 더욱 강하게 하는 법
+	1) 관측치에 대한 더 나은 분포를 찾는 것: 가능하지만, 더욱 엄밀한 검토가 필요
+	2) theta의 최고의 후보군을 만들어 내는 것: theta를 가장 plausible하게 만드는 조건은 무엇인가?
+	- 최고의 후보군을 만드는 방법 중 하나로 MLE를 들 수 있음. 이는 관측된 데이터의 확률을 최대화하는 theta를 찾아내는 것.
+	- theta^hat=argmax_thata P(D|theta) 즉, MLE인 theta^hat은 theta가 주어졌을 때 D라는 관측이 등장할 확률을 극대화해주는 theta를 가리킴
+
+4. MLE calculation
+	- theta^hat=argmax_thata P(D|theta) =argmax_theta theta^head수*(1-theta)^tail수가 될것인데, 이는 처리하기 어려움
+	- 이를 해결하기 위해 흔히 사용하는 테크닉으로, 단조증가함수인 log를 양변에 취해줌. 단조증가 함수의 특성으로 인해 log를 취한 전이나 후나 같은 지점에서 MLE가 구해짐
+	- 이 이후에는 maximization problem임. theta에 대해 미분해서 최대화되는 theta 지점을 찾아주면 MLE가 구해짐.
+	- 결과적으로 theta^hat=a_H/(a_H+a_T)가 됨. 즉 이 사례에서는 3/5가 되는 것! (여기서 a_H는 H의 등장 횟수, a_T는 T의 등장 횟수)
+
+5. 시행 횟수(Number of trials)
+	- 만일 50번의 시행을 더 했더니 Head가 30번이 나왔다. 그렇다면?
+	- MLE를 통한 theta 값은 동일하게 0.6이 나온다. 그럼 아무것도 얻은 것이 없는건가?
+	- 그렇지 않다. 우리의 0.6이라는 theta^hat의 값은 estimation임. 따라서 이 추정의 오차를 줄였다고 할 수 있음
+
+6. Simple Error Bound
+	- theta^hat을 우리의 MLE 추정치, N을 시행 횟수, theta*를 우리의 true parameter, trial error>0이라 할 때
+	- Hoeffding’s inequality에 의해 확률에 대한 simple upper bound를 가짐. 
+	- 이는 풀어 설명하면, theta^hat와 theta*의 차이가 특정 error bound보다 클 확률은 시행 횟수 N이 커질수록, error bound가 커질수록 작아진다.
+	- 따라서 시행이 늘어났으므로 실제 파라미터 값과 추정 파라미터 값의 차이인 오차가 더 작아졌을 것이라는 주장을 할 수 있음!
+	- 이제 역으로, 오차가 0.1이 넘는 확률이 0.01%보다 낮게끔 만들 수 있는 N을 구할 수 있음
+
+7. PAC learning(Probably Approximate Correct)
+	- probably(0.01% 확률)
+	- approximate(0.1 오차)
+	- 즉 0.01% 확률로 0.1이 넘는 오차가 나타날 theta^hat이 바로 0.6입니다 라고 하는 것이 PAC learning의 결과물임
