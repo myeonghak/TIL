@@ -1,0 +1,157 @@
+[랜덤 포레스트 김성범]
+
+1. 개별 트리 모델의 단점
+	- 계측적 구조로 인해 중간에 에러가 발생하면 다음 단계로 에러가 계속 전파
+	- 학습 데이터의 미세한 변동에도 최종 결과가 크게 영향을 받음
+	- 적은 개수의 노이즈에도 크게 영향
+	- 나무의 최종 노드 개수를 늘리면 과적합의 위험이 있음 (Low Bias, Large Variance)
+	- 이에 대한 해결 방안으로 랜덤 포레스트 모델을 사용할 수 있음.
+	
+2. 랜덤 포레스트 배경 - 앙상블
+	- 여러 Base 모델들의 예측을 다수결 법칙 또는 평균을 이용해 통합하여 예측 정확성을 향상시키는 방법
+	- 다음 조건을 만족할 때 앙상블 모델은 Base 모델보다 우수한 성능을 보여줌
+		-> Base 모델들이 서로 독립적
+		-> Base 모델들이 무작위 예측을 수행하는 모델보다 성능이 좋은 경우
+			(가령 이진 분류의 경우 50%의 성능을 가질 경우)
+	
+	- 앙상블 모델의 오류율
+		-> e_ensemble = 수식(캡쳐본 참조, 4:32)
+		-> 그래프를 그려보면, 0.5를 기점으로 성능이 좋아짐.
+		
+	
+	- 의사결정나무 모델은 앙상블 모델의 base 모델로써 활용도가 높음 (Maclin et al. 1999)
+		-> Low computational complexity: 데이터의 크기가 방대한 경우에도 모델을 빨리 구축할 수 있음.
+		-> Nonparametric: 데이터 분포에 대한 전제가 필요하지 않음
+		
+
+3. 랜덤 포레스트 개요
+	- 다수의 의사결정나무 모델에 의한 예측을 종합한 앙상블 방법
+	- 일반적으로 하나의 의사결정나무보다 높은 예측 정확성을 보임
+	- 관측치 수에 비해 변수의 수가 많은 고차원 데이터에서 중요 변수 선택 기법으로 널리 활용됨
+	
+	- 과정
+		1) Bootstrap 기법을 이용하여 다수의 training data 생성
+		2) 생성된 training data로 decision tree 모델 구축 (무작위 변수를 사용하여)
+		3) 예측 종합
+		
+	** - 핵심 아이디어: Diversity, Random 확보 **
+		1. Bagging: 여러개의 training data를 생성하여 각 데이터마다 개별 의사결정나무모델 구축
+		2. Random Subspace: 의사결정나무모델 구축 시 변수를 무작위로 선택
+		
+4. Bagging (bootstrap Aggregating) (Diversity 확보)
+	- Bagging (bootstrap Aggregating): 각각의 bootstrap 샘플로부터 생성된 모델을 통합하여 최종적인 예측을 내리는 것
+	- Bootstrapping: sampling 기법 중 하나
+		-> 각 모델은 서로 다른 학습 데이터셋을 이용
+		-> 복원 추출(sampling with replacement): 각 데이터셋은 복원추출을 통해 "원래 데이터의 수 만큼의" 크기를 갖도록 샘플링함
+		-> 개별 데이터셋을 붓스트랩셋이라 부름
+		
+		-> 원래 학습 데이터 셋의 레코드 수가 10개라면, 10개 만큼의 레코드를 기존 데이터 셋에서 샘플링하여 복원추출함
+		-> 복원추출이므로 똑같은 레코드가 여러개 선택될수도 있으며, 반대로 한번도 선택되지 않은 레코드가 있을 수 있음.
+		
+	- 이론적으로 한 개체가 하나의 붓스트랩에 한번도 선택되지 않을 확률
+		-> 0.368 수준 (e^-1)
+		
+	- Result Aggregating
+		-> 분류 문제에 대해서 여러가지 방법을 사용할 수 있음.
+		-> 10개의 Ensemble population이 있음 (즉, 붓스트랩을 10번 수행하여 10개의 모델을 만듦. 따라서 10개의 데이터셋이 있는 것)
+		-> 각 모델에 대해 training accuracy가 각각 구해졌을 것임
+		
+		1) Majority voting
+		: 각 모델에 대해 한 test instance에 대해 1이라고 예측한 비율(y=1일 확률)을 기반으로 0.5 이상이면 1, 아니면 0으로 뱉어내게 함
+		따라서 10개의 모델에 대해 각각 1,0,1,..,0을 모두 세어 봄
+		가장 major한 클래스로 결정을 내리는 것. 1이 6개 0이 4개면 majority voting 방식의 결론은 1임.
+		
+		2) Weighted Voting (weight=training accuracy of individual models)
+		: 각 training accuracy를 발언권(weight)으로 간주하자는 것임.
+		각 클래스에 대해 training accuracy의 합을 구하는 식으로 계산할 수 있을 것임.
+		0인 클래스 라벨을 뱉어낸 모델의 training accuracy는 0.424, 1의 경우 0.576이 나올 것
+		따라서 weighted voting 방식에서도 1번 클래스로 예측할 것임
+		
+		3) weighted voting (weight= predicted probability for each class)
+		: 각 클래스의 예측 확률을 기반으로 1일때의 확률과 0일때의 확률을 평균을 내어 최종 결론을 내림.
+		
+		
+5. Random Subspace (randomness 확보)
+	- Bootstrap으로 여러개의 데이터셋을 얻었음.
+	- 이제 트리를 만들어 분지시키는 방법에 대해 고민해 보아야 함.
+	- 의사결정 나무의 경우에는 모든 변수의 모든 지점을 고려하여 비용함수가 최소가 되는 변수와 지점을 찾아 분지를 했음
+	- 그러나 여기서는 모든 변수를 고려하는 것이 아니라 전체 변수 중 몇개만을 골라 고려함. 이를 random subspace를 만들어냈다고 함. (전체 중 일부의 feature space만을 고려하므로)
+		(가령 20개의 변수가 있으면 각 분지마다 4개의 변수만을 골라서 고려함)
+		
+	- 이러한 과정을 full-grown tree가 될때까지 반복
+	
+	- Random Subspace
+		-> 의사결정나무의 분기점을 탐색할 때, "원래의 변수의 수보다 적은 수의 변수를 임의로 선택"하여 해당 변수들만을 고려 대상으로 함.
+		-> 즉 모든 변수를 사용하지 않고 일부의 변수만 사용함
+		
+
+6. Generalization Error
+	- 각각의 개별 tree는 과적합될 수 있음
+	- RF는 tree의 수가 충분히 많을 때 Strong Law of Large Numbers에 의해 과적합되지 않고
+	그 에러는 limiting value에 수렴됨.
+	- Generalization error < p(1-s^2)/s^2 -> Generalization Error의 Upper bound (작으면 작을수록 좋음)
+		-> p: Decision tree 사이의 평균 상관관계
+		-> s: 올바로 예측한 tree와 잘못 예측한 tree수 차이의 평균
+		
+	- 개별 tree의 정확도가 높을수록 s 증가
+	- Bagging과 Random subspace 기법은 각 모델들의 독립성, 일반화, 무작위성을 최대화시켜 모델간의 상관관계 p를 감소시킴
+	- 개별 tree의 정확도, 독립성이 높을수록 random forest 모델의 성능이 좋아짐
+	
+	
+	
+7. 중요변수선택(변수의 중요도)
+	- 랜덤포레스트는 선형 회귀모델/로지스틱 회귀모델과는 달리 개별 변수가 통계적으로 얼마나 유의한지에 대한 정보를 제공하지 않음 (알려진 확률분포를 가정하지 않기 때문)
+	- 즉, 비모수적(non-parametric) 모델임.
+	- 대신 랜덤포레스트는 다음과 같은 간접적인 방식으로 변수의 중요도를 결정
+		-> 1단계: 원래 데이터 집합에 대해서 OOB(out of bag) error를 구함
+		-> 2단계: 특정 변수의 값을 임의로 뒤섞은 데이터 집합에 대해서 OOB error를 구함
+		-> 3단계: 개별 변수의 중요도는 2단계와 1단계 OOB Error 차이의 평균과 분산을 고려하여 결정
+		
+	
+	
+	- Out of bag(OOB)
+		-> 배깅을 사용할 경우 붓스트랩셋에 포함되지 않는 데이터들을 검증 집합으로 사용함
+		
+		1) 각 붓스트랩 셋으로부터 생성된 Tree에서 OOB error 계산 (r_i, i=1,2,...,t 여기서 t는 생성한 tree의 총 수)
+		2) 이 tree에서 특정 변수(X_i)의 값을 임의로 뒤섞은 데이터 집합에 대해 OOB error 계산(e_i, i=1,2,...,t)
+		3) d_i = e_i-r_i, i=1,2,...,t
+		4) X_i 변수의 중요도: v_i = d/s_d #여기서 s_d는 d의 표준편차, 이를 통해 scaling 해주는 것
+	
+		-> 즉, 뒤섞었을 경우 OOB 에러와 그렇지 않은 경우의 OOB 에러를 계산해 보았을 때 별로 큰 차이가 없으면 중요하지 않고, 반대도 마찬가지라는 논리
+
+
+8. 하이퍼파라미터
+	- Decision tree의 수
+		-> Strong Law of Large Numbers를 만족시키기 위해 2000개 이상의 decision tree 필요
+		-> 500개 정도면 충분하다는 연구도 있음
+		
+	- Decision tree에서 노드 분할 시 무작위로 선택되는 변수의 수
+		-> 일반적으로 변수의 수에 따라 다음과 같이 추천 됨 (Diaz-Uriarte et al, 2006)
+			- classification = sqrt(변수의 수)
+			- regression = 변수의 수 / 3
+		
+	
+		
+		
+
+		
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
+		
