@@ -1,0 +1,24 @@
+[TIL] 기계학습 강좌 2-1. 머신러닝의 기초-룰기반 머신러닝
+
+
+
+1. 룰 기반 학습을 위한 완벽한 세계에 대한 가정
+	- perfect world의 특성
+	1) 관측오차 없음, 비일관적인 관측치 없음: 트레이닝 데이터에 오차가 없고, 노이즈가 없음
+	2) 관측 대상 중 확률적인 요소 없음: target function이 deterministic함
+	3) 시스템 재생성을 위해 관측치에 대한 모든 정보를 가짐: target function이 가설집합 내에 포함됨, 데이터셋에 포함되지 않은 다른 변수의 영향과 상관 없이 결과를 설명할 수 있음
+
+2. Function Approximation
+	- 입력이 주어졌을 때 좋은 출력을 만들어내는, 실제를 잘 나타내는 출력을 만들어내는 좋은 함수를 근사하는 것
+	- 이것이 바로 머신러닝 알고리즘이 목표하는 것과 유사
+	- perfect world 내에서 
+	1) instance X: features, label
+	2) training dataset D: 인스턴스에 대한 관측 집합
+	3) hypothesis H: X를 Y로 맵핑할 수 있는 잠재적으로 가능한 함수.(ex. 우리 딸 애는 비만 안오면 무조건 나가 놀아!) 수 많은 가설이 존재할 수 있음
+	4) target function C: 알려지지 않은, X에서 Y로 맵핑되는 함수. 우리가 알아내기 위해 노력함. H를 C로 만들기 위해 노력해야 함.
+
+3. graphical representation of function approximation
+	- instance가 맵핑된 공간 내에서, 각 hypothesis는 decision boundary를 그리게 됨.
+	- 그 안에 포함되면 true, or false가 됨
+	- 가설은 general~specific으로 정도를 나눌 수 있음
+	- general할수록 instance space 내에서 더 넓은 공간을 차지할 것임
