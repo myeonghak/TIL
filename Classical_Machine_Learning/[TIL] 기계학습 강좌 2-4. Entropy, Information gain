@@ -1,0 +1,42 @@
+[TIL] 기계학습 강좌 2-4. Entropy, Information gain
+
+
+
+1. 디시전 트리 내에서의 변수 선택
+	- 가장 큰 불확실성을 줄이는 변수가 더 나은 변수임
+	- 이 때, 불확실성을 측정해줄 수 있는 척도가 필요함. 이것이 바로 엔트로피임.
+
+2. 데이터셋 내의 피처는 random variable임. 데이터를 받아보는 입장에서는 모든 변수가 coin toss와 유사하다고 볼 수 있음. 각 변수가 특정 분포를 따르고, 그 분포에서 생성된 값으로 간주할 수 있음
+
+3. random variable의 entropy
+	- 더 높은 엔트로피는 더 높은 불확실성을 의미함.
+	- 이항분포의 경우, 100% 앞면만 나온다고 하면 불확실성은 가장 작을 것임. 반대로 50:50으로 나온다면 가장 불확실성이 클 것임. 이처럼 dominant한 case가 있으면 불확실성이 낮아지고(엔트로피 낮음), 다른 사건이 비슷한 확률로 발생하는 분포는 엔트로피가 커질 것임.
+	- H(x)=-sigma_x(P(X=x)*log_b P(X=x))
+	- 여기서 x는 랜덤 변수의 각 케이스를 의미함
+	- continuous한 공간에서 정의된 distribution을 따를 경우 sigma는 intergral로 바뀜
+
+4. conditional entropy
+	- 한 random variable이 주어진 상황에서 다른 random variable의 불확실성을 측정
+	- H(Y|X)=sigma_x P(X=x) * H(Y|X=x)
+	- y에 대한 루프가 내부에 있고, x에 대한 루프가 외부에 있음
+
+5. information gain
+	- 변수 선택시의 엔트로피 감소에 대한 척도가 필요함.
+	- 특정 변수가 주어졌을 때 정답 클래스에 대한 불확실성의 변화를 측정.
+	- 따라서 조건부 엔트로피로 이를 계산함
+	- IG(Y, A1)=H(Y)-H(Y|A1)
+
+6. Top-down introduction algorithm
+	- DT에는 아주 많은 학습 알고리즘이 존재 (ID3, C4.5, CART...)
+	- 그 중 ID3 알고리즘에 대해 배워봄.
+	- ID3 알고리즘
+	1) initial open node(이를 root라고 부름)를 생성, 모든 인스턴스를 이 노드에 넣음.
+	2) IG를 기준으로 변수를 선택, 해당 변수에 의해 선택된 클래스로 분류함
+	3) 각 분류 결과에 따라 TF로 split하며 진행
+
+7. problem of DT
+	- 문제가 복잡해짐에 따라 더욱 크고 깊은 모델을 만들 수 있을 것임
+	- 그러나 이 경우 학습 데이터셋에만 잘 부합하고, 실제 field에 적용할 경우 잘 작동하지 않을 것임
+	- 그 이유는 실세계는 아주 많은 noise와 inconsistency를 가지고 있기 때문임.
+	- 학습데이터에 맞추어 모델의 복잡도를 키우면 오버피팅의 위험이 있음
+	- 이를 해결하기 위해, pruning, path length penalty와 같은 장치를 적용함.
