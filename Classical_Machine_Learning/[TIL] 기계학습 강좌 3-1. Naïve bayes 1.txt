@@ -1,0 +1,37 @@
+[TIL] 기계학습 강좌 3-1. Naïve bayes 1
+
+
+
+1. Supervised Learning
+	- true value를 가지고 있어서, 실제 값을 예시로 제시할 수 있는 경우
+	- 분류: 관측치로부터 이산적 독립변수를 추정
+	- 회귀: 관측치로부터 연속적 독립변수를 추정
+
+2. Optimal classifier
+	- 베이즈 분류기의 optimal predictor
+	: f*=argmin_f P(f(X)!=Y)
+	- 에러를 최소화하는 함수 근사화
+	- 오직 2 클래스만을 가정하면, f*(x)=argmax_Y=y P(Y=y|X=x)
+	- 즉 x가 주어졌을 때 그에 맞는 y가 나오도록 확률밀도함수를 조정해주고, 그를 f*로 만들어 보자.
+
+3. detour: MLE and MAP
+	- MLE는, 찾고자 하는 파라미터에 대해 분포 가정에 의해 손실함수를 정의하고, 이를 최적화하는 과정에서 파라미터의 최우추정치를 구함
+	- MAP는 이러한 과정에 사전분포에 대한 가정을 가미할 수 있는 파라미터를 포함함
+
+4. Optimal classificatio and bayes risk
+	- P(Y=0|X=x)을 나타내는 곡선과 P(Y=1|X=x)를 나타내는 곡선 두개가 있을 때, 두 곡선이 맞물리는 지점의 확률은 0.5가 됨
+	- 시그모이드의 형태로 곡선 모델을 긋는 것이 직선으로(선형모델) 긋는 것보다 더 나을 것임. 결정경계(decision boundary) 구간 주변에서 더 확실한 구획을 유도함으로써 더 좋은 성능을 얻을 수 있을 것임.
+	- 직선으로 모델을 그어 x축 사이와의 넓이를 구한 영역과 곡선으로 모델을 그은 영역을 뺀 반원 모양의 구간이 bayes risk라고 함. 이 리스크를 줄이는 것이 관건
+	- S curve를 피팅하는 로지스틱함수와 같은 모델을 생각하지 않고, 나이브하게 주어진 데이터에서 위의 조건을 충족시킬 수 있는 모델을 만드는 방법을 찾아보자
+
+5. Learning the optimal classifier
+	- Optimal classifier: f*(x)=argmax_Y=y P(Y=y|X=x)=argmax_Y=y P(X=x|Y=y)*P(Y=y)
+	- 즉, class condition density * class prior의 형태로 바꾸어줄 수 있음
+	- 조건부 확률의 형태가 있을때 이를 사전확률을 사용한 곱의 형태로 바꾸어줄 수 있는 것이 베이즈정리의 좋은 특성 중 하나
+	- Prior와 Likelihood를 알아야할 필요가 있음. 
+	- prior=class prior=P(Y=y), 데이터셋 내부의 y 비율로 알 수도 있고, MAP로 추정도 가능
+	- likelihood=class condition density=P(X=x|Y=y), 이진분류시 y=1인 경우를 모두 모아서 x를(x에 대한 pdf를) 추정하고, y=0인 경우를 모두 모아서 추정하는 식으로 구할 수 있음.
+	- x변수가 하나일 경우에는 간단함. 그러나 변수가 여러개가 될 경우(여친 유무와 키/몸무게/지역 등) 여러 독립변수간의 상관관계에 대해 고려해야함
+	- 이를 해결하는 방법 중 하나로 나이브 베이즈. 즉 이를 모두 무시하겠다는 방법임
+	
+	
