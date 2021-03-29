@@ -1,0 +1,28 @@
+[TIL] 기계학습 강좌 2-5. Linear Regression
+
+
+
+1. DT까지는 rule-based approach였음. 이제 statistical한 approach를 배워봄. 이번에는 housing dataset으로 회귀 문제를 해결
+
+2. approximate function을 만드는 법: 머신러닝은 function approximation의 과정임을 기억하기
+
+3. 여기서 우리의 가설은 이제 룰 방식이 아닌, function의 형태로 정의됨.
+	- 우리의 dependent variable이, 각 independent variable과 그의 weight(theta로 정의됨)의 linear combination의 linear summation으로 결정된다고 가정함. 이 가정이 hypothesis가 됨. 이 hypo를 점점 복잡하게 만들어 갈수 있음
+	- 이 hypothesis에 대해, linear라는 관점과 theta를 어떻게 구할까 하는 관점이 있음
+
+4. Finding theta in Linear Regression
+	- h: f^hat(x, theta) = sigma(i=0부터 n까지, theta_i*x_i) -> f = X*theta
+	- 즉, 원래의 식에서 절편을 넘겨서 매트릭스 곱의 형식으로 간결하게 표현해 줌
+	- Y=X*theta+e (error term)
+	- X는 데이터이므로 고정된 값, 따라서 theta라는 값만을 잘 추정해 주어서 e를 아주 작게 만들고 싶다는 것이 목표
+	- f-f^hat을 minimize 해주는 theta인 theta^hat(즉, 이 값도 진짜는 아닐거야 라는 의미를 함축)를 추정해보자!
+
+5. optimized theta
+	- 위에서, theta^hat=f-f^hat을 전개하여 정리하여 argmin을 충족하는 theta를 찾는 것이 목표
+	- 식을 전개하면 theta와 무관한 텀은 제외되고, 행렬 미분을 통해 극점을 찾음. 이로써 (X^T@X)^-1@X^T@Y의 식으로 간결해짐
+	- 에러가 정규분포를 따른다면 MLE가 됨 (왜?)
+
+6. If you want more..
+	- x에 대해서 피팅한 직선 외에도, x^2, x^3 등등의 변수를 만들어 차원을 늘리고 이에 대한 파라미터를 구해 새로운 모델을 피팅할 수 있음
+	- 모델의 복잡도는 올라가지만 곡선과 같은 형태의 모델을 만들 수 있음
+	
