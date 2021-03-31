@@ -1,0 +1,43 @@
+[TIL] 기계학습 강좌 3-2. Naïve bayes 2, conditional independence
+
+
+
+1. Dataset for Optimal Classifier
+	- 아이가 나가서 놀 것인지에 대한 데이터셋을 사용
+	- f*(x)=argmax_Y=y P(Y=y|X=x)=argmax_Y=y P(X=x|Y=y)*P(Y=y)
+	- 여기서 P(X=x|Y=y) 파트의 x는 x변수마다 여러 경우의 수를 가짐
+	- P(Y=y)이라는 prior는 그냥 MLE(이항분포의 MLE, 즉 데이터셋 내에서의 단순 비율)를 구하면 됨
+	- 문제는 class condition density임.
+	- 필요한 파라미터의 수
+	1) P(X=x|Y=y) for all x,y -> (2^d-1)*k 여기서 d는 피처의 수. d=6이고 모두 이항피처라면 2^6=64개, 63개가 결정되면 나머지 하나는 자동 결정되기 때문에 63개의 파라미터가 필요. 2*6개의 joint probability가 sum되면 1이 되는 probability simplex내에 있게 됨
+	2) P(Y=y) for all y -> k-1, 이항일 경우 1의 경우를 모두 구하고 그 반대의 경우를 빼버리면 되기 때문
+	- 실세계에서는 노이즈가 존재함. 따라서 random variable with distribution replication으로 모델링 하는것이 필요함.
+	- 필요한 파라미터의 수가 늘어남에 따라 모든 joint에 대해 표현이 어려워지는데, 이를 해결하는 것이 필요함
+	- real world에서의 error를 negate하기 위한 replication 갯수만큼을 관측하기 위해선 아주 큰 데이터셋이 필요함
+
+2. why need an additional assumption?
+	- f*(x)=argmax_Y=y P(X=x|Y=y)*P(Y=y)
+	- 왼쪽의 조건부 확률을 학습하기 위해서는 아주 큰 데이터셋이 필요함. 기존의 가정으로는 학습이 불가능하기 때문임
+	- 새로운 가정의 도입이 필요함
+	- 데이터셋 수요의 주된 부분은 위 식의 왼쪽 조건부 확률에서 일어남. (2^d-1)*k, 그렇다면 여기서 d를 줄일 수는 없는가?
+	- 그러나 귀중한 데이터임. 그럼 어떻게할까?
+	- 2^d를 손보자.
+
+3. conditional independence
+	- 만일 P(X=<x_1,...,x_i>|Y=y) -> PHI_i P(X_i=x_i|Y=y)로 바꾸어주면어떨까?
+	- 조건부 독립: (모든 x_1,x_2,y에 대해서) P(x_1|x_2, y)=P(x_1,y)
+	- 따라서, P(x_1,x_2|y)=P(x_1|y)*P(x_2|y)
+
+4. Conditional vs Marginal Independence
+	- 대장이 있고, 사병1과 2가 있다고 해보자. 사병 1은 대장이 명령을 내린지 아닌지를 모름. 사병 2가 걸어 나간다면, 사병1은 대장의 명령을 모르는 상황에서 사병2의 행동을 보고 반응을 할것임. 대장의 명령을 사병1도 안다면, 사병2의 반응에 대해서 얻는 정보가 없을 것임.
+	- y라는 class variable이 있을 때, 이 변수가 x_1이라는 변수도 dictate하고 있고, x_2라는 변수도 dictate하고 있다고 해보자. y가 주어진 상황에서는, 위에서 명령을 아는 상황처럼, x_1과 x_2 사이의 조건부 독립을 가정할 수 있다! 라는 말이 됨.
+
+5. marginal independence: 만일 P(X)=P(X|Y)일 경우 독립임. 위의 사례에서는 marginal 독립이 되지 않음!
+	- P(사병1=간다|사병2=간다)>P(사병1=간다)
+	- 즉 다른 변수의 상태에 영향을 받으므로 독립이 안됨. 옆의 사람이 가는지 아닌지를 관측할때와 하지않을때의 판단이 전혀 다르다.
+
+6. conditional independence: 그러나 가운데에서 이러한 행동을 generate하고있는 latent, 내부적인 동인이 알려져 있다면, 이러한 latent variable에 대해서는 조건부 독립을 정의할 수 있음.
+	- P(사병1=간다|사병2=간다, 대장=가라)=P(사병1=간다|대장=가라)
+
+7. 결과적으로, 나이브 베이즈 분류기는 class variable y를 generate하는 동인으로 간주하여, y를 condition으로 제공하여 x간의 독립을 가정한 분류 모델임.
+	
