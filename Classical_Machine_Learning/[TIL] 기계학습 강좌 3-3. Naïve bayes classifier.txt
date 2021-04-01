@@ -1,0 +1,18 @@
+[TIL] 기계학습 강좌 3-3. Naïve bayes classifier
+
+
+
+1. 이전에는, P(X=x, Y=y)라는 (2^d-1)*k개의 파라미터를 가짐. 새로 도입한 변수들간의 조건부 독립 가정을 적용하면 (2-1)dk가 됨. 여기서 2는 각 x변수가 갖는 경우의 수임. 하나의 경우가 정해지면 나머지는 유추할 수 있기 때문에 위와같이 정리됨.
+	- 그에 따라 원래 식도 곱 product의 꼴로 정리됨
+	- 그러나 y가 x를 generate한다는 가정은 엄밀한 의미에서 억지스럽기 때문에 식은 등호가 아닌 tilde가 됨.
+
+2. Naive bayes classifier
+	- 아주 naive한 assumption이므로 이름을 그렇게 지음.
+	- 위의  f*(x)=argmax_Y=y P(X=x|Y=y)*P(Y=y) 식을 MAP/MLE로 계산함. 이 때 positive y에 대해서도 계산하고, negative y에 대해서도 계산함. 각각의 계산 결과에 따른 확률값이 큰 것을 취해 최종 분류 결과로 채택함
+	- 좌측 확률 텀 class condition density는 MAP로, 우측 확률 텀 prior는 MLE로 추정하는 것이 일반적임
+
+3. 나이브 베이즈 분류기의 문제점
+	- 문제1 나이브한 가정: 많은 독립변수들이 상관관계를 가짐, 다중 공선성
+	- 문제2 incorrect probability estimation: 관측되지 않은 케이스에 대해서는, MLE로 추정하면 확률이 0이 됨. 따라서 MAP을 적용해 stupid prior라도 깔아서 예측에 활용하자.
+	- 문제 2는 항상 존재하는 문제임. 그러나 문제1은 우리가 도입한 가정에 의해 생겨남. 
+	- 로지스틱 회귀에서는 naive assumption을 제거할 예정.
