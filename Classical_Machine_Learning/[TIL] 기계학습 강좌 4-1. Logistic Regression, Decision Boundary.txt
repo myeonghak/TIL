@@ -1,0 +1,30 @@
+[TIL] 기계학습 강좌 4-1. Logistic Regression, Decision Boundary
+
+
+
+1. naive assumption을 적용하지 않고, 조건부 확률을 사용한 분류 모델을 만들 수 있을까? -> logistic regression
+
+2. Optimal classification and  Bayes risk
+	- P(y=녹색|X), P(y=빨강|X)의 확률을 직선의 형태로 교차시켜 X의 꼴로 표현하는 방법과 sigmoid를 교차시켜 표현하는 방법이 있음.
+	- 이 중에, bayes risk를 줄이는 방법은 후자임. 넓이로 표현했을 때 반달의 형태로 직선 함수를 썼을 때의 추가적인 손실을 나타낼 수 있음
+	- 전자(직선 형태 함수)는 두가지 문제가 있는데, 정의되는 범위도 0-1 사이를 벗어나고, risk optimization 관점에서 bayes risk optimize가 불가능(앞에서의 반원만큼)함.
+	- 그렇다면 어떤 함수를 사용해서 이 곡선 함수를 표현해야하나? : sigmoid!
+
+3. Classification with one variable
+	- credit dataset에서, A15라는 연속형 변수 하나만을 가지고 C를 예측해보자
+	- Y축은 P(Y|X)를 나타냄
+	- 결정 경계가 있다는 것을 직관적으로 알 수 있음. 이를 어떻게 찾을 수 있을까?
+	- A15 값에 log를 취해 scaling함으로써 급격한 값의 변화를 (exponential한 값의 변화를 linear하게 바꾸어줄 수 있음) 누그러뜨려줄 수 있음.
+
+4. Linear function vs Non-linear function
+	- 데이터를 선형함수와 비선형함수에 피팅해봄
+	- 선형함수를 적합하는 방법의 문제점: 
+	1) 확률 axiom을 위반함(1을 넘는 확률 등) 
+	2) 샘플에 대해 느린 반응 (결정 경계의 주변을 따라 x값을 변화시키더라도 예측 값이 빠르게 확확 바뀌지 않음)
+	3) 결정경계가 극단적인 데이터포인트에 상대적으로 민감하게 결정됨
+	4) 예제상에서는 precision은 높지만 recall은 낮게 잡힘
+	- 로지스틱 함수에 피팅하는 것이 더 나음: 1) 확률 axiom을 지켜줌 
+	2) 결정경계의 주변에서 빠르게 반응함
+	- 어떤 함수를 사용?
+	: sigmoid 함수의 일종인 logistic function을 사용
+	- 밀집된 데이터포인트를 균일하게 보기 위해, log domain으로 값을 보낼 수 있음
