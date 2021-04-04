@@ -1,0 +1,19 @@
+[TIL] 기계학습 강좌 4-3. Logistic Regression, Parameter Approximation
+
+
+
+1. Finding the Parameter, theta
+	- theta의 MLE: 관측된 데이터의 확률을 극대화시키는 theta를 선택하는 것
+	- 이 문제는 MCLE(maximum conditional likelihood estimation)임.
+	- theta^hat=argmax_theta P(D|theta)
+	여기서는 조건부 우도를 극대화해야 하므로, =argmax_theta product P(Y_i|X_i , theta) 이를 계산상의 편의를 위해 단조증가하는 로그함수를 씌워주면 product가 sigma로 바뀜
+	- 여기서 바로 전개하는 것은 힘들기 때문에, P (Y_i|X_i , theta) 라는 확률에 대해 다시 정의
+	- 결국 해당 조건부 확률의 결과(Y)는 이항분포를 따르기 때문에, 이항분포식을 사용하여 P(Y_i|X_i , theta)를 재정리
+	- 결과적으로 Y_i*X_i*theta-log(1+e^X_i*theta)로 정리됨.
+	- 이러한 과정을 수행하는 이유: theta라고 하는, 우리가 inference하려고 하는 target variable이 있음. 이를 어떻게든 최적화 해야지 function approximation이 잘 되고, 그렇게 되면 더 강한 hypothesis를 가지게 되고, 결과적으로 강한 classifier를 가지게 됨.
+	- 여기서는 log를 취해주고, 묶어주고, 이미 정리해 놓은 X*theta 식을 응용한 테크닉이 사용됨
+
+2. Finding the Parameter, theta, 계속
+	- 앞서 구한 정리된 식, theta^hat=argmax_theta sigma(Y_i*X_i*theta-log(1+e^X_i*theta))를 이제 더이상 전개할 수 없으므로 theta에 대해 미분을 수행.
+	- 그러나 logistic function으로 인해 closed form solution이 존재하지 않음(theta를 이걸로 딱 정하면 되겠다! 하는 형태가 안된다는 말)
+	- open form solution으로 정리되므로, approximation해야함.
