@@ -1,0 +1,29 @@
+[TIL] 기계학습 강좌 4-7. Logistic Regression, Naive bayes to Logistic
+
+
+
+1. logistic regression은 hypothesis frame work의 하나, probability likelihood를 극대화시켜야하므로 Gradient ascent 방식을 사용함. 이때 theta를 구하게 되면 P(Y|X)라는 계산식이 완성된 형태로 도출되기 때문에 learning이 이루어졌다고 할 수 있음.
+
+2. 나이브 베이즈와 로지스틱의 관계
+	- generative/discreminative pair의 관계임.
+	- 그러나, 이 비교를 위해 categorical 변수로만 설명했던 naive bayes 모델을 logistic regression 모델과 compatible하게 만들어줄 필요가 있음
+
+3. Gaussian naive bayes
+	- 변수가 sigma, theta의 parameter를 갖는 gaussian dist.를 따른다고 가정. 다른 분포도 가능
+	- 따라서 X 값들은 위의 파라미터를 따르는 정규분포에서 샘플링된 결과물이라고 가정하는 것
+
+4. naive to logistic
+	- naive에서 derivation한 내용으로 logistic을 도출 가능
+	- LR(로지스틱 회귀)에서는 P(Y=y|X)가 logistic function의 형태를 따를 것이라는 가정하에 이 함수에 regression하는 방법으로 설계함. 즉 다른 가정 없이 P(Y|X)을 바로 모델링 하려고 했음.
+	- discriminative model: 이렇듯이 특정 함수에 바로 확률분포를 모델링하는 모델을 부르는 말. P(Y|X)를 직접 모델링
+	- generative model: bayes theorem을 적용해서 모델링을 시도함. P(Y|X)=P(X|Y=y)*P(Y=y)/P(X), 여기서 P(X)는 상수로 취급하여 등호를 비례기호로 치환함을 대가로 날려버림. 그 결과 likelihood*prior의 형태로 모델링, 모델의 파라미터를 추정
+	- LR은 MLE의 형식을 따르고, GNB는 MAP의 형식을 따름
+	- P(X|Y=y)*P(Y=y)/P(X)를 정리하여 logistic으로 정리하려 함
+
+5. naive to logistic 2
+	- P(X|Y=y)의 문제는, X의 개수(피처의 수)가 늘어남에 따라 필요한 parameter의 수가 기하급수적으로 증가하는 것이었음.
+	- 이를 해소하기 위해 X 피처간의 독립을 가정하여 product 형태로 위의 likelihood 식을 변형해 줌.
+	- 분자에서 P(Y=y)는 pi로 변형해 주고, 이후의 Product P(X_i|Y=y)은 gaussian dist.를 따른다고 했으므로 정규분포의 pdf식으로 바꾸어줄 수 있음. 이 때 sigma/mu는 각각 피처마다/y값에 따라 다르게 정의될 것임. 
+	- P(Y=y|X)에 대해 식을 전개해 나가다, sigma_1^i = sigma_2^i가 같다는 가정을 취해보자. 즉, y 값에 관계없이 같은 피처 내에서는 분산이 동일하다는 가정을 적용.
+	- 식을 전개해 나가면, P(Y=y|X)=1/(1+exp(X*theta))의 꼴로 정리할 수 있음. 즉, 독립성 가정과 equal variance 가정을 통해 LR의 형태로 정리할 수 있다! 
+	
