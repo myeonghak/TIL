@@ -1,0 +1,11 @@
+[TIL] 기계학습 강좌 4-6. Logistic Regression, Parameter Approximation 2
+
+
+
+1. Finding theta with Gradient Ascent
+	- theta의 Likelihood를 maximize하는 theta^hat을 찾기 위해, Gradient Ascent method를 사용함
+	- theta^hat에 대해 정리한 미분식을 gradient ascent 식에 대입하여 반복적인 업데이트를 통해 더 나은 theta 값을 찾음.
+
+2. Linear regression revisited
+	- closed form으로 해결했던 선형회귀모델도 gradient method를 사용해 open form으로 최적화 가능
+	- x의 feature가 너무 많을 때(역행렬을 계산할 때 아주 큰 overhead), y가 너무 많을 때에는 closed form으로 계산으로하는 것이 매우 비효율적일 수 있음. 이 경우 근사하는 것이 더 좋은 접근임
