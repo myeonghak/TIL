@@ -1,0 +1,35 @@
+[TIL] 기계학습 강좌 4-8. Logistic Regression, naive bayes vs Logistic Regression
+
+
+
+1. 앞서 LR의 형태로 정리한 GNB 분류기
+	- 해당 수식을 위한 가정
+	1) naive bayes assumption, same variance assumption between classes
+	2) P(X|Y)에 대한 가우시안 분포
+	3) P(Y)에 대한 베르누이 분포
+	- 파라미터의 수
+	: 2*2*d(등분산성 가정 없을 시의 경우임. 2가 추가로 곱해짐을 알 수 있음)+1(prior는 하나만 알면 나머지 추정 가능)
+
+2. 로지스틱 모델
+	- 해당 수식을 위한 가정
+	1) P(Y|X)가 로지스틱 함수에 피팅된다
+	- 추정할 파라미터의 수: d+1 (피처 수+바이어스 텀)
+
+3. 누가 승자?
+	- 알 수 없음!
+	- 같은 수준의 parameter optimization을 할 경우, LR이 더 좋은 성능을 보인다는 중론, 또 이에 대한 주장을 하는 논문이 존재
+	- 그러나 나이브 베이즈의 경우에는 사전정보를 반영할 수 있는 여지가 더 많음.
+
+4. Generative and Discriminative pair
+
+5. Generative model: P(Y|X)를 베이즈 정리로 (굳이) 전개한 형태를 띰.
+	- 모든 변수에 대한 full probabilistic model: P(Y), P(X|Y)의 파라미터를 데이터로부터 추정함
+	- 특징: 베이지안, 사전확률, joint probability를 모델링함
+
+6. Discriminative model: 관측된 변수의 분포를 모델링할 필요는 없음, 바로 P(Y|X)라는 사후확률을 직접적으로 모델링하여 파라미터를 추정
+	- 특징: 조건부 확률을 모델링함
+
+7. 장단점
+	- LR이 덜 biased됨.
+	- probably approximately correct learning: NB는 학습이 더 빨리 이루어 짐.
+	
