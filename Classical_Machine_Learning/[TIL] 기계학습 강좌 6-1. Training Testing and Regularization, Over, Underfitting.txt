@@ -1,0 +1,33 @@
+[TIL] 기계학습 강좌 6-1. Training Testing and Regularization, Over, Underfitting
+
+
+
+1. Training and Testing
+	- train/test로 나누어, train set으로 추론한 파라미터를 통해 decision boundary를 결정함. 
+	- 이 때, train set의 outlier에 의해 편향된 decision boundary가 그어졌을 경우 test set에서 좋지 않은 성능을 나타낼 것임
+	- 이와 같은 현상을 잡아내기 위해 train/test split을 함
+
+2. Training
+	- parameter inference 절차
+	- 사전적인 지식이고, 과거의 경험임
+	- 이를 통해 세운 가설이 미래에도 유효하다는 보장이 전혀 없음
+	- 이 점이 ML의 가장 치명적인 단점임.
+	- 미래의 분포가 변하지 않는다는 가정 하에서만 유효함 (static and stable dataset)
+	- 왜 미래에 ML 모델이 작동하지 않을까?: 도메인이 변화하거나, 현재의 도메인이 충분한 분산을 보이지 않기 때문
+
+3. Testing
+	- 학습된 머신러닝 알고리즘/추론된 파라미터를 테스트
+	- 학습 데이터셋과 무관한 새로운 데이터셋
+	- 관측치의 일부를 치워 놓음으로써, 미래의 샘플들을 모사함
+
+4. overfitting and underfitting
+	- 트레인셋에 N개의 데이터가 있고, 간단한 polynomial regression model을 적합함. Y=F(x). 이 F(x)의 차원은 정해지지 않았음
+	- 데이터셋이 2차원 곡선처럼 이루어져있다고 해보자. 1차원 직선으로 피팅하면 못맞추는 것들이 너무 많고, 2차원 곡선으로 피팅하면 꼭맞고, 8차원 곡선으로 피팅하면 너무 꼭 맞음.
+	- 각각을 언더피팅, 알맞은 상황, 오버피팅이라 함.
+
+5. Tuning model complexity
+	- 복잡도(complexity)와 일반성(generality) 사이에 trade-off가 있음
+	- 모델의 복잡도를 키움에 있어, 언제 멈춰야 할까?
+	- 너무 일반적인 경우 현재의 트레인셋의 데이터를 많이 못맞추는 문제가 있고, 따라서 트레인 셋과 동일한 분포를 가질 것이라 가정되는 테스트를 비롯한 미래의 데이터에 잘 맞지 않을것이라 생각할 수 있음
+	- 너무 복잡한 모델의 경우 현재의 트레인셋은 잘 맞추지만 테스트셋을 비롯한, 학습 데이터와 유사한 분포를 가질 것이라 가정되는 미래의 데이터셋에 대한 예측 성능을 장담할 수 없다는 문제가 있음
+	
