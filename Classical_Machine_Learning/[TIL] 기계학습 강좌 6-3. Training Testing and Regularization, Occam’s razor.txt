@@ -1,0 +1,21 @@
+[TIL] 기계학습 강좌 6-3. Training Testing and Regularization, Occam’s razor
+
+
+
+1. Empirical Bias and Variance trade off
+	- f(x)=sin(2*pi*x)일 경우를 예시로 듦
+	- 샘플이 두개만 주어졌을 경우 피팅할 수 있는 모델의 예시로
+	1) constant line(0차원)
+	2) linear line(1차원)을 들 수 있음
+	- 단순한 모델의 경우 bias가 높으나 미래의 데이터에 대해 안정적인 예측을 내놓을 수 있음(low variance)
+	- 복잡한 모델의 경우 bias는 상대적으로 낮으나 미래의 데이터에 불안정함(high variance)
+
+2. 따라서 데이터의 조건부 확률 분포(P(y|X))에 대한 정보가 충분하지 않을 경우 단순한 모델을 사용하는 것이 유리한 접근일 수 있음. 샘플이 충분치 않으면 선형 회귀나 상수 모델을 쓰는게 나을지도 모른다는 것
+
+3. Occam’s razor
+	- 여러 가설 중에(among competing hypotheses) 가장 적은 가정을 취하는 가설이 선택되어야 한다는 원칙
+	- competing hypotheses: 예측에 있어 비슷한 에러를 만들어 냄
+	- fewest assumption: 덜 복잡한 모델
+	- 근사적으로 비슷한 에러를 갖는 모델 중에, 덜 복잡한 모델이 선택되어야 한다는 원칙
+	- 이는 Bias and Variance trade-off를 나타냄
+	- 그러나, 실세계에서 Bias/Variance를 계산하는 것이 가능한가?
