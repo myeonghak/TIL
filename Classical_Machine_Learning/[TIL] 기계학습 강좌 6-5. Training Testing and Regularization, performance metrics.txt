@@ -1,0 +1,26 @@
+[TIL] 기계학습 강좌 6-5. Training Testing and Regularization, performance metrics
+
+
+
+1. Performance Measure of ML
+	- 모델의 Bias/Variance를 계산하는 게 가능한가? -> target function f(x)도 모르고, average hypothesis g^hat(x)도 계산할 수 없음
+	- 따라서, 우리는 모델의 성능을 Bias/Variance로 평가할 수 없음.
+	- 그렇다면, 무슨 measure를 사용해야하는가?
+	- Accuracy, precision/recall, F-measure, ROC curve
+
+2. Precision and Recall
+	- 2개의 사용례를 생각해보자.
+	1) spam filtering
+	2) CRM
+	- 둘의 목적은 다름. 스팸 필터링은 실제로는 스팸이 아닌데 스팸으로 분류한 경우에 위험이 크고(False Positive error), CRM은 실제로 고객인데 고객이 아니라고 분류한 경우(True negative error)의 위험이 더 큼
+	- 따라서 스팸은 precision, CRM은 recall이 높아야 좋은 모델임
+
+3. F-measure
+	- recall과 precision은 인기있는 메트릭이지만, 몇가지 문제가 있음.
+	- 이는 precisionl의 경우 False positive를 피하기 위해 all negative 전략을 취하면 가장 높은 metric이 얻어지며, recall의 경우 True negative를 피하기 위해 all positive 전략을 취하면 가장 높은 metric이 얻어진다는 것임
+	- 이 두 메트릭을 균형잡아주는 새로운 메트릭이 필요함. 이것이 바로 F-measure임
+	- F-measure=(1+b^2)*(precision*recall)/(b^2*precision+recall)
+	- F1=(2*precision*recall)/(precision+recall)
+	- F0.5와 F2도 사용됨.
+	1) F0.5는 recall을 강조
+	2) F2는 precision을 강조
