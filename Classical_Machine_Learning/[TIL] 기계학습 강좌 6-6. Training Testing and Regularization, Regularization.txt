@@ -1,0 +1,26 @@
+[TIL] 기계학습 강좌 6-6. Training Testing and Regularization, Regularization
+
+
+
+1. Concept of regularization
+	- variance 관점에서 큰 문제가 발생할 경우를 생각
+	- 정규화를 통해,
+	1) 주어진 데이터에 대한 최고의 적합(fit)을 포기함. 따라서 training accuracy가 감소함
+	2) test set에서의 잠재적인 fit을 늘림
+	3) 모델 복잡도를 증가시켰기 때문에, bias는 다소 증가함
+	4) 결과적으로, 정규화는 모델에 대한 또다른 제약임. 원래 존재하던 제약은 “training error를 최소화한다” 였음.
+
+2. overfitting을 막는 두가지 방법
+	1) complex한 모델을 사용하지 않는다
+	2) complex한 모델을 사용하되, 주어진 데이터에 둔감하게 피팅 되도록 만든다
+
+3. Formal definition of regularization
+	- 정규화는 회귀 모형에 가해지믄 또 하나의 제약조건임
+	- 기존에는 (y-X*theta)^2의 형태로 estimation의 오차만을 계산했었으나, 이제는 파라미터의 크기를 제약조건으로 달아 두 텀을 모두 최적화하도록 모델을 강요함
+	- 다양한 정규화 방식이 존재
+	1) L1==Lasso regularization (1계, first order) -> 몇몇 피처에 대해서만 파라미터 값이 생길 것임. 미분이 어려워 유도가 조금 더 까다로움
+	2) L2==Ridge regularization (2계, second order) -> 가장 많이 쓰임, 모든 파라미터에 대해 조금씩의 값이 생길 것임, 유도가 쉬움(미분이 쉬우므로)
+	- 제약식의 order에 따라 loss function의 형태가 달라짐
+
+4. 
+	
