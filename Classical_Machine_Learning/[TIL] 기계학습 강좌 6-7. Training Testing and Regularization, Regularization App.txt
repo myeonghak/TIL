@@ -1,0 +1,21 @@
+[TIL] 기계학습 강좌 6-7. Training Testing and Regularization, Regularization App
+
+
+
+1. 선형 회귀에 정규화 텀을 붙여 최적화 함. w를 closed form 내에서 구함. 편미분으로 최적화
+	- w(weight)에 대해 정리해보면, 기존의 선형회귀의 w와 비교했을 때 lambda*I가 추가된 형태를 띰. 람다는 얼마나 정규화를 강하게 가할지를 정하는 하이퍼 파라미터임
+
+2. 정규화의 효과
+	- lambda = 1일때, 바이어스가 약간 증가하고 variance는 유의미하게 감소함
+
+3. 정규화 최적화하기
+	- lambda가 너무 작으면, variance가 너무 커짐
+	- lambda가 너무 크면, bias가 너무 작음.모델 파라미터 추론이 의미를 크게 잃음.모델의 complexity가 매우 작아짐으로써 선형회귀의 경우 constant function의 형태를 띠어버림
+	- 적절한 lambda 값을 어떻게 찾나? 여러 테스트를 거쳐야 함.
+
+4. 로지스틱 회귀의 정규화
+	- argmax 식에서, -alpha*R(0)를 더하면 됨
+
+5. SVM의 정규화
+	- C을 조절하면 Decision Boundary가 변화하는 것을 확인했음. 이를 조절하면 정규화 가능
+	- 즉, soft margin을 감안한 순간부터 이미 정규화가 적용되고 있었음
