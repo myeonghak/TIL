@@ -1,0 +1,52 @@
+[TIL] 기계학습 강좌 7-2. Bayesian Network, Probability Theorems
+
+
+
+1. computing with probabilities, Law of Total Probability
+	- Law of ToTal Probabilities: sigma_b P(a,b)=P(a) 즉, b의 모든 경우에 대한 a와의 joint probability를 구하면 P(a)가 된다
+	- 이를 summing out, marginalization이라 부름.
+	- 이를 P(a,b)=P(a|b)*P(b)라는 베이즈 정리를 사용해 정리할 수 있음
+	- 따라서, conditional prob을 알면 개별 특정 확률변수에 대해 알 수 있을 것임
+
+2. marginalize
+	- 만일 P(a,b,c,d)가 있을 때, P(b)에 대해 알고 싶으면 P(b)=sigma_a sigma_c sigma_d P(a,b,c,d)로 구할 수 있음. 이 절차를 marginalize라고 함
+	- 위의 식을 풀이하면, 다른 변수들을 summing out함으로써 marginal probability인 P(b)를 구한다고 할 수 있음.
+
+3. Joint prob(e.g. P(a,b,c,d))과 개별 확률이 주어졌을 경우, 어떤 조건부 확률이든 구할 수 있음.
+	- P(c|b)=sigma_a sigma_d P(a,c,d|b)= (1/P(b))*sigma_a sigma_d P(a,b,c,d)
+	- 위 식에서, 1/P(b)는 normalize constant에 불과하게 됨.
+
+4. Joint probability
+	- joint prob이 주어질 경우, 개별 확률변수에 대해서 알 수도 있고, conditional prob도 알 수 있게 해주는 강력한 정보를 제공
+	- 그러나 파라미터의 수가 급격하게 늘어남. binary의 경우, 2*변수의수 만큼 필요하게됨. 이 모든 것을 알아야하므로 파라미터의 수가 큰 부담이 됨(나이브 베이즈의 경우와 유사)
+	
+
+5. computing with probabilities: Chain rule or Factorization
+	- 우리는 joint probability의 정의에 의해 항상 다음과 같이 정리 가능
+	: P(a,b,c,...,z)=P(a|b,c,...,z)*P(b,c,...,z)
+	- 이 아이디어를 반복적으로 적용함으로써, 다음과 같이 전개할 수 있음 (factorize)
+	: P(a,b,c,...,z)=P(a|b,c,...,z)*P(b|c,...,z)*...*P(z)
+	- 이와 같은 방식을 chain rule이라 부름
+
+6. Joint probability distribution
+	- joint prob은 확률 변수의 어떤 수에 대해서든 정의될 수 있음(binary의 경우, 2^n개의 케이스가 있음)
+	- 각 조합에 대해, 얼마만큼의 확률로 발생하는지를 말하고 싶음
+	- 이 모든 조합의 확률의 합은 1이 되어야 함.
+	- 모든 joint prob에 대해서 알고 있으면, 각 개별 확률변수/조건부확률에 대해 알 수 있음.
+
+7. Independence
+	- 두 확률변수 A,B가 독립이라면, 두 변수간에는 다음이 성립함.
+	-P(A|B)=P(A), P(A,B)=P(A)*P(B)
+	-이는 B의 결과에 대해 아는 것이 A에 대해 아무 상관 없다는 것을 의미
+	- 동전 던지기에서, 만일 독립성이 보장이 안된다고 하면 2^n-1개의 확률값을 알아야 함.
+	- 독립성이 전제된다면 1개의 값만을 알면 됨.
+
+8. Conditional vs Marginal independence
+	- Marginal Independence
+	P(군인A=Go|군인B=Go) > P(군인A=Go)일 경우, Marginally independent하지 않다라고 말함.
+	- 다른 사건이 또 다른 사건이 일어나는데 아무런 영향을 주지 않았을 경우 독립이라고 함.
+	- Conditional Independence
+	P(A|B,C)=P(A|C)일 경우. 즉 B와 C가 동시에 주어질 경우와 C만 주어졌을 경우의 확률이 동일할 경우 A는 B에 대해 conditionally independence함.
+	- 가령 군인A, 군인B, Commander가 있을 경우 위의 식에 대입해보면 이해할 수 있음. C(ommander)의 명령을 잘 들었을 경우 A는 B의 행동으로부터 아무런 정보도 얻지 못하게 됨.
+	- 달리 말해 C라는 조건이 주어졌을 경우, A라는 사건은 B에 대해 독립임!
+	
