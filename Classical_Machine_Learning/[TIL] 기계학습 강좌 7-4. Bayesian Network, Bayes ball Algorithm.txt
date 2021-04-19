@@ -1,0 +1,41 @@
+[TIL] 기계학습 강좌 7-4. Bayesian Network, Bayes ball Algorithm
+
+
+
+1. Typical Local Structures
+	- 여기서 independent에 대한 정보가 매우 중요함. 그 이유는 나중에 joint prob을 factorize할 때 이 독립에 대한 정보가 필요하기 때문
+
+2. Common parent (공통 부모)
+	- “Alarm”이 고정되어 있을 때, “JohnCalls”,”MaryCalls”가 분기해서 나온 형태
+	- JㅗM | A, 즉 A가 given일 때 J와 M은 독립이다. P(J,M|A)=P(J|A)*P(M|A)
+	- parent node를 공유하는 노드들은 하나가 주어졌을 때 다른 하나는, parent node가 given인 이상 그 다른 하나의 사건이 발생했는지와는 독립이다
+
+3. Cascading(순차적 발생)
+	- “Alarm”이 고정되어 있을 때, “Burglary”와 “MaryCalls”가 양쪽에 순차적으로 붙어있는 형태
+	- BㅗM | A, 즉 알람이 울린 이상, B(강도)가 들었는지의 여부는 M(메리전화)에 영향을 미치지 않음. 달리 말해 직접적인 영향을 미치는 노드가 있을 때 그 이전의 노드는 영향을 미치지 않고 독립이 된다는 의미
+	- P(M|B,A)=P(M|A)
+
+4. V-structure
+	- “Alarm”이 고정되어 있을 때, 그 원인인 “Burglary”와 “Earthquake”가 짝지어지게 됨. 
+	- ~ (B ㅗ E |A), 즉 A가 주어지자마자 B와 E 사이의 독립이 깨어지게 됨.
+	- 다시 말해, 원래 강도와 지진은 독립이지만, A가 발생했을 때 B가 발생하지 않았다면 E가 원인일 것이라고 유추할 수 있음. 즉 E라는 확률에 영향을 미침. 
+
+5. Bayes ball algorithm
+	- 목적: X_A ㅗ X_B | X_C 즉, X_C가 주어졌을 때 X_A와 X_B가 독립인지를 체크
+	- 노드를 따라 베이즈 볼을 굴렸을 때, 이 볼이 굴러 갔다면 dependent하며, 반대로 굴러가지 못했다면 independent하다고 판단하는 알고리즘
+	- 여기서 베이즈 볼은 인과를 나타내는 상징적인 대상임. 만약 굴러갔다면 인과가 존재하는 것으로 간주됨
+	- 앞서 배운 typical local structures에서, 주어진 X_C에 해당하는 노드를 색칠함. 만일 X_A에서 X_C로 굴러갈 수 있다면 이는 dependent하다는 의미가 됨. 반대로 굴러가지 못하면 이 둘은 독립
+
+6. Exercise of Bayes Ball
+	- X_1 ㅗ X_4 | {X_2}와 같은 예시의 독립성 검증. 작은 local structure로 큰 스트럭처를 쪼개어 볼이 굴러가는지를 판단함
+
+7. Markov blanket
+	- A라는 특정 랜덤변수가 베이지안 네트워크 위에 있다고 가정할 때, A가 다른 랜덤 변수 전부와 conditionally independent하게 만들어주는 그 condition을 찾아보자.
+	- A 이외 변수가 11개가 있다고 할 때, 5개의 변수가 알려져 있으면, 나머지 6개에 대해서는 conditionally independent해진다면 5개의 변수가 마코프 블랭킷이 됨.
+	- P(A|Blanket, B)=P(A|Blanket)
+	- 달리 표현하자면, AㅗB|Blanket
+	- Blanket={parent(cascading, common parent를 막아줌),child(cascading이 역류하는 것을 막아줌), children의 other parent(V-structure를 막아줌)}
+
+8. D-seperation (Directly Seperated)
+	- X가 Y가 주어졌을 때 Z에 대해 D-seperated되었다는 말은, 베이즈 볼 알고리즘을 써서 어떤 수를 써도 X에서 Z로 볼을 보낼 수 없다는 말이 됨
+	- XㅗZ|Y 라는 의미
