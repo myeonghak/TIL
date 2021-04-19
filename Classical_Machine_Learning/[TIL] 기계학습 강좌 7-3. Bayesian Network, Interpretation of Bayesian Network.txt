@@ -1,0 +1,38 @@
+[TIL] 기계학습 강좌 7-3. Bayesian Network, Interpretation of Bayesian Network
+
+
+
+1. 복습: 나이브 베이즈
+	-전제:
+	1) class prior P(Y)
+	2) Y가 주어졌을 때 조건부 독립인 X들의 데이터셋 d
+	3) 각각의 X_i에 대해 P(X_i|Y)라는 우도가 주어짐
+	- 여기에 X 변수간 독립을 강제로 가정하여 모델링
+	- Y가 있을 때 X_1, X_2 등의 변수와의 관계를 graphical notation으로 표현했음
+
+2. Bayesian Network
+	- A graphical notation of
+	1) 랜덤 확률 변수
+	2) 조건부 독립
+	3) 완전한 결합 분포(full joint dist.)의 compact한 representation을 얻기 위해 사용
+	- syntax: node와 link로 이루어짐
+	- 비순환적(acyclic), 유방향(directed) 그래프 (순환적/무방향 그래프는 안됨!)
+	- 노드집합: 랜덤 확률변수, 노드의 부모노드가 주어졌을 때의 조건부 확률, P(X_i|parent(X_i)). 부모노드가 없으면 전사건이 부모노드가 됨
+	- 링크집합: 부모 노드의 자식 노드로의 직접적인(direct) 영향. 
+
+3. 베이지안 네트워크의 해석
+	- 네트워크의 구조(topology)는 조건부 독립에 대한 가정(? assertion)을 encoding함 (conditional independence 관계를 가정하고 있다고 말하심)
+	- 보통 전문가에 의해 이러한 가정이 도입됨
+	- 무엇이 무엇과 연관이 어떻게 있는지를 그림으로 도식화함
+	- 해석: 날씨는 다른 변수와 독립적이다, 치통과 구취는 충치라는 정보가 주어졌을 때 조건부 독립임(서로), 충치라는 사건은 구취와 치통의 확률에 영향을 미침.
+
+4. 다른 예제
+	- 일 나가 있을 때, 알람이 울려서 존이 전화를 걸었다. 다른 이웃인 메리는 전화를 걸지 않았음. 강도가 들었을 때 울리는 알람은 자잘한 지진에도 반응하곤 함. 강도가 들었을까?
+	- 변수: Earthquake, Burglary, Alarm, JohnCalls, MaryCalls
+	- 베이지안 네트워크의 토폴로지는 “인과적인(casual)” 지식을 반영함 (도둑이 들면 알람이 울린다, 지진이 나면 알람이 울린다, 알람은 메리를 전화하게 한다, 알람은 존을 전화하게 한다 등)
+
+5. 베이지안 네트워크의 구성요소
+	- 질적 요소(qualitative component): 인과 관계에 대한 사전 지식, 데이터로부터 배운 지식, 빈번히 사용되는 (인과)구조
+	- 양적 요소(quantitative component): 조건부 확률 테이블, 각 노드에 주어진 확률 분포
+	- 확률 계산은 질적/양적 요소와 모두 관련되어 있음
+	
