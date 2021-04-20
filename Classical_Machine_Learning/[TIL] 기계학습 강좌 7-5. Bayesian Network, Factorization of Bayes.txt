@@ -1,0 +1,19 @@
+[TIL] 기계학습 강좌 7-5. Bayesian Network, Factorization of Bayes
+
+
+
+1. Factorization of Bayes Network
+	- joint prob이 알려져 있으면, condtional prob, 개별 individual prob 등을 marginalize 하면 다 계산할 수 있다.
+	- joint prob의 문제점은, parameter의 케이스가 급속도로 많아진다.
+	- 이를 줄이기 위해 독립 관계에 대한 정보가 매우 중요함.
+	- P(x1, x2, x3)= P(x1|x2,x3)*P(x2|x3)*P(x3)를 x2가 주어진 상황에서 x1ㅗx3라고 하면 P(x1|x2,x3)은 P(x1|x2)로 간결하게 변함
+
+2. Factorization theorem
+	- 베이지안 네트워크가 주어졌을 때, 확률 분포의 가장 일반적인 형태
+	- 네트워크 내에 인코딩된 확률적 독립 관계에 대해 일관성이 존재(?)
+	- parent가 주어질 경우 노드에 따라 factorize함. P(X)=Product_i P(X_i|X_pi_i)
+	- 여기서 X_pi_i는 X_i의 부모 노드의 집합
+
+3. Plate Notation
+	- 베이지안 네트워크 내에서 노드와 링크 외의 네모 박스를 도입함. 일종의 문법임
+	- 특정 노드가 X_1,X_2,...,X_i에 연결되어 있을 때 이를 단순화하여 플레이트 형태를 취해줌으로써 for loop와 같은 표현을 대체해 줌.
